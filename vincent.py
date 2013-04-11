@@ -2,7 +2,7 @@
 Vincent
 ----
 
-A Python to Vega translator. 
+A Python to Vega translator.  
 
 '''
 
@@ -14,7 +14,7 @@ class Vega(object):
     
     def __init__(self, name='Vega', width=400, height=200,
                  padding={'top': 10, 'left': 30, 'bottom': 20, 'right': 10},
-                 viewport=[]):
+                 viewport=None):
         '''
         The Vega classes generate JSON output in Vega grammer, a
         declarative format for creating and saving visualization designs.
@@ -34,7 +34,7 @@ class Vega(object):
             Height of the visualization
         padding: dict, default {'top': 10, 'left': 30, 'bottom': 20, 'right': 10}
             Internal margins for the visualization, Top, Left, Bottom, Right
-        viewport: list, default []
+        viewport: list, default None
             Width and height of on-screen viewport
         '''
         
@@ -50,9 +50,9 @@ class Vega(object):
         self.scales = []
         self.axes = []
         self.marks = []
-        self._build_vega()
+        self.build_vega()
     
-    def _build_vega(self, *args):
+    def build_vega(self, *args):
         '''Build complete vega specification. String arguments passed will not
         be included in vega dict. 
         
@@ -66,7 +66,7 @@ class Vega(object):
             if key not in args: 
                 self.vega[key] = getattr(self, key)
                 
-    def update_viz(self, **kwargs):
+    def update_visualization(self, **kwargs):
         '''
         Update Vega top level Visualization property:
         width, height, padding, viewport
@@ -77,7 +77,7 @@ class Vega(object):
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
             
-        self._build_vega()
+        self.build_vega()
         
         
     def build_property(self, **kwargs):
@@ -93,17 +93,22 @@ class Vega(object):
         for key, value in kwargs.iteritems(): 
             getattr(self, key).append(value)
         
-        self._build_vega()
+        self.build_vega()
         
     def update_property(self, property=None, index=None, **kwargs):
-        '''Update individual parameters of any property.''' 
+        '''Update individual parameters of any property. Pass the property name
+        and the index of the parameter you want to update. 
         
-        pass
+        Examples:
+        >>>my_vega.update_property(property='data', index=0, name='table')
+        >>>my_vega.update_property(property='marks', index=0, type=rect,
+                                   hover= {"fill": {"value: "red"}}
+        ''' 
         
         for key, value in kwargs.iteritems():
             getattr(self, property)[index].update({key: value})
         
-        self._build_vega()
+        self.build_vega()
                            
     def to_json(self, path):
         '''
@@ -116,7 +121,7 @@ class Vega(object):
         '''
         
         with open(path, 'w') as f: 
-            json.dump(self.vega, f, sort_keys=True, indent=0,
+            json.dump(self.vega, f, sort_keys=True, indent=4,
                       separators=(',', ': '))
                       
     def tabular_data(self, data, name="table", columns=None, use_index=False):
@@ -148,9 +153,9 @@ class Vega(object):
             default_range = xrange(1, len(data)+1, 1)
             values = [{"x": x, "y": y} for x, y in zip(default_range, data)]
             
-        if isinstance(data, dict):
+        if isinstance(data, dict) or isinstance(data, pd.Series):
             values = [{"x": x, "y": y} for x, y in data.iteritems()]
-            
+   
         if isinstance(data, pd.DataFrame):
             if len(columns) > 1 and use_index: 
                 raise ValueError('If using index as x-axis, len(columns)'
@@ -158,16 +163,46 @@ class Vega(object):
             if use_index or len(columns) == 1: 
                 values = [{"x": x[0], "y": x[1][columns[0]]} 
                            for x in data.iterrows()]
-            
-            values = [{"x": x[1][columns[0]], "y": x[1][columns[1]]} 
-                      for x in data.iterrows()]
-             
+            else: 
+                values = [{"x": x[1][columns[0]], "y": x[1][columns[1]]} 
+                          for x in data.iterrows()]
+        
+        self.data = []   
         self.data.append({"name": name, "values": values})
-        self._build_vega()                 
+        self.build_vega()                 
                       
 class Bar(Vega):
     '''Create a bar chart in Vega grammar'''
     
+    def __init__(self):
+        '''Build Vega Bar chart with default parameters'''
+        super(Bar, self).__init__()
+        
+        self.scales = [{"name": "x", "type": "ordinal", "range": "width", 
+                        "domain": {"data": "table", "field": "data.x"}},
+                        {"name": "y", "range": "height", "nice": True, 
+                         "domain": {"data": "table", "field": "data.y"}}]
+                         
+        self.axes = [{"type": "x", "scale": "x"}, {"type": "y", "scale": "y"}]
+        
+        self.marks = [{"type": "rect", "from": {"data": "table"}, 
+                      "properties": {
+                                     "enter": {
+                                     "x": {"scale": "x", "field": "data.x"},
+                                     "width": {"scale": "x", "band": True, 
+                                               "offset": -1},
+                                     "y": {"scale": "y", "field": "data.y"},
+                                     "y2": {"scale": "y", "value": 0}
+                                     },      
+                                     "update": {"fill": {"value": "#2a3140"}},
+                                     "hover": {"fill": {"value": "#a63737"}}
+                                     }
+                      }]
+                      
+        self.build_vega()
+        
+        
+        
     
     
     
