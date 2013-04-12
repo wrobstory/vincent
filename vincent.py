@@ -53,7 +53,25 @@ class Vega(object):
         self.axes = []
         self.marks = []
         self.build_vega()
-    
+        
+    def __add__(self, tuple):
+        '''Allow for updating of Vega with add operator'''
+        self.update_component('add', *tuple)
+
+    def __iadd__(self, tuple):
+        '''Allow for updating of Vega with iadd operator'''
+        self.update_component('add', *tuple)
+        return self
+        
+    def __sub__(self, tuple): 
+        '''Allow for updating of Vega with sub operator'''
+        self.update_component('remove', *tuple)
+        
+    def __isub__(self, tuple): 
+        '''Allow for updating of Vega with sub operator'''
+        self.update_component('remove', *tuple)
+        return self
+        
     def build_vega(self, *args):
         '''Build complete vega specification. String arguments passed will not
         be included in vega dict. 
@@ -108,13 +126,14 @@ class Vega(object):
         self.build_vega()
         
     def update_component(self, change, value, parameter, index, *args):
-        '''Update individual parameters of any component. 
+        '''Update individual parameters of any component.
         
         Parameters: 
         -----------
         change: string, either 'add' or 'remove'
-            'add' will add the parameter to the component. 'remove' will
-            remove it. Pretty simple. 
+            'add' will add the value to the last specified key in *args (this
+            can be a new key). 'remove' will remove the key specified by 
+            'value'.
         value: Any JSON compatible datatype
             The value you want to substitute into the component
         parameter: string
@@ -124,25 +143,35 @@ class Vega(object):
         
         Examples:
         >>>my_vega.update_component(add, 'w', 'axes', 0, 'scale')
-        >>>my_vega.update_component(add, property='marks', index=0, type=rect,
-                                   hover= {"fill": {"value: "red"}}
+        >>>my_vega.update_component('remove', 'width', 'marks', 0,
+                                    'properties', 'enter')
 
         ''' 
         def set_keys(value, param, key, *args):
             if args: 
                 return set_keys(value, param.get(key), *args)
-            if change is 'add': 
+            if change == 'add': 
                 param[key] = value
-            else: 
-                param.pop(value)
+            else:           
+                param[key].pop(value)
     
         parameter = getattr(self, parameter)[index]
         if not args: 
             args = [value]
+            if change == 'remove': 
+                parameter.pop(value)
+                self.build_vega()
+                return 
         set_keys(value, parameter, *args)
         
         self.build_vega()
-                      
+    
+    def multi_update(self, comp_list): 
+        '''Pass a list of component updates to change all'''
+        
+        for update in comp_list: 
+            self.update_component(*update)
+        
     def to_json(self, path):
         '''
         Save Vega object to JSON
@@ -171,7 +200,11 @@ class Vega(object):
             If passing Pandas DataFrame, you must pass at least one column name. 
             If one column is passed, x-values will default to the index values.
             If two column names are passed, x-values are columns[0], y-values 
-            columns[1]./
+            columns[1].
+        use_index: boolean, default False
+            Use the DataFrame index for your x-values
+        append: boolean, default False
+            Append new data to data already in vincent object
         
         Examples: 
         ---------
@@ -217,6 +250,8 @@ class Vega(object):
             self.data = []   
             self.data.append({"name": name, "values": values})
         
+        if isinstance(values[0]['x'], str) or isinstance(values[0]['y'], str):
+            print('Warning: tabular string values require ordinal axes.')
         self.build_vega()                 
                       
 class Bar(Vega):
@@ -255,47 +290,51 @@ class Area(Bar):
     def __init__(self):
         '''Build Vega Area chart with default parameters'''
         super(Area, self).__init__()
-        self.update_component('area', 'marks', 0, 'type')
+        area_updates = [('remove', 'width', 'marks', 0, 'properties', 'enter'),
+                         ('add', 'area', 'marks', 0, 'type'),
+                         ('add', 'linear', 'scales', 0, 'type')]
+                         
+        self.multi_update(area_updates)
         self.build_vega()
         
 class Scatter(Bar):
     '''Create a scatter plot in Vega grammar'''
     
     def __init__(self):
-        '''Build Vega Area chart with default parameters'''
+        '''Build Vega Scatter chart with default parameters'''
         super(Scatter, self).__init__()
         self.height, self.width = 400, 400
         self.padding = {'top': 40, 'left': 40, 'bottom': 40, 'right': 40}
+        scatter_updates = [('remove', 'type', 'scales', 0), 
+                           ('add', True, 'scales', 0, 'nice'),
+                           ('remove', 'width', 'marks', 0, 'properties', 
+                            'enter'),
+                           ('remove', 'y2', 'marks', 0, 'properties', 
+                            'enter'),
+                           ('remove', 'hover', 'marks', 0, 'properties'),
+                           ('add', {'value': '#2a3140'}, 'marks', 0, 
+                            'properties', 'enter', 'stroke'),
+                           ('add', {'value': 0.9}, 'marks', 0, 'properties', 
+                            'enter', 'fillOpacity'),
+                           ('add', 'symbol', 'marks', 0, 'type')]
+                            
+        self.multi_update(scatter_updates)
+        self.build_vega()
         
-        self.build_vega()    
+class Line(Scatter): 
+    '''Create a line plot in Vega grammar'''
     
+    def __init__(self):
+        '''Build Vega Scatter chart with default parameters'''
+        
+        pass
+        
+        #Something still broken- need to do some syntax hunting...
+        super(Scatter, self).__init__()
+        line_updates = [('remove', 'update', 'marks', 0, 'properties'),
+                        ('add', 'line', 'marks', 0, 'type')]
+
+        self.multi_update(line_updates)
+        self.build_vega()
         
         
-        
-        
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-           
-           
