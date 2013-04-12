@@ -6,13 +6,15 @@ A Python to Vega translator.
 
 '''
 
+from __future__ import print_function 
 import json
 import pandas as pd
+import pdb
 
 class Vega(object): 
     '''Vega abstract base class'''
     
-    def __init__(self, name='Vega', width=400, height=200,
+    def __init__(self, width=400, height=200,
                  padding={'top': 10, 'left': 30, 'bottom': 20, 'right': 10},
                  viewport=None):
         '''
@@ -27,8 +29,7 @@ class Vega(object):
         
         Parameters:
         -----------
-        name: string, default 'Vega'
-            Name of the visualization
+
         width: int, default 800
             Width of the visualization
         height: int, default 400
@@ -39,13 +40,12 @@ class Vega(object):
             Width and height of on-screen viewport
             
         '''
-        
-        self.name = name
+
         self.width = width
         self.height = height
         self.padding = padding
         self.viewport = viewport
-        self.visualization = {'name': self.name, 'width': self.width, 
+        self.visualization = {'width': self.width, 
                               'padding': self.padding, 
                               'viewport': self.viewport}
         self.data = []
@@ -62,7 +62,7 @@ class Vega(object):
         
         '''
         
-        keys = ['name', 'width', 'height', 'padding', 'viewport', 'data', 
+        keys = ['width', 'height', 'padding', 'viewport', 'data', 
                 'scales', 'axes', 'marks']
         self.vega = {}
         for key in keys: 
@@ -107,34 +107,42 @@ class Vega(object):
         
         self.build_vega()
         
-    def update_component(self, value, component, index, *args):
+    def update_component(self, change, value, parameter, index, *args):
         '''Update individual parameters of any component. 
         
         Parameters: 
         -----------
+        change: string, either 'add' or 'remove'
+            'add' will add the parameter to the component. 'remove' will
+            remove it. Pretty simple. 
         value: Any JSON compatible datatype
             The value you want to substitute into the component
-        component: string
+        parameter: string
             The Vega component you want to modify (scales, marks, etc)
         index: int
             The index of dict/object in the component array you want to mod
         
         Examples:
-        >>>my_vega.update_component('w', 'axes', 0, 'scale')
-        >>>my_vega.update_component(property='marks', index=0, type=rect,
+        >>>my_vega.update_component(add, 'w', 'axes', 0, 'scale')
+        >>>my_vega.update_component(add, property='marks', index=0, type=rect,
                                    hover= {"fill": {"value: "red"}}
 
         ''' 
         def set_keys(value, param, key, *args):
             if args: 
                 return set_keys(value, param.get(key), *args)
-            param[key] = value
-            
-        parameter = getattr(self, component)[index]
+            if change is 'add': 
+                param[key] = value
+            else: 
+                param.pop(value)
+    
+        parameter = getattr(self, parameter)[index]
+        if not args: 
+            args = [value]
         set_keys(value, parameter, *args)
         
         self.build_vega()
-                           
+                      
     def to_json(self, path):
         '''
         Save Vega object to JSON
@@ -157,10 +165,8 @@ class Vega(object):
         
         Parameters:
         -----------
-        name: string, default "VegaBar"
-            If passed as a list or dict, the name will default to the name 
-            passed name parameter. If a DataFrame, the name parameter will use
-            the DataFrame name if provided
+        name: string, default "table"
+            Type of visualization
         columns: list, default None
             If passing Pandas DataFrame, you must pass at least one column name. 
             If one column is passed, x-values will default to the index values.
@@ -176,19 +182,22 @@ class Vega(object):
 
         '''
         
+        #Lists
         if isinstance(data, list):
             if append:
                 start = self.data[0]['values'][-1]['x'] + 1
-                end = len(self.data) + len(data)
+                end = len(self.data[0]['values']) + len(data)
             else: 
                 start, end = 0, len(data)
                 
             default_range = xrange(start, end+1, 1)
             values = [{"x": x, "y": y} for x, y in zip(default_range, data)]
-            
+        
+        #Dicts   
         if isinstance(data, dict) or isinstance(data, pd.Series):
             values = [{"x": x, "y": y} for x, y in data.iteritems()]
-   
+        
+        #Dataframes
         if isinstance(data, pd.DataFrame):
             if len(columns) > 1 and use_index: 
                 raise ValueError('If using index as x-axis, len(columns)'
@@ -239,6 +248,29 @@ class Bar(Vega):
                       }]
                       
         self.build_vega()
+        
+class Area(Bar):
+    '''Create an area chart in Vega grammar'''
+    
+    def __init__(self):
+        '''Build Vega Area chart with default parameters'''
+        super(Area, self).__init__()
+        self.update_component('area', 'marks', 0, 'type')
+        self.build_vega()
+        
+class Scatter(Bar):
+    '''Create a scatter plot in Vega grammar'''
+    
+    def __init__(self):
+        '''Build Vega Area chart with default parameters'''
+        super(Scatter, self).__init__()
+        self.height, self.width = 400, 400
+        self.padding = {'top': 40, 'left': 40, 'bottom': 40, 'right': 40}
+        
+        self.build_vega()    
+    
+        
+        
         
         
         
