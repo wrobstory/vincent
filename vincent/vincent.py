@@ -212,6 +212,10 @@ class Vega(object):
 
         '''
         
+        #Tuples
+        if isinstance(data, tuple): 
+            values = [{"x": x[0], "y": x[1]} for x in data]
+            
         #Lists
         if isinstance(data, list):
             if append:
@@ -244,9 +248,6 @@ class Vega(object):
         else:     
             self.data = []   
             self.data.append({"name": name, "values": values})
-        
-        if isinstance(values[0]['x'], str) or isinstance(values[0]['y'], str):
-            print('Warning: tabular string values require ordinal axes.')
 
         self.build_vega()                 
                       
