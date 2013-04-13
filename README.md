@@ -42,29 +42,21 @@ Creating visualizations manually is a little tedious. The vincent.Vega() object 
 >>>vis.tabular_data([random.randint(10, 100) for x in range(0, 21, 1)])
 >>>vis.to_json(path)
 ```
-Vincent allows you to add and subtract components at varying levels of depth in order to change the visualization. For example, if we wanted to change the bar plot to an area plot: 
+![Bar](http://farm9.staticflickr.com/8532/8645065132_3f96e1be49.jpg)
+
+Vincent also allows you to add and subtract components at varying levels of nesting depth in order to change the visualization. Vincent syntax for modifying component pieces on the fly is:
+> Addition: ( **New Value**, **Component**, **Component index**, **Keywords into nested structure** )
+
+> Removal: ( **Old key**, **Component**, **Component index**, **Keywords into nested structure** ) 
+
+For example, if we wanted to change the bar plot to an area plot: 
 ```python
->>>vis.marks #Before
-[{'from': {'data': 'table'},
-  'properties': {'enter': {'width': {'band': True, 'offset': -1, 'scale': 'x'},
-    'x': {'field': 'data.x', 'scale': 'x'},
-    'y': {'field': 'data.y', 'scale': 'y'},
-    'y2': {'scale': 'y', 'value': 0}},
-   'hover': {'fill': {'value': '#a63737'}},
-   'update': {'fill': {'value': '#2a3140'}}},
-  'type': 'rect'}]
->>>vis - ('width', 'marks', 0, 'properties', 'enter')
+>>>vis - ('width', 'marks', 0, 'properties', 'enter') 
 >>>vis + ('area', 'marks', 0, 'type')
 >>>vis + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 'interpolate')
->>>vis.marks #After
-[{'from': {'data': 'table'},
-  'properties': {'enter': {'interpolate': {'value': 'basis'},
-    'x': {'field': 'data.x', 'scale': 'x'},
-    'y': {'field': 'data.y', 'scale': 'y'},
-    'y2': {'scale': 'y', 'value': 0}},
-   'hover': {'fill': {'value': '#a63737'}},
-   'update': {'fill': {'value': '#2a3140'}}},
-  'type': 'area'}]
 >>>vis + ('linear', 'scales', 0, 'type')
 >>>vis.to_json(path)
 ```
+![Area](http://farm9.staticflickr.com/8540/8645065128_d2cf65bdf9_o.jpg)
+
+The major influence for this syntax was the D3py library, into which Vincent will be incorporated as soon as possible. 
