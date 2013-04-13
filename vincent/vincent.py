@@ -101,16 +101,16 @@ class Vega(object):
         self.build_vega()
              
     def build_component(self, append=True, **kwargs):
-        '''Build complete Vega component. The Vega grammar will update with
-        passed keywords. This method defaults to appending to the existing 
-        component; if you want to rebuild the component entirely, you must 
-        pass append=False and the component as a list. 
+        '''Build complete Vega component. 
+        
+        The Vega grammar will update with passed keywords. This method 
+        rebuilds an entire Vega component: axes, data, scales, marks, etc. 
         
         Examples:
-        >>>my_vega.build_component(scales={"domain": {"data": "table",
+        >>>my_vega.build_component(scales=[{"domain": {"data": "table",
                                                       "field": "data.x"},
-                                           "name":"x", "type":"ordinal", 
-                                           "range":"width"})
+                                            "name":"x", "type":"ordinal", 
+                                            "range":"width"}])
         >>>my_vega.build_component(axes=[{"scale": "x", type: "x"},
                                          {"scale": "y", type: "y"}], 
                                    append=False)
@@ -118,9 +118,6 @@ class Vega(object):
         '''
 
         for key, value in kwargs.iteritems(): 
-            if append: 
-                getattr(self, key).append(value)
-            else: 
                 setattr(self, key, value)
         
         self.build_vega()
@@ -190,7 +187,7 @@ class Vega(object):
     def tabular_data(self, data, name="table", columns=None, use_index=False,
                      append=False):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
-        in a list, dict, or Pandas Dataframe. Note: old data is overwritten 
+        in a list, dict, or Pandas Dataframe. Note: old data is overwritten.
         
         Parameters:
         -----------
@@ -243,8 +240,6 @@ class Vega(object):
                           for x in data.iterrows()]
 
         if append:
-            if not self.data[0]['name']:
-                raise ValueError('There is no existing data to append')
             self.data[0]['values'].extend(values)
         else:     
             self.data = []   
@@ -252,6 +247,7 @@ class Vega(object):
         
         if isinstance(values[0]['x'], str) or isinstance(values[0]['y'], str):
             print('Warning: tabular string values require ordinal axes.')
+
         self.build_vega()                 
                       
 class Bar(Vega):
@@ -321,18 +317,25 @@ class Scatter(Bar):
         self.multi_update(scatter_updates)
         self.build_vega()
         
-class Line(Scatter): 
+class Line(Bar): 
     '''Create a line plot in Vega grammar'''
     
     def __init__(self):
-        '''Build Vega Scatter chart with default parameters'''
+        '''Build Vega Line plot chart with default parameters'''
         
         pass
         
         #Something still broken- need to do some syntax hunting...
-        super(Scatter, self).__init__()
-        line_updates = [('remove', 'update', 'marks', 0, 'properties'),
-                        ('add', 'line', 'marks', 0, 'type')]
+        super(Line, self).__init__()
+        line_updates = [('add', 'linear', 'scales', 0, 'type'),
+                        ('remove', 'update', 'marks', 0, 'properties'),
+                        ('remove', 'hover', 'marks', 0, 'properties'),
+                        ('remove', 'width', 'marks', 0, 'properties', 'enter'),
+                        ('add', 'line', 'marks', 0, 'type'),
+                        ('add', {'value': '#2a3140'}, 'marks', 0, 
+                         'properties', 'enter', 'stroke'), 
+                        ('add', {'value': 2}, 'marks', 0, 'properties', 
+                         'enter', 'strokeWidth')]
 
         self.multi_update(line_updates)
         self.build_vega()

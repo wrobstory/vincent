@@ -58,10 +58,10 @@ class TestVincent(object):
     def test_build_component(self):
         '''Test component build'''
         
-        self.testvin.build_component(scales={"domain": {"data": "area",
+        self.testvin.build_component(scales=[{"domain": {"data": "area",
                                                         "field": "data.z"},
-                                             "name":"z", "type":"ordinal", 
-                                             "range":"height"})
+                                              "name":"z", "type":"ordinal", 
+                                              "range":"height"}])
         assert self.testvin.scales[-1] == {"domain": {"data": "area",
                                                       "field": "data.z"},
                                            "name":"z", "type":"ordinal", 
@@ -70,8 +70,8 @@ class TestVincent(object):
         
         self.testvin.build_component(axes=[{"scale": "x", type: "x"},
                                            {"scale": "y", type: "y"},
-                                           {"scale": "z", type: "z"}], 
-                                     append=False)
+                                           {"scale": "z", type: "z"}])
+                                                                            
         assert self.testvin.axes == [{"scale": "x", type: "x"},
                                      {"scale": "y", type: "y"},
                                      {"scale": "z", type: "z"}]
@@ -80,7 +80,7 @@ class TestVincent(object):
     def test_update_component(self):
         '''Test component update'''
         
-        self.testvin.build_component(axes={"scale": "x", type: "x"})
+        self.testvin.build_component(axes=[{"scale": "x", type: "x"}])
         self.testvin.update_component('add', 'w', 'axes', 0, 'scale')
         assert self.testvin.axes[0]["scale"] == 'w'
         
