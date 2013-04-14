@@ -26,7 +26,8 @@ kw = {
     'url': 'https://github.com/wrobstory/vincent',
     'keywords': 'data visualization',
     'classifiers': classifiers,
-    'py_modules': ['vincent'],
+    'packages': ['vincent'],
+    'package_data': {'vincent': ['*.html']},
     'install_requires': required,
     'zip_safe': True,
 }

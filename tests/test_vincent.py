@@ -124,7 +124,7 @@ class TestVincent(object):
                                                        {'x': 100, 'y': 105}]
           
         
-        
+  
         
         
         

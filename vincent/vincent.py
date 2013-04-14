@@ -7,9 +7,11 @@ A Python to Vega translator.
 '''
 
 from __future__ import print_function 
+import os
 import json
+from pkg_resources import resource_string
 import pandas as pd
-import pdb
+
 
 class Vega(object): 
     '''Vega abstract base class'''
@@ -168,21 +170,52 @@ class Vega(object):
         
         for update in comp_list: 
             self.update_component(*update)
+            
+    def _json_IO(self):
+        '''Return data values as JSON for StringIO '''
+        data_vals = self.data[0]['values']
+        self.update_component('remove', 'values', 'data', 0)
+        self.update_component('add', 'data.json', 0, 'url')
+        return json.dumps(data_vals, sort_keys=True, indent=4)
         
-    def to_json(self, path):
+    def to_json(self, path, split_data=False, html=False):
         '''
         Save Vega object to JSON
         
         Parameters: 
         -----------
         path: string
-            Save path
+            File path for Vega grammar JSON. 
+        split_data: boolean, default False
+            Split the output into a JSON with only the data values, and a 
+            Vega grammar JSON referencing that data.  
+        html: boolean, default False
+            Output Vega Scaffolding HTML file to path
             
         '''
         
-        with open(path, 'w') as f: 
-            json.dump(self.vega, f, sort_keys=True, indent=4,
-                      separators=(',', ': '))
+        def json_out(path, output): 
+            '''Output to JSON'''
+            with open(path, 'w') as f: 
+                json.dump(output, f, sort_keys=True, indent=4,
+                          separators=(',', ': '))            
+        
+        if split_data: 
+            data_out = self.data[0]['values']
+            self.update_component('remove', 'values', 'data', 0)
+            self.update_component('add', 'data.json', 'data', 0, 'url')
+            data_path = os.path.dirname(path) + r'/data.json'
+            json_out(data_path, data_out)
+            json_out(path, self.vega)
+            if html: 
+                template = resource_string('vincent', 'vega_template.html')
+                html_path = ''.join([os.path.dirname(path), 
+                                     r'/vega_template.html'])
+                with open(html_path, 'w') as f: 
+                    f.write(template)
+        else: 
+            json_out(path, self.vega)
+
                       
     def tabular_data(self, data, name="table", columns=None, use_index=False,
                      append=False):
