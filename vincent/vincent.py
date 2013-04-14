@@ -175,8 +175,11 @@ class Vega(object):
         '''Return data values as JSON for StringIO '''
         data_vals = self.data[0]['values']
         self.update_component('remove', 'values', 'data', 0)
-        self.update_component('add', 'data.json', 0, 'url')
-        return json.dumps(data_vals, sort_keys=True, indent=4)
+        url = ''.join(['http://', host, ':', str(port), '/data.json'])
+        self.update_component('add', url, 'data', 0, 'url')
+        vega = json.dumps(self.vega, sort_keys=True, indent=4)
+        data = json.dumps(data_vals, sort_keys=True, indent=4)
+        return vega, data
         
     def to_json(self, path, split_data=False, html=False):
         '''
