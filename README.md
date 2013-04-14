@@ -6,7 +6,7 @@ The folks at Trifeca are making it easy to visualize data with D3. Lets make it 
 
 Concept
 -------
-Vincent takes Python data structures (lists, dicts, and Pandas DataFrames) and translates them into [Vega](https://github.com/trifacta/vega) visualization grammar. It allows for quick iteration of visualization designs via simple addition and subtraction of grammer elements, and outputs the final visualization to JSON.
+Vincent takes Python data structures (lists, dicts, and Pandas DataFrames) and translates them into [Vega](https://github.com/trifacta/vega) visualization grammar. It allows for quick iteration of visualization designs via simple addition and subtraction of grammar elements, and outputs the final visualization to JSON.
 
 Getting Started
 ---------------
