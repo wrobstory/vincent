@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Builds a Vega grammar specification from vincent.Scatter()
+Builds a Vega grammar specification from vincent.Line()
 '''
 
 import vincent
