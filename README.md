@@ -69,4 +69,29 @@ For example, if we wanted to change the bar plot to an area plot:
 >>>vis.to_json(path)
 ```
 ![Area](http://farm9.staticflickr.com/8540/8645065128_d2cf65bdf9_o.jpg)
+
+I also have Vincent fully incorporated into a [fork](https://github.com/wrobstory/d3py) of Mike Dewar's [d3py](https://github.com/mikedewar/d3py), with a pull request to merge into the main repo. The intent is to keep Vincent and d3py moving together in development; eventually Vincent may get fully merged into d3py as the main development track. 
+
+For now, here is the syntax for using the d3py fork: 
+```python
+import d3py
+import pandas as pd
+import random
+
+x = range(0, 21, 1)
+y = [random.randint(25, 100) for num in range(0, 21, 1)]
+
+df = pd.DataFrame({'x': x, 'y': y})
+
+#Create Pandas figure
+fig = d3py.PandasFigure(df, 'd3py_area', port=8080, columns=['x', 'y'])
+
+#Add Vega Area plot
+fig += d3py.vega.Area()
+
+#Add interpolation to figure data
+fig.vega + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 
+            'interpolate')
+fig.show()
+```
  
