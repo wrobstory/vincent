@@ -122,8 +122,27 @@ class TestVincent(object):
         self.testvin.tabular_data(df2, columns=['Column 1', 'Column 2'])
         assert self.testvin.data[0]['values'][-2:] == [{'x': 90, 'y': 95}, 
                                                        {'x': 100, 'y': 105}]
-          
+                                                       
+    def test_add_subtract(self):
+        '''Test add and subtract on some subclasses'''
         
+        bar = vincent.Bar()
+        area = vincent.Area()
+        
+        area + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 
+                'interpolate')
+        bar + ('red', 'marks', 0, 'properties', 'hover', 'fill', 'value')
+                
+        assert area.marks[0]['properties']['enter'].has_key('interpolate')
+        assert bar.marks[0]['properties']['hover']['fill']['value'] == 'red'
+          
+        bar - ('domain', 'scales', 1)
+        bar -= ('name', 'scales', 1)
+        area - ('scale', 'axes', 0)
+        area -= ('type', 'axes', 1)
+        
+        assert bar.scales[1] == {'nice': True, 'range': 'height'}
+        assert area.axes == [{'type': 'x'}, {'scale': 'y'}]
   
         
         

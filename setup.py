@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+    
 from os.path import abspath, dirname, join
 
 path = abspath(dirname(__file__))
