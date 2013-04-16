@@ -46,7 +46,7 @@ The other option is to output the Vega grammar and data into separate JSONs, as 
 $python -m SimpleHTTPServer 8000
 ```
 
-Point your browser at http://localhost:8000/vega_template.html to see your visualization.
+CD to your path and point your browser at http://localhost:8000/vega_template.html to see your visualization.
 
 Creating visualizations manually is a little tedious. The vincent.Vega() object can be subclassed to pre-define components and parameters. Lets take a shortcut and use the Bar class:  
 ```python
