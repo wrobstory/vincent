@@ -12,7 +12,6 @@ import os
 import json
 from pkg_resources import resource_string
 import pandas as pd
-import pdb
 
 
 class Vega(object):
