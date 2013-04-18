@@ -174,7 +174,7 @@ class Vega(object):
 
     def _json_IO(self, host, port):
         '''Return data values as JSON for StringIO '''
-
+        
         data_vals = self.data[0]['values']
         self.update_component('remove', 'values', 'data', 0)
         url = ''.join(['http://', host, ':', str(port), '/data.json'])
@@ -206,6 +206,7 @@ class Vega(object):
                           separators=(',', ': '))
 
         if split_data:
+            name = self.data[0]['name']
             data_out = self.data[0]['values']
             self.update_component('remove', 'values', 'data', 0)
             self.update_component('add', 'data.json', 'data', 0, 'url')
@@ -219,7 +220,9 @@ class Vega(object):
                 with open(html_path, 'w') as f:
                     f.write(template)
 
-            self.tabular_data(self.raw_data)
+            #Reset our data in the Vega object
+            self.data = [{'name': name, 'values': data_out}]
+            self.build_vega
             
         else:
             json_out(path, self.vega)
