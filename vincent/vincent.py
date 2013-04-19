@@ -181,7 +181,7 @@ class Vega(object):
         self.update_component('add', url, 'data', 0, 'url')
         vega = json.dumps(self.vega, sort_keys=True, indent=4)
         data = json.dumps(data_vals, sort_keys=True, indent=4)
-        return vega, data
+        return vega, data 
 
     def to_json(self, path, split_data=False, html=False):
         '''
@@ -226,9 +226,19 @@ class Vega(object):
             
         else:
             json_out(path, self.vega)
+            
+    def _serial_transform(self): 
+        '''Transform data to make it JSON serializable'''
+        for objs in self.data[0]['values']:
+            for key, value in objs.iteritems():       
+               if pd.isnull(value):
+                   objs[key] = None
+               elif (isinstance(value, pd.tslib.Timestamp) or 
+                     isinstance(value, pd.Period)):
+                   objs[key] = value.strftime('%m/%d/%y')  
 
     def tabular_data(self, data, name="table", columns=None, use_index=False,
-                     append=False):
+                     append=False, period='M', str_time='%b, %Y'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
         in a list, dict, or Pandas Dataframe. 
 
@@ -245,6 +255,11 @@ class Vega(object):
             Use the DataFrame index for your x-values
         append: boolean, default False
             Append new data to data already in vincent object
+        period: string, default 'M'
+            If using a dataframe with a DatetimeIndex, the time period for
+            axis visualization. Defaults to monthly
+        str_time: string, default '%b, 'Y'
+            String format for axis dates
 
         Examples:
         ---------
@@ -253,10 +268,23 @@ class Vega(object):
         >>>myvega.tabular_data(my_dataframe, columns=['column 1'],
                                use_index=True)
         >>>myvega.tabular_data(my_dataframe, columns=['column 1', 'column 2'])
+        
 
         '''
         
         self.raw_data = data
+        
+        def period_axis(data, period):
+            '''Transform a Datetime index into a periodical axis'''
+            if isinstance(data.index, pd.DatetimeIndex):
+                prng =  pd.period_range(data.index[0], data.index[-1], 
+                                        freq=period)
+                axis = [time.strftime(str_time) for time in prng]
+                self.update_component('add', axis, 'axes', 0, 'values')
+                self.update_component('add', 'ordinal', 'scales', 0, 
+                                      'type')
+                data.index = data.index.to_period(period)
+            return data
 
         #Tuples
         if isinstance(data, tuple):
@@ -275,6 +303,8 @@ class Vega(object):
 
         #Dicts
         if isinstance(data, dict) or isinstance(data, pd.Series):
+            if isinstance(data, pd.Series):
+                data = period_axis(data, period)
             values = [{"x": x, "y": y} for x, y in data.iteritems()]
 
         #Dataframes
@@ -283,6 +313,7 @@ class Vega(object):
                 raise ValueError('If using index as x-axis, len(columns)'
                                  'cannot be > 1')
             if use_index or len(columns) == 1:
+                data = period_axis(data, period)
                 values = [{"x": x[0], "y": x[1][columns[0]]}
                           for x in data.iterrows()]
             else:
@@ -295,6 +326,7 @@ class Vega(object):
             self.data = []
             self.data.append({"name": name, "values": values})
 
+        self._serial_transform()
         self.build_vega()
 
 
@@ -374,9 +406,6 @@ class Line(Bar):
     def __init__(self):
         '''Build Vega Line plot chart with default parameters'''
 
-        pass
-
-        #Something still broken- need to do some syntax hunting...
         super(Line, self).__init__()
         line_updates = [('add', 'linear', 'scales', 0, 'type'),
                         ('remove', 'update', 'marks', 0, 'properties'),
