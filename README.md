@@ -96,4 +96,7 @@ fig.vega + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter',
             'interpolate')
 fig.show()
 ```
- 
+
+Status
+---------------
+Note: Vincent is still in alpha, so expect bugs and lots of development in the near future.
