@@ -10,8 +10,10 @@ comes out.
 from __future__ import print_function
 import os
 import json
+import time
 from pkg_resources import resource_string
 import pandas as pd
+import pdb
 
 
 class Vega(object):
@@ -227,18 +229,22 @@ class Vega(object):
         else:
             json_out(path, self.vega)
             
-    def _serial_transform(self): 
-        '''Transform data to make it JSON serializable'''
+    def _serial_transform(self, str_time): 
+        '''Transform data to make it JSON serializable. Vega requires
+        Epoch time in milliseconds.'''
         for objs in self.data[0]['values']:
-            for key, value in objs.iteritems():       
-               if pd.isnull(value):
-                   objs[key] = None
-               elif (isinstance(value, pd.tslib.Timestamp) or 
-                     isinstance(value, pd.Period)):
-                   objs[key] = value.strftime('%m/%d/%y')  
+            for key, value in objs.iteritems():
+                if isinstance(value, pd.Period):
+                    value = value.to_timestamp()     
+                if pd.isnull(value):
+                    objs[key] = None
+                elif (isinstance(value, pd.tslib.Timestamp) or 
+                      isinstance(value, pd.Period)):
+                    objs[key] = time.mktime(value.timetuple())*1000
+                    
 
     def tabular_data(self, data, name="table", columns=None, use_index=False,
-                     append=False, period='M', str_time='%b, %Y'):
+                     append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
         in a list, dict, or Pandas Dataframe. 
 
@@ -255,11 +261,9 @@ class Vega(object):
             Use the DataFrame index for your x-values
         append: boolean, default False
             Append new data to data already in vincent object
-        period: string, default 'M'
-            If using a dataframe with a DatetimeIndex, the time period for
-            axis visualization. Defaults to monthly
-        str_time: string, default '%b, 'Y'
-            String format for axis dates
+        axis_time: string, default 'day'
+            Time scale for axis. Must be one of 'second', 'minute', 'hour', 
+            'day', 'week', 'month', or 'year'
 
         Examples:
         ---------
@@ -274,17 +278,13 @@ class Vega(object):
         
         self.raw_data = data
         
-        def period_axis(data, period):
-            '''Transform a Datetime index into a periodical axis'''
+        def period_axis(data, axis_time):
+            '''Update to Time Scale if DatetimeIndex'''
             if isinstance(data.index, pd.DatetimeIndex):
-                prng =  pd.period_range(data.index[0], data.index[-1], 
-                                        freq=period)
-                axis = [time.strftime(str_time) for time in prng]
-                self.update_component('add', axis, 'axes', 0, 'values')
-                self.update_component('add', 'ordinal', 'scales', 0, 
+                self.update_component('add', 'time', 'scales', 0, 
                                       'type')
-                data.index = data.index.to_period(period)
-            return data
+                self.update_component('add', axis_time, 'scales', 0, 
+                                      'nice')
 
         #Tuples
         if isinstance(data, tuple):
@@ -304,7 +304,7 @@ class Vega(object):
         #Dicts
         if isinstance(data, dict) or isinstance(data, pd.Series):
             if isinstance(data, pd.Series):
-                data = period_axis(data, period)
+                period_axis(data, axis_time)
             values = [{"x": x, "y": y} for x, y in data.iteritems()]
 
         #Dataframes
@@ -313,7 +313,7 @@ class Vega(object):
                 raise ValueError('If using index as x-axis, len(columns)'
                                  'cannot be > 1')
             if use_index or len(columns) == 1:
-                data = period_axis(data, period)
+                period_axis(data, axis_time)
                 values = [{"x": x[0], "y": x[1][columns[0]]}
                           for x in data.iterrows()]
             else:
@@ -326,7 +326,7 @@ class Vega(object):
             self.data = []
             self.data.append({"name": name, "values": values})
 
-        self._serial_transform()
+        self._serial_transform(axis_time)
         self.build_vega()
 
 

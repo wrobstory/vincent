@@ -21,9 +21,11 @@ price = pd.DataFrame({tic: data['Adj Close']
 #Create line graph, with monthly plotting on the axes                       
 line = vincent.Line()
 line.tabular_data(price, columns=['AAPL'])
-line + ({'labels': {'angle': {'value': 45}}}, 'axes', 0, 'properties')
-line + ({'value': 20}, 'axes', 0, 'properties', 'labels', 'dx')
-line + ({'value': 5}, 'axes', 0, 'properties', 'labels', 'dy')
-line.update_vis(padding={'bottom': 60, 'left': 30, 'right': 30, 'top': 10})
-line.update_vis(width=800)
+line.to_json(path)
+
+#Play with the axes labels a bit
+line + ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
+line + ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
+line.update_vis(padding={'bottom': 50, 'left': 30, 'right': 30, 'top': 10})
+line.update_vis(width=800, height=300)
 line.to_json(path)

@@ -7,6 +7,7 @@ Test Vincent
 
 import pandas as pd
 import vincent
+import nose.tools as nt
 
 class TestVincent(object):
     '''Test vincent.py'''
@@ -122,6 +123,7 @@ class TestVincent(object):
         self.testvin.tabular_data(df2, columns=['Column 1', 'Column 2'])
         assert self.testvin.data[0]['values'][-2:] == [{'x': 90, 'y': 95}, 
                                                        {'x': 100, 'y': 105}]
+
                                                        
     def test_add_subtract(self):
         '''Test add and subtract on some subclasses'''
@@ -143,7 +145,29 @@ class TestVincent(object):
         
         assert bar.scales[1] == {'nice': True, 'range': 'height'}
         assert area.axes == [{'type': 'x'}, {'scale': 'y'}]
+        
+    def test_datetimeandserial(self):
+        '''Test pandas serialization and datetime parsing'''
+        
+        import pandas.io.data as web
+        all_data = {}
+        for ticker in ['AAPL', 'GOOG']:
+            all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2004', 
+                                                  '1/1/2006')
+        price = pd.DataFrame({tic: data['Adj Close']
+                              for tic, data in all_data.iteritems()})
+
+        scatter = vincent.Scatter()
+        scatter.tabular_data(price, columns=['AAPL', 'GOOG'])   
+        assert scatter.data[0]['values'][0]['x'] == 10.49
+        nt.assert_is_none(scatter.data[0]['values'][0]['y'])
+        
+        line = vincent.Line()
+        line.tabular_data(price, columns=['AAPL'])
+        assert line.data[0]['values'][0]['x'] == 1073030400000
+        
   
+
         
         
         
