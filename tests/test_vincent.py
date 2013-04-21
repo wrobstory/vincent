@@ -20,7 +20,7 @@ class TestVincent(object):
         self.default_vega = {'width': 400, 'height': 200,
                              'viewport': None, 'axes': [],
                              'padding': {'top': 10, 'left': 30, 
-                                         'bottom': 20, 'right': 10}, 
+                                         'bottom': 20, 'right': 20}, 
                              'data': [{'name': None, 'values': None}], 
                              'marks': [], 'scales': []}
     
@@ -30,7 +30,7 @@ class TestVincent(object):
         assert self.testvin.width == 400
         assert self.testvin.height == 200
         assert self.testvin.padding == {'top': 10, 'left': 30, 
-                                             'bottom': 20, 'right': 10}
+                                             'bottom': 20, 'right': 20}
         assert self.testvin.viewport == None
         assert self.testvin.vega == self.default_vega
         

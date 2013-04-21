@@ -21,7 +21,7 @@ class Vega(object):
     '''Vega abstract base class'''
 
     def __init__(self, width=400, height=200,
-                 padding={'top': 10, 'left': 30, 'bottom': 20, 'right': 10},
+                 padding={'top': 10, 'left': 30, 'bottom': 20, 'right': 20},
                  viewport=None):
         '''
         The Vega classes generate JSON output in Vega grammar, a
@@ -193,7 +193,7 @@ class Vega(object):
             label_update(key, label_data, 'data', remove)
             label_update(key, marks[key], 'marks', remove)          
 
-        left, top = 30, 10
+        left, top, bottom = 30, 10, 20
         if self.axis_labels.get('y_label'):
             if horiz_y: 
                 left = 120
@@ -201,8 +201,10 @@ class Vega(object):
                 left = 60
         if self.axis_labels.get('title'): 
             top = 30
+        if self.axis_labels.get('x_label'):
+            bottom = 50
             
-        self.update_vis(padding={'bottom': self.padding['bottom'], 
+        self.update_vis(padding={'bottom': bottom, 
                                  'left': left, 'right': self.padding['right'], 
                                  'top': top})
 
