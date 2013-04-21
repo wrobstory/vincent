@@ -202,8 +202,9 @@ class Vega(object):
         if self.axis_labels.get('title'): 
             top = 30
             
-        self.update_vis(padding={'bottom': 50, 'left': left, 
-                                 'right': 10, 'top': top})
+        self.update_vis(padding={'bottom': self.padding['bottom'], 
+                                 'left': left, 'right': self.padding['right'], 
+                                 'top': top})
 
     def build_component(self, append=True, **kwargs):
         '''Build complete Vega component.
