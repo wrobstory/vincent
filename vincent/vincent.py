@@ -8,6 +8,7 @@ comes out.
 '''
 
 from __future__ import print_function
+from __future__ import division
 import os
 import json
 import time
@@ -53,9 +54,10 @@ class Vega(object):
         self.visualization = {'width': self.width,
                               'padding': self.padding,
                               'viewport': self.viewport}
-        self.data = []
+        self.data = [{"name": None, "values": None}]
         self.scales = []
         self.axes = []
+        self.axis_labels = {}
         self.marks = []
         self.build_vega()
 
@@ -104,6 +106,104 @@ class Vega(object):
             setattr(self, key, value)
 
         self.build_vega()
+        
+    def axis_label(self, x_label=None, y_label=None, title=None, 
+                   horiz_y=False):
+        '''
+        Add axis labels to your visualization. 
+        
+        Labels can be added or changed individually. To remove a label, 
+        pass "Remove Label" to the axis label you wish to remove.  
+        
+        Parameters: 
+        -----------
+        x_label: string, default None
+            X-axis label. 
+        y_label: string, default None
+            Y-axis label
+        title: string, default None
+            Visualization Title (defaults to top of vis)
+        horiz_y: boolean, default False
+            Pass "True" to plot y-axis label horizontally
+            
+        Examples: 
+        ---------
+        >>>vis.axis_label(x_label='X Data')
+        >>>vis.axis_label(x_label='New X Label', y_label='Y Data')
+        >>>vis.axis_label(y_label='New Y Label', x_label='Remove Label')
+        
+        '''
+        temp = {'x_label': x_label, 'y_label': y_label, 'title': title}
+        for label, name in temp.iteritems():
+            if name: 
+                self.axis_labels[label] = name
+        
+        x_mark = {"type": "text", "name": "x_label",
+                  "from": {"data": "x_label"},
+                  "properties": {"enter": {
+                                 "x": {"value": self.width/2},
+                                 "y": {"value": self.height},
+                                 "dy": {"value": 35}}}}
+        y_mark = {"type": "text", "name": "y_label",
+                  "from": {"data": "y_label"},
+                  "properties": {"enter": {
+                                 "x": {"value": 0},
+                                 "y": {"value": self.height/2},
+                                 "dy": {"value": -45},
+                                 "angle": {'value': -90}}}}                         
+        if horiz_y: 
+            y_mark['properties']['enter'].pop('dy')
+            y_mark['properties']['enter']['dx'] = {'value': -65}
+            y_mark['properties']['enter']['angle'] ={'value':  0}
+            
+        title_mark = {"type": "text", "name": "title",
+                      "from": {"data": "title"},
+                      "properties": {"enter": {
+                                     "x": {"value": self.width/2},
+                                     "y": {"value": 0},
+                                     "dy": {"value": -20}}}}       
+        
+        common_pars={"baseline": {"value": "middle"},
+                     "align": {"value": "center"},
+                     "fill": {"value": "#000"},
+                     "text": {"field": "data.label"},
+                     "font": {"value": "Helvetica Neue"},
+                     "fontSize": {"value": 14}}
+                     
+        marks = {'x_label': x_mark, 'y_label': y_mark, 'title': title_mark}
+        
+        def label_update(key, value, component, remove):
+            '''Check component for axis label, append/insert/pop
+            as required'''
+            comp = getattr(self, component)
+            for index, att in enumerate(comp):
+                if att.get('name') == key: 
+                    comp.pop(index)
+                    if remove != 'Remove Label':
+                        comp.insert(index, value)
+                    return
+            if remove != 'Remove Label': 
+                comp.append(value)
+            return 
+        
+        for key, value in self.axis_labels.iteritems():
+            label_data = {'name': key, 'values': [{'label': value}]}
+            marks[key]['properties']['enter'].update(common_pars)
+            remove = value
+            label_update(key, label_data, 'data', remove)
+            label_update(key, marks[key], 'marks', remove)          
+
+        left, top = 30, 10
+        if self.axis_labels.get('y_label'):
+            if horiz_y: 
+                left = 120
+            else: 
+                left = 60
+        if self.axis_labels.get('title'): 
+            top = 30
+            
+        self.update_vis(padding={'bottom': 50, 'left': left, 
+                                 'right': 10, 'top': top})
 
     def build_component(self, append=True, **kwargs):
         '''Build complete Vega component.
@@ -323,8 +423,8 @@ class Vega(object):
         if append:
             self.data[0]['values'].extend(values)
         else:
-            self.data = []
-            self.data.append({"name": name, "values": values})
+            self.data.pop(0)
+            self.data.insert(0, {"name": name, "values": values})
 
         self._serial_transform(axis_time)
         self.build_vega()

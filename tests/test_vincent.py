@@ -21,7 +21,8 @@ class TestVincent(object):
                              'viewport': None, 'axes': [],
                              'padding': {'top': 10, 'left': 30, 
                                          'bottom': 20, 'right': 10}, 
-                             'data': [], 'marks': [], 'scales': []}
+                             'data': [{'name': None, 'values': None}], 
+                             'marks': [], 'scales': []}
     
     def test_atts(self):
         '''Test init attributes'''
@@ -123,7 +124,32 @@ class TestVincent(object):
         self.testvin.tabular_data(df2, columns=['Column 1', 'Column 2'])
         assert self.testvin.data[0]['values'][-2:] == [{'x': 90, 'y': 95}, 
                                                        {'x': 100, 'y': 105}]
-
+    
+    def test_axis_title(self): 
+        '''Test the addition of axis and title labels'''
+        
+        self.testvin.axis_label(x_label='Test 1', y_label='Test 2')
+        assert self.testvin.data[1]['name'] == 'x_label'
+        assert self.testvin.data[1]['values'][0]['label'] == 'Test 1'
+        assert self.testvin.data[2]['name'] == 'y_label'
+        assert self.testvin.data[2]['values'][0]['label'] == 'Test 2'
+        assert self.testvin.padding['bottom'] == 50
+        
+        self.testvin.axis_label(title='Test 3', y_label='Remove Label')
+        assert self.testvin.data[2]['name'] == 'title'
+        assert self.testvin.data[2]['values'][0]['label'] == 'Test 3'
+        assert len(self.testvin.marks) == 2
+        
+        self.testvin.axis_label(x_label='Test 1', y_label='Test 2', 
+                                horiz_y=True)
+        assert len(self.testvin.marks) == 3
+        assert len(self.testvin.data) == 4
+        assert self.testvin.padding['left'] == 120
+        
+        self.testvin.axis_label(x_label='Remove Label', y_label='Remove Label', 
+                                title = 'Remove Label')
+        assert len(self.testvin.data) == 1
+        assert not self.testvin.marks
                                                        
     def test_add_subtract(self):
         '''Test add and subtract on some subclasses'''
@@ -165,6 +191,8 @@ class TestVincent(object):
         line = vincent.Line()
         line.tabular_data(price, columns=['AAPL'])
         assert line.data[0]['values'][0]['x'] == 1073030400000
+        
+        
         
   
 
