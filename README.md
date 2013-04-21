@@ -72,6 +72,38 @@ For example, if we wanted to change the bar plot to an area plot:
 ```
 ![Area](http://farm9.staticflickr.com/8540/8645065128_d2cf65bdf9_o.jpg)
 
+Vincent also plays nice with Pandas DatetimeIndex, and allows for simple axis labeling and titling: 
+
+```python
+import vincent
+import pandas as pd
+
+#All of the following import code comes from Wes McKinney's book, Python for Data Analysis
+
+import pandas.io.data as web
+all_data = {}
+for ticker in ['AAPL', 'GOOG']:
+    all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2010', '1/1/2013')
+price = pd.DataFrame({tic: data['Adj Close']
+                      for tic, data in all_data.iteritems()})
+
+#Create line graph, with monthly plotting on the axes                       
+line = vincent.Line()
+line.tabular_data(price, columns=['AAPL'], axis_time='month')
+line.to_json(path)
+
+#Manipulate the axis tick/tick label orientation
+line + ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
+line + ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
+line.update_vis(padding={'bottom': 50, 'left': 30, 'right': 30, 'top': 10})
+line.update_vis(width=800, height=300)
+
+#Add axis labels and a title
+line.axis_label(y_label='AAPL Price', title='AAPL Stock Price 1/1/2010-1/1/2013')
+line.to_json(path)
+```
+![AAPL fig](http://farm9.staticflickr.com/8393/8669181178_e22e576144_c.jpg)
+
 I also have Vincent fully incorporated into a [fork](https://github.com/wrobstory/d3py) of Mike Dewar's [d3py](https://github.com/mikedewar/d3py), with a pull request to merge into the main repo. The intent is to keep Vincent and d3py moving together in development; eventually Vincent may get fully merged into d3py as the main development track. 
 
 For now, here is the syntax for using the d3py fork: 
