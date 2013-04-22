@@ -327,7 +327,7 @@ class Vega(object):
 
             #Reset our data in the Vega object
             self.data = [{'name': name, 'values': data_out}]
-            self.build_vega
+            self.build_vega()
             
         else:
             json_out(path, self.vega)
