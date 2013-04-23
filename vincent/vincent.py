@@ -522,3 +522,79 @@ class Line(Bar):
 
         self.multi_update(line_updates)
         self.build_vega()
+        
+class Map(Vega):
+    '''Create a map plot in Vega grammar'''
+    
+    def __init__(self):
+        '''Build Vega Map chart with default parameters'''
+        super(Map, self).__init__(width=1000, height=800)
+
+        self.data = []
+        self.build_vega('axes', 'scales')
+        
+    def map_data(self, new=False, projection='mercator', **kwargs): 
+        '''Pass name/url as keyword arguments'''
+        
+        for name, url in kwargs.iteritems(): 
+        
+            self._mapfile = os.path.split(url)[-1]
+            with open(url, 'r') as f: 
+                self.raw_map_data = json.load(f)
+                
+            if new: 
+                for index, dat in enumerate(self.data):
+                    if dat.get('format').get('type') == 'json': 
+                        self.data.pop(index)
+                for index, dat in enumerate(self.marks):
+                    if dat.get('name') == 'mapmark': 
+                        self.marks.pop(index)
+                        
+            self.data.append({'name': name, 'url': self._mapfile, 
+                              'format': {'type': 'json', 
+                                         'property': 'features'},
+                              'transform': [{'type': 'geopath', 
+                                            'value': 'data',
+                                            'projection': projection}]})
+                                            
+            mapmark = {"type": "path", 'from': {'data': name},
+                       'name': 'mapmark',
+                      "properties": {
+                                     "enter": {
+                                     "stroke": {'value': '#fff'},
+                                     "strokeWidth": {"value": 1.0},
+                                     "path": {"field": "path"},
+                                     "fill": {'value': '#2a3140'}
+                                      }}}
+            self.marks.append(mapmark)
+            
+    def to_json(self, path, split_data=False, html=False):
+        '''Map-specific JSON write. Always writes geoJSON to separate file,
+        keeps any relevant data for key/value color mapping'''
+        
+        super(Map, self).to_json(path, split_data=split_data, html=html)
+        
+        geo_path = '/'.join([os.path.split(path)[0], self._mapfile])
+        with open(geo_path, 'w') as f:
+            json.dump(self.raw_map_data, f, sort_keys=True, indent=4,
+                      separators=(',', ': '))
+                      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+ 
