@@ -522,13 +522,14 @@ class Line(Bar):
         self.multi_update(line_updates)
         self.build_vega()
 
-def ipynb_init():
-    '''Display html that loads d3 and vega as javascript libraries.'''
+def ipynb_init_d3():
+    '''Display html that loads d3 javascript library.'''
     from IPython.core.display import display, HTML
-    display(HTML('''
-        <script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>
-        <script src="http://trifacta.github.com/vega/vega.js"></script>
-    '''))
+    display(HTML('''<script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>'''))
+def ipynb_init_vg():
+    '''Display html that loads vega javascript library.'''
+    from IPython.core.display import display, HTML
+    display(HTML('''<script src="http://trifacta.github.com/vega/vega.js"></script>'''))
 
 def ipynb_display(vis):
     '''Display graphic inline in IPython notebook'''
