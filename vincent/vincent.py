@@ -345,7 +345,6 @@ class Vega(object):
                       isinstance(value, pd.Period)):
                     objs[key] = time.mktime(value.timetuple())*1000
                     
-
     def tabular_data(self, data, name="table", columns=None, use_index=False,
                      append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
@@ -522,3 +521,26 @@ class Line(Bar):
 
         self.multi_update(line_updates)
         self.build_vega()
+
+def ipynb_init_d3():
+    '''Display html that loads d3 javascript library.'''
+    from IPython.core.display import display, HTML
+    display(HTML('''<script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>'''))
+def ipynb_init_vg():
+    '''Display html that loads vega javascript library.'''
+    from IPython.core.display import display, HTML
+    display(HTML('''<script src="http://trifacta.github.com/vega/vega.js"></script>'''))
+
+def ipynb_display(vis):
+    '''Display graphic inline in IPython notebook'''
+    import random
+    from IPython.core.display import display, HTML, Javascript
+
+    # HACK: use a randomly chosen unique div id
+    id = random.randint(0, 2**16)
+
+    a = HTML('''<div id="vis%d"></div>''' % id)
+    b = Javascript('''vg.parse.spec(%s, function(chart)
+                        { chart({el:"#vis%d"}).update(); });''' % (json.dumps(vis.vega), id))
+    display(a, b)
+
