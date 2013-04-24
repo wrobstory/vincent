@@ -531,18 +531,26 @@ class Map(Vega):
         super(Map, self).__init__(width=1000, height=800)
 
         self.data = []
+        self.geojson = {}
+        self.map_par = {}
         self.build_vega('axes', 'scales')
         
-    def map_data(self, new=False, projection='mercator', **kwargs): 
+    def map_data(self, scale=100, projection='mercator', reset=False, **kwargs): 
         '''Pass name/url as keyword arguments'''
+        
+        self.map_par['projection'] = self.map_par.get('projection', projection) 
+        self.map_par['scale'] = self.map_par.get('scale', scale)
+        
         
         for name, url in kwargs.iteritems(): 
         
-            self._mapfile = os.path.split(url)[-1]
+            self.geojson[name] = {}
+            self.geojson[name]['file'] = os.path.split(url)[-1]
             with open(url, 'r') as f: 
-                self.raw_map_data = json.load(f)
+                self.geojson[name]['data'] = json.load(f)
                 
-            if new: 
+            if reset:
+                self.map_par['projection'] = projection 
                 for index, dat in enumerate(self.data):
                     if dat.get('format').get('type') == 'json': 
                         self.data.pop(index)
@@ -550,12 +558,15 @@ class Map(Vega):
                     if dat.get('name') == 'mapmark': 
                         self.marks.pop(index)
                         
-            self.data.append({'name': name, 'url': self._mapfile, 
+            self.data.append({'name': name, 'url': self.geojson[name]['file'], 
                               'format': {'type': 'json', 
                                          'property': 'features'},
                               'transform': [{'type': 'geopath', 
                                             'value': 'data',
-                                            'projection': projection}]})
+                                            'scale': self.map_par['scale'],
+                                            'projection': self.map_par['projection']
+                                            }]})
+                                            
                                             
             mapmark = {"type": "path", 'from': {'data': name},
                        'name': 'mapmark',
@@ -574,10 +585,11 @@ class Map(Vega):
         
         super(Map, self).to_json(path, split_data=split_data, html=html)
         
-        geo_path = '/'.join([os.path.split(path)[0], self._mapfile])
-        with open(geo_path, 'w') as f:
-            json.dump(self.raw_map_data, f, sort_keys=True, indent=4,
-                      separators=(',', ': '))
+        for key, value in self.geojson.iteritems():
+            geo_path = '/'.join([os.path.split(path)[0], value['file']])
+            with open(geo_path, 'w') as f:
+                json.dump(value['data'], f, sort_keys=True, indent=4,
+                          separators=(',', ': '))
                       
         
         
