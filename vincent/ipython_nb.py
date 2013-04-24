@@ -1,0 +1,35 @@
+'''
+Vincent iPython notebook
+-------
+
+A module for integrating vincent with the iPython notebook. Huge thanks to 
+https://github.com/aflaxman for putting this together. iPython might be seeing 
+significant changes with JS handling in the near future- until then, this module
+will allow for embedding on a local server (but not in nbviewer)
+
+'''
+import random
+import json
+from IPython.core.display import display, HTML, Javascript
+
+def ipynb_init_d3():
+    '''Display html that loads d3 javascript library.'''
+
+    display(HTML('''<script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>'''))
+    
+def ipynb_init_vg():
+    '''Display html that loads vega javascript library.'''
+
+    display(HTML('''<script src="http://trifacta.github.com/vega/vega.js"></script>'''))
+
+def ipynb_display(vis):
+    '''Display graphic inline in IPython notebook'''
+
+
+    # HACK: use a randomly chosen unique div id
+    id = random.randint(0, 2**16)
+
+    a = HTML('''<div id="vis%d"></div>''' % id)
+    b = Javascript('''vg.parse.spec(%s, function(chart)
+                        { chart({el:"#vis%d"}).update(); });''' % (json.dumps(vis.vega), id))
+    display(a, b)
