@@ -55,7 +55,7 @@ class Vega(object):
         self.visualization = {'width': self.width,
                               'padding': self.padding,
                               'viewport': self.viewport}
-        self.data = [{"name": 'default', "values": None}]
+        self.data = []
         self.scales = []
         self.axes = []
         self.axis_labels = {}
@@ -536,7 +536,22 @@ class Map(Vega):
         self.map_par = {}
         self.build_vega('axes', 'scales')
         
-    def map_geo(self, scale=100, projection='mercator', reset=False, **kwargs): 
+    def update_map(self, projection=None, scale=None): 
+        '''Update the map projection or scale'''
+        
+        if not projection:
+            projection = self.map_par.get('projection', 'mercator')
+        if not scale: 
+            scale = self.map_par.get('scale', 100)
+            
+        self.map_par.update({'projection': projection, 'scale': scale})
+            
+        for data in self.data: 
+            if data.get('transform')[0].get('projection'):
+                data['transform'][0].update({'projection': projection, 'scale': scale})
+                
+    def geo_data(self, scale=100, projection='mercator', reset=False, 
+                 bind_data=None, **kwargs): 
         '''Pass name/url as keyword arguments'''
         
         self.map_par['projection'] = self.map_par.get('projection', projection) 
@@ -552,25 +567,26 @@ class Map(Vega):
                 
             if reset:
                 self.map_par['projection'] = projection
+                self.map_par['scale'] = scale
                 filter_data = lambda x: x.get('name') == 'table'
                 filter_mark = lambda x: x.get('name') == 'mapmark'
                 self.data = list(itertools.ifilter(filter_data, self.data))
                 self.marks = list(itertools.ifilterfalse(filter_mark, 
                                                          self.marks))
                         
-            self.data.append({'name': name, 'url': self.geojson[name]['file'], 
-                              'format': {'type': 'json', 
-                                         'property': 'features'},
-                              'transform': [{'type': 'geopath', 
-                                            'value': 'data',
-                                            'scale': self.map_par['scale'],
-                                            'projection': self.map_par['projection']
-                                            }]})
-                                            
+            mapdata = {'name': name, 'url': self.geojson[name]['file'], 
+                       'format': {'type': 'json', 
+                                  'property': 'features'},
+                       'transform': [{'type': 'geopath', 
+                                      'value': 'data',
+                                      'scale': self.map_par['scale'],
+                                      'projection': self.map_par['projection']
+                                      }]}
+            self.data.append(mapdata)                               
                                             
             mapmark = {"type": "path", 'from': {'data': name},
                        'name': 'mapmark',
-                      "properties": {
+                       "properties": {
                                      "enter": {
                                      "stroke": {'value': '#fff'},
                                      "strokeWidth": {"value": 1.0},
@@ -578,6 +594,20 @@ class Map(Vega):
                                      "fill": {'value': '#2a3140'}
                                       }}}
             self.marks.append(mapmark)
+            
+            if bind_data: 
+                transform = {"type": "zip", "key": bind_data,
+                             "with": "table", "withKey": "data.x",
+                             "as": "value"}
+                scales = {"name": "color", 
+                          "domain": {"data": "table", "field": "data.y"},
+                          "range": ["#f5f5f5","#00b"]}
+                marks = {"fill": {"scale": "color", "field": "value.data.y"}}
+                self.data[-1]['transform'].append(transform)
+                self.scales.append(scales)
+                self.marks[-1]['properties'].update({'update': marks})
+            
+            self.build_vega()
             
     def to_json(self, path, split_data=False, html=False):
         '''Map-specific JSON write. Always writes geoJSON to separate file,
