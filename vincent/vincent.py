@@ -12,6 +12,7 @@ from __future__ import division
 import os
 import json
 import time
+import itertools
 from pkg_resources import resource_string
 import pandas as pd
 import pdb
@@ -54,7 +55,7 @@ class Vega(object):
         self.visualization = {'width': self.width,
                               'padding': self.padding,
                               'viewport': self.viewport}
-        self.data = [{"name": None, "values": None}]
+        self.data = [{"name": 'default', "values": None}]
         self.scales = []
         self.axes = []
         self.axis_labels = {}
@@ -346,15 +347,15 @@ class Vega(object):
                     objs[key] = time.mktime(value.timetuple())*1000
                     
 
-    def tabular_data(self, data, name="table", columns=None, use_index=False,
+    def tabular_data(self, data, columns=None, use_index=False,
                      append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
         in a list, dict, or Pandas Dataframe. 
 
         Parameters:
         -----------
-        name: string, default "table"
-            Type of visualization
+        data: Tuples, List, Dict, Pandas Series, or Pandas DataFrame
+            Input data
         columns: list, default None
             If passing Pandas DataFrame, you must pass at least one column
             name.If one column is passed, x-values will default to the index
@@ -426,8 +427,9 @@ class Vega(object):
         if append:
             self.data[0]['values'].extend(values)
         else:
-            self.data.pop(0)
-            self.data.insert(0, {"name": name, "values": values})
+            filter = lambda x: x.get('name') == 'table'
+            self.data = list(itertools.ifilterfalse(filter, self.data))
+            self.data.insert(0, {"name": "table", "values": values})
 
         self._serial_transform(axis_time)
         self.build_vega()
@@ -535,7 +537,7 @@ class Map(Vega):
         self.map_par = {}
         self.build_vega('axes', 'scales')
         
-    def map_data(self, scale=100, projection='mercator', reset=False, **kwargs): 
+    def map_geo(self, scale=100, projection='mercator', reset=False, **kwargs): 
         '''Pass name/url as keyword arguments'''
         
         self.map_par['projection'] = self.map_par.get('projection', projection) 
@@ -550,13 +552,12 @@ class Map(Vega):
                 self.geojson[name]['data'] = json.load(f)
                 
             if reset:
-                self.map_par['projection'] = projection 
-                for index, dat in enumerate(self.data):
-                    if dat.get('format').get('type') == 'json': 
-                        self.data.pop(index)
-                for index, dat in enumerate(self.marks):
-                    if dat.get('name') == 'mapmark': 
-                        self.marks.pop(index)
+                self.map_par['projection'] = projection
+                filter_data = lambda x: x.get('name') == 'table'
+                filter_mark = lambda x: x.get('name') == 'mapmark'
+                self.data = list(itertools.ifilter(filter_data, self.data))
+                self.marks = list(itertools.ifilterfalse(filter_mark, 
+                                                         self.marks))
                         
             self.data.append({'name': name, 'url': self.geojson[name]['file'], 
                               'format': {'type': 'json', 
