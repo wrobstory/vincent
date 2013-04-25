@@ -12,6 +12,7 @@ from __future__ import division
 import os
 import json
 import time
+import itertools
 from pkg_resources import resource_string
 import pandas as pd
 import pdb
@@ -54,7 +55,7 @@ class Vega(object):
         self.visualization = {'width': self.width,
                               'padding': self.padding,
                               'viewport': self.viewport}
-        self.data = [{"name": None, "values": None}]
+        self.data = [{"name": 'default', "values": None}]
         self.scales = []
         self.axes = []
         self.axis_labels = {}
@@ -345,15 +346,15 @@ class Vega(object):
                       isinstance(value, pd.Period)):
                     objs[key] = time.mktime(value.timetuple())*1000
                     
-    def tabular_data(self, data, name="table", columns=None, use_index=False,
+    def tabular_data(self, data, columns=None, use_index=False,
                      append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
         in a list, dict, or Pandas Dataframe. 
 
         Parameters:
         -----------
-        name: string, default "table"
-            Type of visualization
+        data: Tuples, List, Dict, Pandas Series, or Pandas DataFrame
+            Input data
         columns: list, default None
             If passing Pandas DataFrame, you must pass at least one column
             name.If one column is passed, x-values will default to the index
@@ -425,8 +426,9 @@ class Vega(object):
         if append:
             self.data[0]['values'].extend(values)
         else:
-            self.data.pop(0)
-            self.data.insert(0, {"name": name, "values": values})
+            filter = lambda x: x.get('name') == 'table'
+            self.data = list(itertools.ifilterfalse(filter, self.data))
+            self.data.insert(0, {"name": "table", "values": values})
 
         self._serial_transform(axis_time)
         self.build_vega()
@@ -521,3 +523,90 @@ class Line(Bar):
 
         self.multi_update(line_updates)
         self.build_vega()
+        
+class Map(Vega):
+    '''Create a map plot in Vega grammar'''
+    
+    def __init__(self):
+        '''Build Vega Map chart with default parameters'''
+        super(Map, self).__init__(width=1000, height=800)
+
+        self.data = []
+        self.geojson = {}
+        self.map_par = {}
+        self.build_vega('axes', 'scales')
+        
+    def map_geo(self, scale=100, projection='mercator', reset=False, **kwargs): 
+        '''Pass name/url as keyword arguments'''
+        
+        self.map_par['projection'] = self.map_par.get('projection', projection) 
+        self.map_par['scale'] = self.map_par.get('scale', scale)
+        
+        
+        for name, url in kwargs.iteritems(): 
+        
+            self.geojson[name] = {}
+            self.geojson[name]['file'] = os.path.split(url)[-1]
+            with open(url, 'r') as f: 
+                self.geojson[name]['data'] = json.load(f)
+                
+            if reset:
+                self.map_par['projection'] = projection
+                filter_data = lambda x: x.get('name') == 'table'
+                filter_mark = lambda x: x.get('name') == 'mapmark'
+                self.data = list(itertools.ifilter(filter_data, self.data))
+                self.marks = list(itertools.ifilterfalse(filter_mark, 
+                                                         self.marks))
+                        
+            self.data.append({'name': name, 'url': self.geojson[name]['file'], 
+                              'format': {'type': 'json', 
+                                         'property': 'features'},
+                              'transform': [{'type': 'geopath', 
+                                            'value': 'data',
+                                            'scale': self.map_par['scale'],
+                                            'projection': self.map_par['projection']
+                                            }]})
+                                            
+                                            
+            mapmark = {"type": "path", 'from': {'data': name},
+                       'name': 'mapmark',
+                      "properties": {
+                                     "enter": {
+                                     "stroke": {'value': '#fff'},
+                                     "strokeWidth": {"value": 1.0},
+                                     "path": {"field": "path"},
+                                     "fill": {'value': '#2a3140'}
+                                      }}}
+            self.marks.append(mapmark)
+            
+    def to_json(self, path, split_data=False, html=False):
+        '''Map-specific JSON write. Always writes geoJSON to separate file,
+        keeps any relevant data for key/value color mapping'''
+        
+        super(Map, self).to_json(path, split_data=split_data, html=html)
+        
+        for key, value in self.geojson.iteritems():
+            geo_path = '/'.join([os.path.split(path)[0], value['file']])
+            with open(geo_path, 'w') as f:
+                json.dump(value['data'], f, sort_keys=True, indent=4,
+                          separators=(',', ': '))
+                      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+ 
