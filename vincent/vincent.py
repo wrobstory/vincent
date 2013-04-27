@@ -3,19 +3,17 @@ Vincent
 -------
 
 A Python to Vega translator. Python data structures go in, Vega grammar
-comes out. 
+comes out.
 
 '''
 
 from __future__ import print_function
 from __future__ import division
-import os
 import json
 import time
 from pkg_resources import resource_string
 from string import Template
 import pandas as pd
-import pdb
 
 
 class Vega(object):
@@ -107,38 +105,38 @@ class Vega(object):
             setattr(self, key, value)
 
         self.build_vega()
-        
-    def axis_label(self, x_label=None, y_label=None, title=None, 
+
+    def axis_label(self, x_label=None, y_label=None, title=None,
                    horiz_y=False):
         '''
-        Add axis labels to your visualization. 
-        
-        Labels can be added or changed individually. To remove a label, 
-        pass "Remove Label" to the axis label you wish to remove.  
-        
-        Parameters: 
+        Add axis labels to your visualization.
+
+        Labels can be added or changed individually. To remove a label,
+        pass "Remove Label" to the axis label you wish to remove.
+
+        Parameters:
         -----------
         x_label: string, default None
-            X-axis label. 
+            X-axis label.
         y_label: string, default None
             Y-axis label
         title: string, default None
             Visualization Title (defaults to top of vis)
         horiz_y: boolean, default False
             Pass "True" to plot y-axis label horizontally
-            
-        Examples: 
+
+        Examples:
         ---------
         >>>vis.axis_label(x_label='X Data')
         >>>vis.axis_label(x_label='New X Label', y_label='Y Data')
         >>>vis.axis_label(y_label='New Y Label', x_label='Remove Label')
-        
+
         '''
         temp = {'x_label': x_label, 'y_label': y_label, 'title': title}
         for label, name in temp.iteritems():
-            if name: 
+            if name:
                 self.axis_labels[label] = name
-        
+
         x_mark = {"type": "text", "name": "x_label",
                   "from": {"data": "x_label"},
                   "properties": {"enter": {
@@ -151,62 +149,62 @@ class Vega(object):
                                  "x": {"value": 0},
                                  "y": {"value": self.height/2},
                                  "dy": {"value": -45},
-                                 "angle": {'value': -90}}}}                         
-        if horiz_y: 
+                                 "angle": {'value': -90}}}}
+        if horiz_y:
             y_mark['properties']['enter'].pop('dy')
             y_mark['properties']['enter']['dx'] = {'value': -65}
-            y_mark['properties']['enter']['angle'] ={'value':  0}
-            
+            y_mark['properties']['enter']['angle'] = {'value':  0}
+
         title_mark = {"type": "text", "name": "title",
                       "from": {"data": "title"},
                       "properties": {"enter": {
                                      "x": {"value": self.width/2},
                                      "y": {"value": 0},
-                                     "dy": {"value": -20}}}}       
-        
-        common_pars={"baseline": {"value": "middle"},
-                     "align": {"value": "center"},
-                     "fill": {"value": "#000"},
-                     "text": {"field": "data.label"},
-                     "font": {"value": "Helvetica Neue"},
-                     "fontSize": {"value": 14}}
-                     
+                                     "dy": {"value": -20}}}}
+
+        common_pars = {"baseline": {"value": "middle"},
+                       "align": {"value": "center"},
+                       "fill": {"value": "#000"},
+                       "text": {"field": "data.label"},
+                       "font": {"value": "Helvetica Neue"},
+                       "fontSize": {"value": 14}}
+
         marks = {'x_label': x_mark, 'y_label': y_mark, 'title': title_mark}
-        
+
         def label_update(key, value, component, remove):
             '''Check component for axis label, append/insert/pop
             as required'''
             comp = getattr(self, component)
             for index, att in enumerate(comp):
-                if att.get('name') == key: 
+                if att.get('name') == key:
                     comp.pop(index)
                     if remove != 'Remove Label':
                         comp.insert(index, value)
                     return
-            if remove != 'Remove Label': 
+            if remove != 'Remove Label':
                 comp.append(value)
-            return 
-        
+            return
+
         for key, value in self.axis_labels.iteritems():
             label_data = {'name': key, 'values': [{'label': value}]}
             marks[key]['properties']['enter'].update(common_pars)
             remove = value
             label_update(key, label_data, 'data', remove)
-            label_update(key, marks[key], 'marks', remove)          
+            label_update(key, marks[key], 'marks', remove)
 
         left, top, bottom = 30, 10, 20
         if self.axis_labels.get('y_label'):
-            if horiz_y: 
+            if horiz_y:
                 left = 120
-            else: 
+            else:
                 left = 60
-        if self.axis_labels.get('title'): 
+        if self.axis_labels.get('title'):
             top = 30
         if self.axis_labels.get('x_label'):
             bottom = 50
-            
-        self.update_vis(padding={'bottom': bottom, 
-                                 'left': left, 'right': self.padding['right'], 
+
+        self.update_vis(padding={'bottom': bottom,
+                                 'left': left, 'right': self.padding['right'],
                                  'top': top})
 
     def build_component(self, append=True, **kwargs):
@@ -280,14 +278,14 @@ class Vega(object):
 
     def _json_IO(self, host, port):
         '''Return data values as JSON for StringIO '''
-        
+
         data_vals = self.data[0]['values']
         self.update_component('remove', 'values', 'data', 0)
         url = ''.join(['http://', host, ':', str(port), '/data.json'])
         self.update_component('add', url, 'data', 0, 'url')
         vega = json.dumps(self.vega, sort_keys=True, indent=4)
         data = json.dumps(data_vals, sort_keys=True, indent=4)
-        return vega, data 
+        return vega, data
 
     def to_json(self, path, split_data=False, data_path='data.json',
                 html=False, html_path='vega_template.html'):
@@ -342,17 +340,17 @@ class Vega(object):
         for objs in self.data[0]['values']:
             for key, value in objs.iteritems():
                 if isinstance(value, pd.Period):
-                    value = value.to_timestamp()     
+                    value = value.to_timestamp()
                 if pd.isnull(value):
                     objs[key] = None
-                elif (isinstance(value, pd.tslib.Timestamp) or 
+                elif (isinstance(value, pd.tslib.Timestamp) or
                       isinstance(value, pd.Period)):
                     objs[key] = time.mktime(value.timetuple())*1000
-                    
+
     def tabular_data(self, data, name="table", columns=None, use_index=False,
                      append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
-        in a list, dict, or Pandas Dataframe. 
+        in a list, dict, or Pandas Dataframe.
 
         Parameters:
         -----------
@@ -368,7 +366,7 @@ class Vega(object):
         append: boolean, default False
             Append new data to data already in vincent object
         axis_time: string, default 'day'
-            Time scale for axis. Must be one of 'second', 'minute', 'hour', 
+            Time scale for axis. Must be one of 'second', 'minute', 'hour',
             'day', 'week', 'month', or 'year'
 
         Examples:
@@ -378,18 +376,18 @@ class Vega(object):
         >>>myvega.tabular_data(my_dataframe, columns=['column 1'],
                                use_index=True)
         >>>myvega.tabular_data(my_dataframe, columns=['column 1', 'column 2'])
-        
+
 
         '''
-        
+
         self.raw_data = data
-        
+
         def period_axis(data, axis_time):
             '''Update to Time Scale if DatetimeIndex'''
             if isinstance(data.index, pd.DatetimeIndex):
-                self.update_component('add', 'time', 'scales', 0, 
+                self.update_component('add', 'time', 'scales', 0,
                                       'type')
-                self.update_component('add', axis_time, 'scales', 0, 
+                self.update_component('add', axis_time, 'scales', 0,
                                       'nice')
 
         #Tuples
