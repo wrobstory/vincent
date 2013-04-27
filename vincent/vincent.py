@@ -13,6 +13,7 @@ import os
 import json
 import time
 from pkg_resources import resource_string
+from string import Template
 import pandas as pd
 import pdb
 
@@ -288,7 +289,8 @@ class Vega(object):
         data = json.dumps(data_vals, sort_keys=True, indent=4)
         return vega, data 
 
-    def to_json(self, path, split_data=False, html=False):
+    def to_json(self, path, split_data=False, data_path='data.json',
+                html=False, html_path='vega_template.html'):
         '''
         Save Vega object to JSON
 
@@ -299,9 +301,13 @@ class Vega(object):
         split_data: boolean, default False
             Split the output into a JSON with only the data values, and a
             Vega grammar JSON referencing that data.
+        data_path: string, default 'data.json'
+            Path for data file. Does nothing if `split_data` is False.
         html: boolean, default False
-            Output Vega Scaffolding HTML file to path
-
+            Output Vega scaffolding HTML file.
+        html_path: string, default 'vega_template.html'
+            Path for the scaffolding HTML file. Does nothing if `html` is
+            False.
         '''
 
         def json_out(path, output):
@@ -314,25 +320,23 @@ class Vega(object):
             name = self.data[0]['name']
             data_out = self.data[0]['values']
             self.update_component('remove', 'values', 'data', 0)
-            self.update_component('add', 'data.json', 'data', 0, 'url')
-            data_path = os.path.dirname(path) + r'/data.json'
+            self.update_component('add', data_path, 'data', 0, 'url')
             json_out(data_path, data_out)
             json_out(path, self.vega)
-            if html:
-                template = resource_string('vincent', 'vega_template.html')
-                html_path = ''.join([os.path.dirname(path),
-                                     r'/vega_template.html'])
-                with open(html_path, 'w') as f:
-                    f.write(template)
 
             #Reset our data in the Vega object
             self.data = [{'name': name, 'values': data_out}]
             self.build_vega()
-            
         else:
             json_out(path, self.vega)
-            
-    def _serial_transform(self, str_time): 
+
+        if html:
+            template = Template(
+                resource_string('vincent', 'vega_template.html'))
+            with open(html_path, 'w') as f:
+                f.write(template.substitute(path=path))
+
+    def _serial_transform(self, str_time):
         '''Transform data to make it JSON serializable. Vega requires
         Epoch time in milliseconds.'''
         for objs in self.data[0]['values']:
