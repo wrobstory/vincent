@@ -1,4 +1,4 @@
-﻿  # -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
 '''
 Test Vincent
 ---------
@@ -8,6 +8,15 @@ Test Vincent
 import pandas as pd
 import vincent
 import nose.tools as nt
+import os
+
+try:
+    import unittest.mock as mock
+    assert mock
+except ImportError:
+    # Requires mock library if version < 3.3
+    import mock
+
 
 class TestVincent(object):
     '''Test vincent.py'''
@@ -196,19 +205,55 @@ class TestVincent(object):
         
   
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-            
+    def test_to_json(self):
+        '''Test json output
 
-        
+        This tests that files are written with the correct names, not that
+        the json was serialized correctly.'''
+        line = vincent.Line()
+        from mock import call, patch, MagicMock
+
+        with patch('__builtin__.open', create=True) as mock_open:
+            mock_open.return_value = MagicMock(spec=file)
+
+            path = 'test.json'
+            data_path = 'test_data.json'
+            default_data_path = 'data.json'
+            html_path = 'test.html'
+            default_html_path = 'vega_template.html'
+
+            # No data splitting / html
+            kwargs_default_behavior = [
+                {}, {'split_data': False}, {'html': False},
+                {'data_path': data_path}, {'html_path': html_path}]
+            for kwargs in kwargs_default_behavior:
+                line.to_json(path, **kwargs)
+                mock_open.assert_called_once_with(path, 'w')
+                mock_open.reset_mock()
+
+            line.to_json(path, split_data=True)
+            mock_open.assert_has_calls([
+                call(path, 'w'), call(default_data_path, 'w')],
+                any_order=True)
+            mock_open.reset_mock()
+
+            line.to_json(path, split_data=True, data_path=data_path)
+            mock_open.assert_has_calls([
+                call(path, 'w'), call(data_path, 'w')], any_order=True)
+            mock_open.reset_mock()
+
+            # The HTML option reads a default file that needs a real return
+            # value the template substitution.
+            mock_open.return_value.read.return_value = '$path'
+
+            line.to_json(path, html=True)
+            mock_open.assert_has_calls([
+                call(path, 'w'), call(default_html_path, 'w')],
+                any_order=True)
+            mock_open.reset_mock()
+
+            line.to_json(path, html=True, html_path=html_path)
+            mock_open.assert_has_calls([
+                call(path, 'w'), call(html_path, 'w')],
+                any_order=True)
+            mock_open.reset_mock()
