@@ -2,15 +2,14 @@
 '''
 Builds a Vega grammar specification from vincent.Map()
 '''
-
-import json
-import random
 import vincent
 import pandas as pd
 
-us_states = r'../us-states.json'
-us_counties = r'../us-counties.json'
-world_countries = r'../world-countries.json'
+us_states = r'../data/us-states.json'
+us_counties = r'../data/us-counties.json'
+world_countries = r'../data/world-countries.json'
+county_data = r'../data/us_county_data.csv'
+state_unemployment = r'../data/US_Unemployment_Oct2012.csv'
 path = r'../vega.json'
 
 #Simple map of the US
@@ -25,26 +24,16 @@ world.to_json(path)
 
 #Map with both US States and Counties
 
-#Grab county names so that we can add random data to them
-with open(us_counties, 'r') as f:
-    get_names = json.load(f)
-    
-county_names = [x['properties']['name'] for x in get_names['features']]
-random_data = [random.randint(10, 100) for y in range(len(county_names))]
-data_dict = {key: value for key, value in zip(county_names, random_data)}
-
 vis = vincent.Map(width=1000, height=800)
-#Add our state data first
-vis.geo_data(projection='albersUsa', scale=1000, states=us_states)
-
-#Add our data that we want to visualize
-vis.tabular_data(data_dict)
+#Add our county data first
+vis.geo_data(projection='albersUsa', scale=1000, counties=us_counties)
+vis + ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
 
 #The projection and scale will stay fixed unless you 'reset' the map
-#Bind the tabular data to the counties, passing dot notation for the geoJSON
-#parameter you are binding to
-vis.geo_data(bind_data='data.properties.name', counties=us_counties)
+vis.geo_data(states=us_states)
+vis - ('fill', 'marks', 1, 'properties', 'enter')
 vis.to_json(path)
 
-#Change map back to just states
+#Swap out data for state data, reset our map
 vis.geo_data(projection='albersUsa', scale=1000, reset=True, states=us_states)
+vis.to_json(path)

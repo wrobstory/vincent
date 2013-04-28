@@ -331,7 +331,7 @@ class Vega(object):
             self.build_vega()
             
         else:
-            json_out(path, self.vega)
+            json_out(path, self.vega)            
             
     def _serial_transform(self, str_time): 
         '''Transform data to make it JSON serializable. Vega requires
@@ -523,7 +523,8 @@ class Line(Bar):
 
         self.multi_update(line_updates)
         self.build_vega()
-        
+ 
+       
 class Map(Vega):
     '''Create a map plot in Vega grammar'''
     
@@ -547,17 +548,57 @@ class Map(Vega):
         self.map_par.update({'projection': projection, 'scale': scale})
             
         for data in self.data: 
-            if data.get('transform')[0].get('projection'):
+            if data.get('transform'):
                 data['transform'][0].update({'projection': projection, 
                                              'scale': scale})
                 
-    def geo_data(self, scale=100, projection='mercator', reset=False, 
-                 bind_data=None, **kwargs): 
+    def geo_data(self, scale=100, projection='winkel3', reset=False, 
+                 bind_data=None, **kwarg): 
         '''Create the data for a map in Vega grammar. 
         
         Each set of map data is passed as a keyword argument, with the key as
         the data name and the value the data path. Tabular data can be bound
         to geo_data to create chloropleth maps. 
+        
+        Vincent/Vega support D3 geo projections: 
+        https://github.com/mbostock/d3/wiki/Geo-Projections
+        
+        Once a set of map data has been passed, subsequent map datasets will
+        retain the scale and parameter of the original data, unless reset=True
+        is passed. Scale/Projection can be changed for all maps with the 
+        `update_map` method. 
+        
+        Parameters:
+        -----------
+        scale: int, default 100
+            Map scale
+        projection: string, default 'mercator'
+            Map projection
+        reset: boolean, default False
+            reset=True will remove all existing map datasets
+        bind_data: string, default None
+            Bind the geo_data to the tabular data in the vincent object. The
+            passed string references a geoJSON data attribute
+            (id, properties, etc). This data must match the x-column of the 
+            tabular_data to plot correctly. 
+        kwarg: keyword argument
+            Pass paths to map data, with the passed keyword as the name 
+            of the dataset
+
+        Examples:
+        ---------
+        #Plot both counties and states, bind data to counties
+        >>>vis = vincent.Map()
+        >>>vis.tabular_data(county_data_dataframe, columns=['ID', 'Data'])
+        >>>vis.geo_data(scale=1000, projection='albersUsa', 
+                        states=r'/states.json')
+        >>>vis.geo_data(bind_data='data.id', counties=r'/counties.json')
+        
+        #Change the tabular data to state-level, reset map data
+        >>>vis.tabular_data(state_data_dataframe, columns=['name', 'Data'])
+        >>>vis.geo_data(scale=1000, projection='albersUsa',
+                        bind_data='data.properties.name', reset=True, 
+                        states=r'/states.json')
         
         '''
         
@@ -608,7 +649,7 @@ class Map(Vega):
                              "as": "value"}
                 scales = {"name": "color", 
                           "domain": {"data": "table", "field": "data.y"},
-                          "range": ["#f5f5f5","#00b"]}
+                          "range": ["#f5f5f5","#000045"]}
                 marks = {"fill": {"scale": "color", "field": "value.data.y"}}
                 self.data[-1]['transform'].append(transform)
                 self.scales.append(scales)
@@ -616,11 +657,11 @@ class Map(Vega):
             
             self.build_vega()
             
-    def to_json(self, path, split_data=False, html=False):
-        '''Map-specific JSON write. Always writes geoJSON to separate file,
-        keeps any relevant data for key/value color mapping'''
+    def to_json(self, path, **kwargs):
+        '''Map-specific JSON write. Always writes geoJSON to separate file in path
+        of vega.json file'''
         
-        super(Map, self).to_json(path, split_data=split_data, html=html)
+        super(Map, self).to_json(path, **kwargs)
         
         for key, value in self.geojson.iteritems():
             geo_path = '/'.join([os.path.split(path)[0], value['file']])
