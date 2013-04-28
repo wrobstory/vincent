@@ -30,7 +30,7 @@ class TestVincent(object):
                              'viewport': None, 'axes': [],
                              'padding': {'top': 10, 'left': 30, 
                                          'bottom': 20, 'right': 20}, 
-                             'data': [{'name': None, 'values': None}], 
+                             'data': [], 
                              'marks': [], 'scales': []}
     
     def test_atts(self):
@@ -138,26 +138,26 @@ class TestVincent(object):
         '''Test the addition of axis and title labels'''
         
         self.testvin.axis_label(x_label='Test 1', y_label='Test 2')
-        assert self.testvin.data[1]['name'] == 'x_label'
-        assert self.testvin.data[1]['values'][0]['label'] == 'Test 1'
-        assert self.testvin.data[2]['name'] == 'y_label'
-        assert self.testvin.data[2]['values'][0]['label'] == 'Test 2'
+        assert self.testvin.data[0]['name'] == 'x_label'
+        assert self.testvin.data[0]['values'][0]['label'] == 'Test 1'
+        assert self.testvin.data[1]['name'] == 'y_label'
+        assert self.testvin.data[1]['values'][0]['label'] == 'Test 2'
         assert self.testvin.padding['bottom'] == 50
         
         self.testvin.axis_label(title='Test 3', y_label='Remove Label')
-        assert self.testvin.data[2]['name'] == 'title'
-        assert self.testvin.data[2]['values'][0]['label'] == 'Test 3'
+        assert self.testvin.data[1]['name'] == 'title'
+        assert self.testvin.data[1]['values'][0]['label'] == 'Test 3'
         assert len(self.testvin.marks) == 2
         
         self.testvin.axis_label(x_label='Test 1', y_label='Test 2', 
                                 horiz_y=True)
         assert len(self.testvin.marks) == 3
-        assert len(self.testvin.data) == 4
+        assert len(self.testvin.data) == 3
         assert self.testvin.padding['left'] == 120
         
         self.testvin.axis_label(x_label='Remove Label', y_label='Remove Label', 
                                 title = 'Remove Label')
-        assert len(self.testvin.data) == 1
+        assert len(self.testvin.data) == 0
         assert not self.testvin.marks
                                                        
     def test_add_subtract(self):
