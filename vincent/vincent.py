@@ -437,9 +437,9 @@ class Vega(object):
 class Bar(Vega):
     '''Create a bar chart in Vega grammar'''
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         '''Build Vega Bar chart with default parameters'''
-        super(Bar, self).__init__()
+        super(Bar, self).__init__(**kwargs)
 
         self.scales = [{"name": "x", "type": "ordinal", "range": "width",
                         "domain": {"data": "table", "field": "data.x"}},
@@ -468,9 +468,9 @@ class Bar(Vega):
 class Area(Bar):
     '''Create an area chart in Vega grammar'''
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         '''Build Vega Area chart with default parameters'''
-        super(Area, self).__init__()
+        super(Area, self).__init__(**kwargs)
         area_updates = [('remove', 'width', 'marks', 0, 'properties', 'enter'),
                         ('add', 'area', 'marks', 0, 'type'),
                         ('add', 'linear', 'scales', 0, 'type')]
@@ -482,9 +482,9 @@ class Area(Bar):
 class Scatter(Bar):
     '''Create a scatter plot in Vega grammar'''
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         '''Build Vega Scatter chart with default parameters'''
-        super(Scatter, self).__init__()
+        super(Scatter, self).__init__(**kwargs)
         self.height, self.width = 400, 400
         self.padding = {'top': 40, 'left': 40, 'bottom': 40, 'right': 40}
         scatter_updates = [('remove', 'type', 'scales', 0),
@@ -507,10 +507,10 @@ class Scatter(Bar):
 class Line(Bar):
     '''Create a line plot in Vega grammar'''
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         '''Build Vega Line plot chart with default parameters'''
 
-        super(Line, self).__init__()
+        super(Line, self).__init__(**kwargs)
         line_updates = [('add', 'linear', 'scales', 0, 'type'),
                         ('remove', 'update', 'marks', 0, 'properties'),
                         ('remove', 'hover', 'marks', 0, 'properties'),
@@ -527,9 +527,9 @@ class Line(Bar):
 class Map(Vega):
     '''Create a map plot in Vega grammar'''
     
-    def __init__(self):
+    def __init__(self, **kwargs):
         '''Build Vega Map chart with default parameters'''
-        super(Map, self).__init__(width=1000, height=800)
+        super(Map, self).__init__(**kwargs)
 
         self.data = []
         self.geojson = {}
@@ -548,11 +548,18 @@ class Map(Vega):
             
         for data in self.data: 
             if data.get('transform')[0].get('projection'):
-                data['transform'][0].update({'projection': projection, 'scale': scale})
+                data['transform'][0].update({'projection': projection, 
+                                             'scale': scale})
                 
     def geo_data(self, scale=100, projection='mercator', reset=False, 
                  bind_data=None, **kwargs): 
-        '''Pass name/url as keyword arguments'''
+        '''Create the data for a map in Vega grammar. 
+        
+        Each set of map data is passed as a keyword argument, with the key as
+        the data name and the value the data path. Tabular data can be bound
+        to geo_data to create chloropleth maps. 
+        
+        '''
         
         self.map_par['projection'] = self.map_par.get('projection', projection) 
         self.map_par['scale'] = self.map_par.get('scale', scale)
@@ -582,8 +589,8 @@ class Map(Vega):
                                       'scale': self.map_par['scale'],
                                       'projection': self.map_par['projection']
                                       }]}
-            self.data.append(mapdata)                               
-                                            
+            self.data.append(mapdata)
+
             mapmark = {"type": "path", 'from': {'data': name},
                        'name': 'mapmark',
                        "properties": {
@@ -620,23 +627,3 @@ class Map(Vega):
             with open(geo_path, 'w') as f:
                 json.dump(value['data'], f, sort_keys=True, indent=4,
                           separators=(',', ': '))
-                      
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
- 
