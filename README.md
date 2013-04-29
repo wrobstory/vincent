@@ -104,6 +104,29 @@ line.to_json(path)
 ```
 ![AAPL fig](http://farm9.staticflickr.com/8393/8669181178_e22e576144_c.jpg)
 
+Vincent fully supports the mapping component of Vega, allowing for rapid creation of regular maps and chloropleths by binding Python data structures to 
+geoJSON data: 
+```python
+#Regular map, no data binding
+vis = vincent.Map(width=1000, height=800)
+vis.geo_data(projection='albersUsa', scale=1000, counties=r'county_geo.json')
+vis + ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
+vis.geo_data(states=r'state_geo.json')
+vis - ('fill', 'marks', 1, 'properties', 'enter')
+vis.to_json(path)
+```
+![Map](http://farm9.staticflickr.com/8389/8690908267_d7a3a83dae_z.jpg)
+```python
+#Bind Pandas DataFrame to map
+vis = vincent.Map(width=1000, height=800)
+vis.tabular_data(dataframe, columns=['FIPS_Code', 'Unemployment_rate_2011']) 
+vis.geo_data(projection='albersUsa', scale=1000, bind_data='data.id',
+             counties=r'county_geo.json')
+vis + (["#f5f5f5","#000045"], 'scales', 0, 'range')
+vis.to_json(path)
+```
+![Map](http://farm9.staticflickr.com/8543/8692026644_a1ee888398_z.jpg)
+
 I also have Vincent fully incorporated into a [fork](https://github.com/wrobstory/d3py) of Mike Dewar's [d3py](https://github.com/mikedewar/d3py), with a pull request to merge into the main repo. The intent is to keep Vincent and d3py moving together in development; eventually Vincent may get fully merged into d3py as the main development track. 
 
 For now, here is the syntax for using the d3py fork: 

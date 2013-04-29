@@ -9,6 +9,7 @@ comes out.
 
 from __future__ import print_function
 from __future__ import division
+import os
 import json
 import time
 import itertools
@@ -324,7 +325,8 @@ class Vega(object):
             json_out(path, self.vega)
 
             #Reset our data in the Vega object
-            self.data = [{'name': name, 'values': data_out}]
+            self.data.pop(0)
+            self.data.insert(0, {'name': name, 'values': data_out})
             self.build_vega()
         else:
             json_out(path, self.vega)
@@ -347,7 +349,7 @@ class Vega(object):
                 elif (isinstance(value, pd.tslib.Timestamp) or
                       isinstance(value, pd.Period)):
                     objs[key] = time.mktime(value.timetuple())*1000
-                    
+
     def tabular_data(self, data, columns=None, use_index=False,
                      append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
@@ -517,6 +519,8 @@ class Line(Bar):
                         ('remove', 'update', 'marks', 0, 'properties'),
                         ('remove', 'hover', 'marks', 0, 'properties'),
                         ('remove', 'width', 'marks', 0, 'properties', 'enter'),
+                        ('remove', 'y2', 'marks', 0, 'properties',
+                         'enter'),
                         ('add', 'line', 'marks', 0, 'type'),
                         ('add', {'value': '#2a3140'}, 'marks', 0,
                          'properties', 'enter', 'stroke'),
@@ -525,11 +529,11 @@ class Line(Bar):
 
         self.multi_update(line_updates)
         self.build_vega()
- 
-       
+
+
 class Map(Vega):
     '''Create a map plot in Vega grammar'''
-    
+
     def __init__(self, **kwargs):
         '''Build Vega Map chart with default parameters'''
         super(Map, self).__init__(**kwargs)
@@ -538,38 +542,38 @@ class Map(Vega):
         self.geojson = {}
         self.map_par = {}
         self.build_vega('axes', 'scales')
-        
-    def update_map(self, projection=None, scale=None): 
+
+    def update_map(self, projection=None, scale=None):
         '''Update the map projection or scale'''
-        
+
         if not projection:
             projection = self.map_par.get('projection', 'mercator')
-        if not scale: 
+        if not scale:
             scale = self.map_par.get('scale', 100)
-            
+
         self.map_par.update({'projection': projection, 'scale': scale})
-            
-        for data in self.data: 
+
+        for data in self.data:
             if data.get('transform'):
-                data['transform'][0].update({'projection': projection, 
+                data['transform'][0].update({'projection': projection,
                                              'scale': scale})
-                
-    def geo_data(self, scale=100, projection='winkel3', reset=False, 
-                 bind_data=None, **kwarg): 
-        '''Create the data for a map in Vega grammar. 
-        
+
+    def geo_data(self, scale=100, projection='winkel3', reset=False,
+                 bind_data=None, **kwargs):
+        '''Create the data for a map in Vega grammar.
+
         Each set of map data is passed as a keyword argument, with the key as
         the data name and the value the data path. Tabular data can be bound
-        to geo_data to create chloropleth maps. 
-        
-        Vincent/Vega support D3 geo projections: 
+        to geo_data to create chloropleth maps.
+
+        Vincent/Vega support D3 geo projections:
         https://github.com/mbostock/d3/wiki/Geo-Projections
-        
+
         Once a set of map data has been passed, subsequent map datasets will
         retain the scale and parameter of the original data, unless reset=True
-        is passed. Scale/Projection can be changed for all maps with the 
-        `update_map` method. 
-        
+        is passed. Scale/Projection can be changed for all maps with the
+        `update_map` method.
+
         Parameters:
         -----------
         scale: int, default 100
@@ -581,10 +585,10 @@ class Map(Vega):
         bind_data: string, default None
             Bind the geo_data to the tabular data in the vincent object. The
             passed string references a geoJSON data attribute
-            (id, properties, etc). This data must match the x-column of the 
-            tabular_data to plot correctly. 
-        kwarg: keyword argument
-            Pass paths to map data, with the passed keyword as the name 
+            (id, properties, etc). This data must match the x-column of the
+            tabular_data to plot correctly.
+        kwargs: keyword argument
+            Pass paths to map data, with the passed keyword as the name
             of the dataset
 
         Examples:
@@ -592,42 +596,41 @@ class Map(Vega):
         #Plot both counties and states, bind data to counties
         >>>vis = vincent.Map()
         >>>vis.tabular_data(county_data_dataframe, columns=['ID', 'Data'])
-        >>>vis.geo_data(scale=1000, projection='albersUsa', 
+        >>>vis.geo_data(scale=1000, projection='albersUsa',
                         states=r'/states.json')
         >>>vis.geo_data(bind_data='data.id', counties=r'/counties.json')
-        
+
         #Change the tabular data to state-level, reset map data
         >>>vis.tabular_data(state_data_dataframe, columns=['name', 'Data'])
         >>>vis.geo_data(scale=1000, projection='albersUsa',
-                        bind_data='data.properties.name', reset=True, 
+                        bind_data='data.properties.name', reset=True,
                         states=r'/states.json')
-        
+
         '''
-        
-        self.map_par['projection'] = self.map_par.get('projection', projection) 
+
+        self.map_par['projection'] = self.map_par.get('projection', projection)
         self.map_par['scale'] = self.map_par.get('scale', scale)
-        
-        
-        for name, url in kwargs.iteritems(): 
-        
+
+        for name, url in kwargs.iteritems():
+
             self.geojson[name] = {}
             self.geojson[name]['file'] = os.path.split(url)[-1]
-            with open(url, 'r') as f: 
+            with open(url, 'r') as f:
                 self.geojson[name]['data'] = json.load(f)
-                
+
             if reset:
                 self.map_par['projection'] = projection
                 self.map_par['scale'] = scale
                 filter_data = lambda x: x.get('name') == 'table'
                 filter_mark = lambda x: x.get('name') == 'mapmark'
                 self.data = list(itertools.ifilter(filter_data, self.data))
-                self.marks = list(itertools.ifilterfalse(filter_mark, 
+                self.marks = list(itertools.ifilterfalse(filter_mark,
                                                          self.marks))
-                        
-            mapdata = {'name': name, 'url': self.geojson[name]['file'], 
-                       'format': {'type': 'json', 
+
+            mapdata = {'name': name, 'url': self.geojson[name]['file'],
+                       'format': {'type': 'json',
                                   'property': 'features'},
-                       'transform': [{'type': 'geopath', 
+                       'transform': [{'type': 'geopath',
                                       'value': 'data',
                                       'scale': self.map_par['scale'],
                                       'projection': self.map_par['projection']
@@ -637,36 +640,40 @@ class Map(Vega):
             mapmark = {"type": "path", 'from': {'data': name},
                        'name': 'mapmark',
                        "properties": {
-                                     "enter": {
-                                     "stroke": {'value': '#fff'},
-                                     "strokeWidth": {"value": 1.0},
-                                     "path": {"field": "path"},
-                                     "fill": {'value': '#2a3140'}
-                                      }}}
+                                      "enter": {
+                                      "stroke": {'value': '#fff'},
+                                      "strokeWidth": {"value": 1.0},
+                                      "path": {"field": "path"},
+                                      "fill": {'value': '#2a3140'}
+                                     }}}
             self.marks.append(mapmark)
-            
-            if bind_data: 
+
+            if bind_data:
                 transform = {"type": "zip", "key": bind_data,
                              "with": "table", "withKey": "data.x",
                              "as": "value"}
-                scales = {"name": "color", 
+                scales = {"name": "color",
                           "domain": {"data": "table", "field": "data.y"},
-                          "range": ["#f5f5f5","#000045"]}
+                          "range": ["#f5f5f5", "#000045"]}
                 marks = {"fill": {"scale": "color", "field": "value.data.y"}}
                 self.data[-1]['transform'].append(transform)
                 self.scales.append(scales)
                 self.marks[-1]['properties'].update({'update': marks})
-            
+
             self.build_vega()
-            
+
     def to_json(self, path, **kwargs):
-        '''Map-specific JSON write. Always writes geoJSON to separate file in path
-        of vega.json file'''
-        
+        '''Map-specific JSON write. Always writes geoJSON to separate file
+        in path of vega.json file'''
+
         super(Map, self).to_json(path, **kwargs)
-        
+
         for key, value in self.geojson.iteritems():
-            geo_path = '/'.join([os.path.split(path)[0], value['file']])
+            path_test = os.path.split(path)[0]
+            if path_test == '':
+                geo_path = ''.join([os.path.split(path)[0], value['file']])
+            else:
+                geo_path = '/'.join([os.path.split(path)[0], value['file']])
             with open(geo_path, 'w') as f:
                 json.dump(value['data'], f, sort_keys=True, indent=4,
                           separators=(',', ': '))

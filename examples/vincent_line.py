@@ -10,7 +10,7 @@ vis = vincent.Line()
 vis.tabular_data([random.randint(10, 100) for x in range(0, 101, 1)])
 
 #Generate both the Vega JSON and a data JSON. 
-path = r'/vega.json'
+path = r'vega.json'
 vis.to_json(path, split_data=True, html=True)
 
 #Make the visualization bigger, lines thicker, and do some point interpolation

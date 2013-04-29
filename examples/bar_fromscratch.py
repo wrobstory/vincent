@@ -27,7 +27,7 @@ vis.build_component(axes=[{"type":"x", "scale":"x"},{"type":"y", "scale":"y"}],
                                       }}])
 
 #Generate both the Vega JSON and a data JSON. 
-path = r'/vega.json'
+path = r'vega.json'
 vis.to_json(path, split_data=True, html=True)
 
 #Fire up a server on the path you saved the JSONs to: 

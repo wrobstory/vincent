@@ -20,190 +20,186 @@ except ImportError:
 
 class TestVincent(object):
     '''Test vincent.py'''
-    
+
     def setup(self):
         '''Setup method'''
-        
+
         self.testvin = vincent.Vega()
-                                     
+
         self.default_vega = {'width': 400, 'height': 200,
                              'viewport': None, 'axes': [],
-                             'padding': {'top': 10, 'left': 30, 
-                                         'bottom': 20, 'right': 20}, 
-                             'data': [], 
+                             'padding': {'top': 10, 'left': 30,
+                                         'bottom': 20, 'right': 20},
+                             'data': [],
                              'marks': [], 'scales': []}
-    
+
     def test_atts(self):
         '''Test init attributes'''
-        
+
         assert self.testvin.width == 400
         assert self.testvin.height == 200
-        assert self.testvin.padding == {'top': 10, 'left': 30, 
-                                             'bottom': 20, 'right': 20}
+        assert self.testvin.padding == {'top': 10, 'left': 30,
+                                        'bottom': 20, 'right': 20}
         assert self.testvin.viewport == None
         assert self.testvin.vega == self.default_vega
-        
+
     def test_keypop(self):
         '''Test vega build key removal'''
-        keys = ['width', 'height', 'padding', 'viewport', 'data', 
+        keys = ['width', 'height', 'padding', 'viewport', 'data',
                 'scales', 'axes', 'marks']
-        for key in keys: 
+        for key in keys:
             self.testvin.build_vega(key)
             dict = self.default_vega.copy()
             dict.pop(key)
             assert self.testvin.vega == dict
-            
+
     def test_updatevis(self):
         '''Test updating the visualization'''
-        
+
         self.testvin.update_vis(height=300, width=1000,
                                 padding={'bottom': 40,
-                                         'left': 40, 
+                                         'left': 40,
                                          'right': 40,
                                          'top': 40})
         assert self.testvin.width == 1000
         assert self.testvin.height == 300
-        assert self.testvin.padding == {'top': 40, 'left': 40, 
+        assert self.testvin.padding == {'top': 40, 'left': 40,
                                         'bottom': 40, 'right': 40}
-                                             
+
     def test_build_component(self):
         '''Test component build'''
-        
+
         self.testvin.build_component(scales=[{"domain": {"data": "area",
-                                                        "field": "data.z"},
-                                              "name":"z", "type":"ordinal", 
-                                              "range":"height"}])
+                                                         "field": "data.z"},
+                                              "name": "z", "type": "ordinal",
+                                              "range": "height"}])
         assert self.testvin.scales[-1] == {"domain": {"data": "area",
                                                       "field": "data.z"},
-                                           "name":"z", "type":"ordinal", 
-                                           "range":"height"}
+                                           "name": "z", "type": "ordinal",
+                                           "range": "height"}
         assert self.testvin.scales == self.testvin.vega['scales']
-        
+
         self.testvin.build_component(axes=[{"scale": "x", type: "x"},
                                            {"scale": "y", type: "y"},
                                            {"scale": "z", type: "z"}])
-                                                                            
+
         assert self.testvin.axes == [{"scale": "x", type: "x"},
                                      {"scale": "y", type: "y"},
                                      {"scale": "z", type: "z"}]
         assert self.testvin.axes == self.testvin.vega['axes']
-        
+
     def test_update_component(self):
         '''Test component update'''
-        
+
         self.testvin.build_component(axes=[{"scale": "x", type: "x"}])
         self.testvin.update_component('add', 'w', 'axes', 0, 'scale')
         assert self.testvin.axes[0]["scale"] == 'w'
-        
+
         self.testvin.build_component(scales=[{"domain": {"data": "table",
                                                         "field": "data.x"},
-                                             "name":"x", "type":"ordinal", 
-                                             "range":"width"}], append=False)
-        self.testvin.update_component('add', 'data.y', 'scales', 0, 'domain', 
+                                             "name": "x", "type": "ordinal",
+                                             "range": "width"}], append=False)
+        self.testvin.update_component('add', 'data.y', 'scales', 0, 'domain',
                                       'field')
         assert self.testvin.vega['scales'][0]['domain']['field'] == 'data.y'
-        
+
     def test_tabular_data(self):
         '''Test tabular data input'''
-        
+
         #Lists
         self.testvin.tabular_data([10, 20, 30, 40, 50])
-        assert self.testvin.data[0]['values'][0:2] == [{'x': 0, 'y': 10}, 
+        assert self.testvin.data[0]['values'][0:2] == [{'x': 0, 'y': 10},
                                                        {'x': 1, 'y': 20}]
         self.testvin.tabular_data([60, 70, 80, 90, 100], append=True)
-        assert self.testvin.data[0]['values'][-2:] == [{'x': 8, 'y': 90}, 
+        assert self.testvin.data[0]['values'][-2:] == [{'x': 8, 'y': 90},
                                                        {'x': 9, 'y': 100}]
-        #Dicts                                              
+        #Dicts
         self.testvin.tabular_data({'A': 10, 'B': 20})
-        assert self.testvin.data[0]['values'][0:2] == [{'x': 'A', 'y': 10}, 
+        assert self.testvin.data[0]['values'][0:2] == [{'x': 'A', 'y': 10},
                                                        {'x': 'B', 'y': 20}]
-        self.testvin.tabular_data({'C': 30, 'D': 40}) 
-        assert self.testvin.data[0]['values'][-2:] == [{'x': 'C', 'y': 30}, 
+        self.testvin.tabular_data({'C': 30, 'D': 40})
+        assert self.testvin.data[0]['values'][-2:] == [{'x': 'C', 'y': 30},
                                                        {'x': 'D', 'y': 40}]
-         
-        #Dataframes                                                                                                                                                         
-        df = pd.DataFrame({'Column 1': [10, 20, 30, 40, 50], 
+
+        #Dataframes
+        df = pd.DataFrame({'Column 1': [10, 20, 30, 40, 50],
                            'Column 2': [60, 70, 80, 90, 100]})
-        df2 = pd.DataFrame({'Column 1': [60, 70, 80, 90, 100], 
+        df2 = pd.DataFrame({'Column 1': [60, 70, 80, 90, 100],
                             'Column 2': [65, 75, 85, 95, 105]})
-                            
+
         self.testvin.tabular_data(df, columns=['Column 1', 'Column 2'])
-        assert self.testvin.data[0]['values'][0:2] == [{'x': 10, 'y': 60}, 
+        assert self.testvin.data[0]['values'][0:2] == [{'x': 10, 'y': 60},
                                                        {'x': 20, 'y': 70}]
         self.testvin.tabular_data(df2, columns=['Column 1', 'Column 2'])
-        assert self.testvin.data[0]['values'][-2:] == [{'x': 90, 'y': 95}, 
+        assert self.testvin.data[0]['values'][-2:] == [{'x': 90, 'y': 95},
                                                        {'x': 100, 'y': 105}]
-    
-    def test_axis_title(self): 
+
+    def test_axis_title(self):
         '''Test the addition of axis and title labels'''
-        
+
         self.testvin.axis_label(x_label='Test 1', y_label='Test 2')
         assert self.testvin.data[0]['name'] == 'x_label'
         assert self.testvin.data[0]['values'][0]['label'] == 'Test 1'
         assert self.testvin.data[1]['name'] == 'y_label'
         assert self.testvin.data[1]['values'][0]['label'] == 'Test 2'
         assert self.testvin.padding['bottom'] == 50
-        
+
         self.testvin.axis_label(title='Test 3', y_label='Remove Label')
         assert self.testvin.data[1]['name'] == 'title'
         assert self.testvin.data[1]['values'][0]['label'] == 'Test 3'
         assert len(self.testvin.marks) == 2
-        
-        self.testvin.axis_label(x_label='Test 1', y_label='Test 2', 
+
+        self.testvin.axis_label(x_label='Test 1', y_label='Test 2',
                                 horiz_y=True)
         assert len(self.testvin.marks) == 3
         assert len(self.testvin.data) == 3
         assert self.testvin.padding['left'] == 120
-        
-        self.testvin.axis_label(x_label='Remove Label', y_label='Remove Label', 
-                                title = 'Remove Label')
+
+        self.testvin.axis_label(x_label='Remove Label', y_label='Remove Label',
+                                title='Remove Label')
         assert len(self.testvin.data) == 0
         assert not self.testvin.marks
-                                                       
+
     def test_add_subtract(self):
         '''Test add and subtract on some subclasses'''
-        
+
         bar = vincent.Bar()
         area = vincent.Area()
-        
-        area + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 
+
+        area + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter',
                 'interpolate')
         bar + ('red', 'marks', 0, 'properties', 'hover', 'fill', 'value')
-                
-        assert area.marks[0]['properties']['enter'].has_key('interpolate')
+
+        assert 'interpolate' in area.marks[0]['properties']['enter']
         assert bar.marks[0]['properties']['hover']['fill']['value'] == 'red'
-          
+
         bar - ('domain', 'scales', 1)
         bar -= ('name', 'scales', 1)
         area - ('scale', 'axes', 0)
         area -= ('type', 'axes', 1)
-        
+
         assert bar.scales[1] == {'nice': True, 'range': 'height'}
         assert area.axes == [{'type': 'x'}, {'scale': 'y'}]
-        
+
     def test_datetimeandserial(self):
         '''Test pandas serialization and datetime parsing'''
-        
+
         import pandas.io.data as web
         all_data = {}
         for ticker in ['AAPL', 'GOOG']:
-            all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2004', 
+            all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2004',
                                                   '1/1/2006')
         price = pd.DataFrame({tic: data['Adj Close']
                               for tic, data in all_data.iteritems()})
 
         scatter = vincent.Scatter()
-        scatter.tabular_data(price, columns=['AAPL', 'GOOG'])   
+        scatter.tabular_data(price, columns=['AAPL', 'GOOG'])
         assert scatter.data[0]['values'][0]['x'] == 10.49
         nt.assert_is_none(scatter.data[0]['values'][0]['y'])
-        
+
         line = vincent.Line()
         line.tabular_data(price, columns=['AAPL'])
         assert line.data[0]['values'][0]['x'] == 1073030400000
-        
-        
-        
-  
 
     def test_to_json(self):
         '''Test json output
@@ -211,6 +207,7 @@ class TestVincent(object):
         This tests that files are written with the correct names, not that
         the json was serialized correctly.'''
         line = vincent.Line()
+        line.tabular_data([1, 2, 3, 4, 5])
         from mock import call, patch, MagicMock
 
         with patch('__builtin__.open', create=True) as mock_open:
@@ -257,3 +254,66 @@ class TestVincent(object):
                 call(path, 'w'), call(html_path, 'w')],
                 any_order=True)
             mock_open.reset_mock()
+
+
+class TestMaps(object):
+    '''Class to test the Maps subclass'''
+
+    def setup(self):
+        '''Setup method'''
+        self.testmap = vincent.Map()
+
+    def test_add_geo(self):
+        '''Test adding geoJSON data to map'''
+
+        self.testmap.geo_data(projection='albersUsa', scale=1000,
+                              states=r'data/us-states.json')
+        assert self.testmap.data[0]['url'] == 'us-states.json'
+        assert self.testmap.data[0]['name'] == 'states'
+
+    def test_append_reset_geo(self):
+        '''Test appending geo, then resetting all geo'''
+
+        self.testmap.geo_data(projection='albersUsa', scale=1000,
+                              states=r'data/us-states.json')
+        self.testmap.geo_data(states=r'data/us-states.json')
+        assert len(self.testmap.data) == 2
+        assert len(self.testmap.marks) == 2
+
+        self.testmap.geo_data(projection='albersUsa', scale=1000,
+                              reset=True, states=r'data/us-states.json')
+        assert len(self.testmap.data) == 1
+        assert len(self.testmap.marks) == 1
+
+    def test_update_map(self):
+        '''Test map updating and projection/scale retention'''
+
+        self.testmap.geo_data(projection='albersUsa', scale=1000,
+                              states=r'data/us-states.json')
+        self.testmap.geo_data(projection='mercator', scale=100,
+                              states=r'data/us-states.json')
+        for data in self.testmap.data:
+            assert data['transform'][0]['projection'] == 'albersUsa'
+            assert data['transform'][0]['scale'] == 1000
+
+        self.testmap.update_map(projection='mercator', scale=200)
+        for data in self.testmap.data:
+            assert data['transform'][0]['projection'] == 'mercator'
+            assert data['transform'][0]['scale'] == 200
+
+    def test_tabular_map(self):
+        '''Test the binding of tabular data to map data'''
+
+        #Just testing that marks/data syntax is created correctly,
+        #not that the data keys match
+        self.testmap.geo_data(projection='albersUsa', scale=1000,
+                              bind_data='data.properties.name',
+                              states=r'data/us-states.json')
+        transform = {"type": "zip", "key": 'data.properties.name',
+                     "with": "table", "withKey": "data.x",
+                     "as": "value"}
+        scales = {"name": "color",
+                  "domain": {"data": "table", "field": "data.y"},
+                  "range": ["#f5f5f5", "#000045"]}
+        assert self.testmap.data[-1]['transform'][1] == transform
+        assert self.testmap.scales[0] == scales

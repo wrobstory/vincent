@@ -17,6 +17,8 @@ for ticker in ['AAPL', 'GOOG']:
     
 price = pd.DataFrame({tic: data['Adj Close']
                       for tic, data in all_data.iteritems()})
+                      
+path = 'vega.json'
 
 #Create line graph, with monthly plotting on the axes                       
 line = vincent.Line()
@@ -28,5 +30,5 @@ line + ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
 line + ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
 line.update_vis(width=800, height=300)
 line.axis_label(y_label='AAPL Price', title='AAPL Stock Price 1/1/2010-1/1/2013')
-line.update_vis(padding={'bottom': 50, 'left': 30, 'right': 50, 'top': 10})
+line.update_vis(padding={'bottom': 50, 'left': 50, 'right': 50, 'top': 30})
 line.to_json(path)

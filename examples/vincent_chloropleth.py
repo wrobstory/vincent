@@ -23,6 +23,8 @@ df['FIPS_Code'] = df['FIPS_Code'].astype(str)
 merged = pd.merge(df, county_df, on='FIPS_Code', how='inner')
 merged = merged.fillna(method='pad')
 
+path = 'vega.json'
+
 #Map different data sets
 vis = vincent.Map(width=1000, height=800)
 vis.tabular_data(merged, columns=['FIPS_Code', 'Unemployment_rate_2011']) 

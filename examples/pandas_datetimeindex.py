@@ -7,6 +7,8 @@ import vincent
 import pandas as pd
 import random
 
+path = 'vega.json'
+
 #Daily data
 dates = pd.date_range('4/1/2013 00:00:00', periods=1441, freq='T')
 data = [random.randint(20, 100) for x in range(len(dates))]
