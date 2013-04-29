@@ -18,6 +18,7 @@ from copy import deepcopy
 from pkg_resources import resource_string
 from string import Template
 import pandas as pd
+import numpy as np
 
 
 class Vega(object):
@@ -405,6 +406,15 @@ class Vega(object):
 
         self.raw_data = data
 
+        def default_range(data_len, append):
+            if append:
+                start = self.data[0]['values'][-1]['x'] + 1
+                end = len(self.data[0]['values']) + data_len
+            else:
+                start, end = 0, data_len
+
+            return xrange(start, end + 1, 1)
+
         def period_axis(data, axis_time):
             '''Update to Time Scale if DatetimeIndex'''
             if isinstance(data.index, pd.DatetimeIndex):
@@ -418,24 +428,18 @@ class Vega(object):
             values = [{"x": x[0], "y": x[1]} for x in data]
 
         #Lists
-        if isinstance(data, list):
-            if append:
-                start = self.data[0]['values'][-1]['x'] + 1
-                end = len(self.data[0]['values']) + len(data)
-            else:
-                start, end = 0, len(data)
-
-            default_range = xrange(start, end+1, 1)
-            values = [{"x": x, "y": y} for x, y in zip(default_range, data)]
+        elif isinstance(data, list):
+            values = [{"x": x, "y": y}
+                      for x, y in zip(default_range(len(data), append), data)]
 
         #Dicts
-        if isinstance(data, dict) or isinstance(data, pd.Series):
+        elif isinstance(data, dict) or isinstance(data, pd.Series):
             if isinstance(data, pd.Series):
                 period_axis(data, axis_time)
             values = [{"x": x, "y": y} for x, y in data.iteritems()]
 
         #Dataframes
-        if isinstance(data, pd.DataFrame):
+        elif isinstance(data, pd.DataFrame):
             if len(columns) > 1 and use_index:
                 raise ValueError('If using index as x-axis, len(columns)'
                                  'cannot be > 1')
@@ -446,6 +450,29 @@ class Vega(object):
             else:
                 values = [{"x": x[1][columns[0]], "y": x[1][columns[1]]}
                           for x in data.iterrows()]
+
+        #NumPy arrays
+        elif isinstance(data, np.ndarray):
+            if len(data.shape) == 1:
+                xvals = default_range(data.shape[0], append)
+                values = [{"x": x, "y": y} for x, y in zip(xvals, data)]
+            elif len(data.shape) == 2:
+                if data.shape[0] == 1:
+                    xvals = default_range(data.shape[1], append)
+                    values = [{"x": x, "y": y}
+                              for x, y in zip(xvals, data[0])]
+                elif data.shape[1] == 1:
+                    xvals = default_range(data.shape[0], append)
+                    values = [{"x": x, "y": y[0]}
+                              for x, y in zip(xvals, data)]
+                else:
+                    raise ValueError(
+                        'multidimensional arrays not supported')
+            else:
+                raise ValueError('invalid dimensions for ndarray')
+
+        else:
+            raise TypeError('unknown data type %s' % type(data))
 
         if append:
             self.data[0]['values'].extend(values)
