@@ -127,7 +127,7 @@ vis.to_json(path)
 ```
 ![Map](http://farm9.staticflickr.com/8543/8692026644_a1ee888398_z.jpg)
 
-I also have Vincent fully incorporated into a [fork](https://github.com/wrobstory/d3py) of Mike Dewar's [d3py](https://github.com/mikedewar/d3py), with a pull request to merge into the main repo. The intent is to keep Vincent and d3py moving together in development; eventually Vincent may get fully merged into d3py as the main development track. 
+I also have Vincent incorporated into a [fork](https://github.com/wrobstory/d3py) of Mike Dewar's [d3py](https://github.com/mikedewar/d3py), with a pull request to merge into the main repo. 
 
 For now, here is the syntax for using the d3py fork: 
 ```python
@@ -154,4 +154,5 @@ fig.show()
 
 Status
 ---------------
-Note: Vincent is still in alpha, so expect bugs and lots of development in the near future.
+Note: Vincent is still in beta, but we are moving quickly towards a V1.0 release. Expect API/syntax to stay mostly fixed,
+with major changes incorporated before V1.0. 
