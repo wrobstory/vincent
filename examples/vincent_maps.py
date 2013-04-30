@@ -5,15 +5,15 @@ Builds a Vega grammar specification from vincent.Map()
 import vincent
 import pandas as pd
 
-state_geo = r'../data/us-states.json'
-county_geo = r'../data/us-counties.json'
-world_countries = r'../data/world-countries.json'
+state_geo = r'data/us-states.json'
+county_geo = r'data/us-counties.json'
+world_countries = r'data/world-countries.json'
 path = r'vega.json'
 
 #Simple map of the US
 states = vincent.Map(width=1000, height=800)
 states.geo_data(projection='albersUsa', scale=1000, states=state_geo)
-states.to_json(path)
+states.to_json(path, html=True)
 
 #Simple map of the world
 world = vincent.Map(width=1200, height=1000)

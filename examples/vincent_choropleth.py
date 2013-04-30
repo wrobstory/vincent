@@ -2,10 +2,10 @@ import json
 import pandas as pd
 import vincent
 
-county_data = r'../data/us_county_data.csv'
-county_geo = r'..data/us-counties.json'
-state_geo = r'../data/us-states.json'
-state_unemployment = r'../data/US_Unemployment_Oct2012.csv'
+county_data = r'data/us_county_data.csv'
+county_geo = r'data/us-counties.json'
+state_geo = r'data/us-states.json'
+state_unemployment = r'data/US_Unemployment_Oct2012.csv'
 
 #We want to map the county codes we have in our geometry to those in the
 #county_data file, which contains additional rows we don't need
@@ -30,7 +30,7 @@ vis = vincent.Map(width=1000, height=800)
 vis.tabular_data(merged, columns=['FIPS_Code', 'Unemployment_rate_2011']) 
 vis.geo_data(projection='albersUsa', scale=1000, bind_data='data.id', counties=county_geo)
 vis + (["#f5f5f5","#000045"], 'scales', 0, 'range')
-vis.to_json(path)
+vis.to_json(path, html=True)
 
 vis.tabular_data(merged, columns=['FIPS_Code', 'Median_Household_Income_2011'])
 vis.to_json(path)
