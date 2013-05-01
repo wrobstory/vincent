@@ -46,7 +46,7 @@ The other option is to output the Vega grammar and data into separate JSONs, as 
 $python -m SimpleHTTPServer 8000
 ```
 
-CD to your path and point your browser at http://localhost:8000/vega_template.html to see your visualization.
+CD to your path and point your browser at http://localhost:8000/vega_template.html to see your visualization. Please see the README in the examples folder for a more complete description of running the example files. 
 
 Creating visualizations manually is a little tedious. The vincent.Vega() object can be subclassed to pre-define components and parameters. Lets take a shortcut and use the Bar class:  
 ```python
@@ -58,16 +58,16 @@ Creating visualizations manually is a little tedious. The vincent.Vega() object 
 ![Bar](http://farm9.staticflickr.com/8532/8645065132_3f96e1be49.jpg)
 
 Vincent also allows you to add and subtract components at varying levels of nesting depth in order to change the visualization. Vincent syntax for modifying component pieces on the fly is:
-> Addition: ( **New Value**, **Component**, **Component index**, **Keywords into nested structure** )
+> Addition: += ( **New Value**, **Component**, **Component index**, **Keywords into nested structure** )
 
-> Removal: ( **Old key**, **Component**, **Component index**, **Keywords into nested structure** ) 
+> Removal: -= ( **Old key**, **Component**, **Component index**, **Keywords into nested structure** ) 
 
 For example, if we wanted to change the bar plot to an area plot: 
 ```python
->>>vis - ('width', 'marks', 0, 'properties', 'enter') 
->>>vis + ('area', 'marks', 0, 'type')
->>>vis + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 'interpolate')
->>>vis + ('linear', 'scales', 0, 'type')
+>>>vis -= ('width', 'marks', 0, 'properties', 'enter') 
+>>>vis += ('area', 'marks', 0, 'type')
+>>>vis += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 'interpolate')
+>>>vis += ('linear', 'scales', 0, 'type')
 >>>vis.to_json(path)
 ```
 ![Area](http://farm9.staticflickr.com/8540/8645065128_d2cf65bdf9_o.jpg)
@@ -93,8 +93,8 @@ line.tabular_data(price, columns=['AAPL'], axis_time='month')
 line.to_json(path)
 
 #Manipulate the axis tick/tick label orientation
-line + ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
-line + ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
+line += ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
+line += ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
 line.update_vis(padding={'bottom': 50, 'left': 30, 'right': 30, 'top': 10})
 line.update_vis(width=800, height=300)
 
@@ -110,9 +110,9 @@ geoJSON data:
 #Regular map, no data binding
 vis = vincent.Map(width=1000, height=800)
 vis.geo_data(projection='albersUsa', scale=1000, counties=r'county_geo.json')
-vis + ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
+vis += ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
 vis.geo_data(states=r'state_geo.json')
-vis - ('fill', 'marks', 1, 'properties', 'enter')
+vis -= ('fill', 'marks', 1, 'properties', 'enter')
 vis.to_json(path)
 ```
 ![Map](http://farm9.staticflickr.com/8389/8690908267_d7a3a83dae_z.jpg)
@@ -122,7 +122,7 @@ vis = vincent.Map(width=1000, height=800)
 vis.tabular_data(dataframe, columns=['FIPS_Code', 'Unemployment_rate_2011']) 
 vis.geo_data(projection='albersUsa', scale=1000, bind_data='data.id',
              counties=r'county_geo.json')
-vis + (["#f5f5f5","#000045"], 'scales', 0, 'range')
+vis += (["#f5f5f5","#000045"], 'scales', 0, 'range')
 vis.to_json(path)
 ```
 ![Map](http://farm9.staticflickr.com/8543/8692026644_a1ee888398_z.jpg)

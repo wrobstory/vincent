@@ -64,6 +64,8 @@ class Vega(object):
 
     def __add__(self, tuple):
         '''Allow for updating of Vega with add operator'''
+        print('This API/syntax will change in the next major release. Please'
+              ' use "+=" for modifying components')        
         self.update_component('add', *tuple)
 
     def __iadd__(self, tuple):
@@ -73,6 +75,8 @@ class Vega(object):
 
     def __sub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
+        print('This API/syntax will change in the next major release. Please'
+              ' use "-=" for modifying components')        
         self.update_component('remove', *tuple)
 
     def __isub__(self, tuple):

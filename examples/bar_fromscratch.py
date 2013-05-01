@@ -30,14 +30,3 @@ vis.build_component(axes=[{"type":"x", "scale":"x"},{"type":"y", "scale":"y"}],
 path = r'vega.json'
 vis.to_json(path, split_data=True, html=True)
 
-#Fire up a server on the path you saved the JSONs to: 
-import os
-import SimpleHTTPServer
-import SocketServer
-import webbrowser
-os.chdir(os.path.dirname(path))
-Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-httpd = SocketServer.TCPServer(("", 8000), Handler)
-httpd.serve_forever()
-
-#Go to http://localhost:8000/vega_template.html in your browser

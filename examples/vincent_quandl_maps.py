@@ -28,11 +28,11 @@ for key, value in data.iteritems():
     
 all_data = pd.concat(df_list, axis=1)
 
-us_states = r'../us-states.json'
+us_states = r'data/us-states.json'
 vis = vincent.Map(width=1000, height=800)
 vis.tabular_data(all_data, columns=['Unemployment'])
 vis.geo_data(projection='albersUsa', scale=1000, bind_data='data.id', states=us_states)
-vis + (['#c9cedb', '#0b0d11'], 'scales', 0, 'range')
-vis.to_json(path)
+vis += (['#c9cedb', '#0b0d11'], 'scales', 0, 'range')
+vis.to_json(path, html=True)
     
 

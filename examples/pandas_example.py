@@ -26,8 +26,8 @@ line.tabular_data(price, columns=['AAPL'], axis_time='month')
 line.to_json(path)
 
 #Play with the axes labels a bit
-line + ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
-line + ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
+line += ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
+line += ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
 line.update_vis(width=800, height=300)
 line.axis_label(y_label='AAPL Price', title='AAPL Stock Price 1/1/2010-1/1/2013')
 line.update_vis(padding={'bottom': 50, 'left': 50, 'right': 50, 'top': 30})

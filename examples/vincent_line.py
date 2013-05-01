@@ -17,7 +17,7 @@ vis.to_json(path, split_data=True, html=True)
 
 vis.update_vis(height=400, width=800)
 
-vis + (4, 'marks', 0, 'properties','enter', 'strokeWidth', 'value')
-vis + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 'interpolate')
+vis += (4, 'marks', 0, 'properties','enter', 'strokeWidth', 'value')
+vis += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 'interpolate')
        
 vis.to_json(path, split_data=True, html=True)

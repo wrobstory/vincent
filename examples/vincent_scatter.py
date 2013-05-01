@@ -17,10 +17,10 @@ vis.to_json(path, split_data=True, html=True)
 
 vis.update_vis(width=800)
 
-vis + ({'fill': {'value': '#2a3140'}, 'size': {'value': '100'}}, 
-       'marks', 0, 'properties', 'update')
+vis += ({'fill': {'value': '#2a3140'}, 'size': {'value': '100'}}, 
+         'marks', 0, 'properties', 'update')
 
-vis + ({'fill': {'value': '#a63737'}, 'size': {'value': '300'}}, 
-       'marks', 0, 'properties', 'hover')
+vis += ({'fill': {'value': '#a63737'}, 'size': {'value': '300'}}, 
+         'marks', 0, 'properties', 'hover')
        
 vis.to_json(path, split_data=True, html=True)

@@ -29,19 +29,19 @@ path = 'vega.json'
 vis = vincent.Map(width=1000, height=800)
 vis.tabular_data(merged, columns=['FIPS_Code', 'Unemployment_rate_2011']) 
 vis.geo_data(projection='albersUsa', scale=1000, bind_data='data.id', counties=county_geo)
-vis + (["#f5f5f5","#000045"], 'scales', 0, 'range')
+vis += (["#f5f5f5","#000045"], 'scales', 0, 'range')
 vis.to_json(path, html=True)
 
 vis.tabular_data(merged, columns=['FIPS_Code', 'Median_Household_Income_2011'])
 vis.to_json(path)
 
 vis.tabular_data(merged, columns=['FIPS_Code', 'Civilian_labor_force_2011']) 
-vis.to_json(path)
+vis.to_json(path, html=True)
 
 #Swap county data for state data, reset map
 state_data = pd.read_csv(state_unemployment)
 vis.tabular_data(state_data, columns=['State', 'Unemployment'])
 vis.geo_data(bind_data='data.id', reset=True, states=state_geo)
 vis.update_map(scale=1000, projection='albersUsa')
-vis + (['#c9cedb', '#0b0d11'], 'scales', 0, 'range')
-vis.to_json(path)
+vis += (['#c9cedb', '#0b0d11'], 'scales', 0, 'range')
+vis.to_json(path, html=True)

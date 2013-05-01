@@ -15,5 +15,5 @@ path = r'vega.json'
 vis.to_json(path, split_data=True, html=True)
 
 #Lets add a data interpolation parameter and resave the JSON
-vis + ({'value': 'monotone'}, 'marks', 0, 'properties', 'enter', 'interpolate')
+vis += ({'value': 'monotone'}, 'marks', 0, 'properties', 'enter', 'interpolate')
 vis.to_json(path, split_data=True, html=True)

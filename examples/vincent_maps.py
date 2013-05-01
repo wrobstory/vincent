@@ -25,11 +25,11 @@ world.to_json(path)
 vis = vincent.Map(width=1000, height=800)
 #Add our county data first
 vis.geo_data(projection='albersUsa', scale=1000, counties=county_geo)
-vis + ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
+vis += ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
 
 #The projection and scale will stay fixed unless you 'reset' the map
 vis.geo_data(states=state_geo)
-vis - ('fill', 'marks', 1, 'properties', 'enter')
+vis -= ('fill', 'marks', 1, 'properties', 'enter')
 vis.to_json(path)
 
 #Swap out data for state data, reset our map
