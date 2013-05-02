@@ -546,6 +546,50 @@ class Map(Vega):
         self.geojson = {}
         self.map_par = {}
         self.build_vega('axes', 'scales')
+        
+    def shapefile_to_json(self, shp_path=None, json_out=None): 
+        '''Write a shapefile to geoJSON via Ogre
+        
+        Make a HTTP POST request to the Ogre converter: 
+        http://ogre.adc4gis.com/ to transform shapefiles
+        to geoJSON for Vincent.
+        
+        Parameters: 
+        -----------
+        shp_path: string, default None
+            Path to zipped shapefiles. Must contain .shp, .dbf, and .shx. 
+            .prj is optional
+        json_out: string, default None
+            Path to write geoJSON output. If None, will default to same
+            path as shp_path  
+            
+        Examples: 
+        ---------
+        >>>vis.shapefile_to_json(shp_path=r'countries.zip')      
+        
+        '''
+        import requests
+        url = r'http://ogre.adc4gis.com/convert'
+        shp_data = {'upload': open(shp_path, 'rb')}
+        print('Calling Ogre to perform shapefile to geoJSON conversion...')
+        try: 
+            r = requests.post(url, files=shp_data)
+        except:
+            print("There was an error with the HTTP request")
+            raise
+        r.raise_for_status()
+        if json_out: 
+            path = '.'.join([name, 'json'])
+        else: 
+            dir, zip = os.path.split(shp_path)
+            geoJSON = '.'.join([zip.split('.')[0], 'json'])
+            path = '/'.join([dir, geoJSON])
+        print('Writing to geoJSON. This may take some time if your shapefile'
+              ' is high resolution.')
+        with open(path, 'w') as f: 
+            json.dump(r.json, f, sort_keys=True, indent=4,
+                          separators=(',', ': '))
+        
 
     def update_map(self, projection=None, scale=None):
         '''Update the map projection or scale'''
