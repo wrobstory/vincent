@@ -9,6 +9,7 @@ import pandas as pd
 import vincent
 import nose.tools as nt
 import os
+import os.path as path
 
 try:
     import unittest.mock as mock
@@ -16,6 +17,10 @@ try:
 except ImportError:
     # Requires mock library if version < 3.3
     import mock
+
+
+# Location of test data files.
+data_dir = path.join(path.dirname(path.abspath(__file__)), 'data')
 
 
 class TestVincent(object):
@@ -258,6 +263,7 @@ class TestVincent(object):
 
 class TestMaps(object):
     '''Class to test the Maps subclass'''
+    us_states_json = path.join(data_dir, 'us-states.json')
 
     def setup(self):
         '''Setup method'''
@@ -267,7 +273,7 @@ class TestMaps(object):
         '''Test adding geoJSON data to map'''
 
         self.testmap.geo_data(projection='albersUsa', scale=1000,
-                              states=r'data/us-states.json')
+                              states=self.us_states_json)
         assert self.testmap.data[0]['url'] == 'us-states.json'
         assert self.testmap.data[0]['name'] == 'states'
 
@@ -275,13 +281,13 @@ class TestMaps(object):
         '''Test appending geo, then resetting all geo'''
 
         self.testmap.geo_data(projection='albersUsa', scale=1000,
-                              states=r'data/us-states.json')
-        self.testmap.geo_data(states=r'data/us-states.json')
+                              states=self.us_states_json)
+        self.testmap.geo_data(states=self.us_states_json)
         assert len(self.testmap.data) == 2
         assert len(self.testmap.marks) == 2
 
         self.testmap.geo_data(projection='albersUsa', scale=1000,
-                              reset=True, states=r'data/us-states.json')
+                              reset=True, states=self.us_states_json)
         assert len(self.testmap.data) == 1
         assert len(self.testmap.marks) == 1
 
@@ -289,9 +295,9 @@ class TestMaps(object):
         '''Test map updating and projection/scale retention'''
 
         self.testmap.geo_data(projection='albersUsa', scale=1000,
-                              states=r'data/us-states.json')
+                              states=self.us_states_json)
         self.testmap.geo_data(projection='mercator', scale=100,
-                              states=r'data/us-states.json')
+                              states=self.us_states_json)
         for data in self.testmap.data:
             assert data['transform'][0]['projection'] == 'albersUsa'
             assert data['transform'][0]['scale'] == 1000
@@ -308,7 +314,7 @@ class TestMaps(object):
         #not that the data keys match
         self.testmap.geo_data(projection='albersUsa', scale=1000,
                               bind_data='data.properties.name',
-                              states=r'data/us-states.json')
+                              states=self.us_states_json)
         transform = {"type": "zip", "key": 'data.properties.name',
                      "with": "table", "withKey": "data.x",
                      "as": "value"}
