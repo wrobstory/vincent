@@ -1,4 +1,4 @@
-In order to see the visualization, you will need to start a simple Python HTTP server and serve the html and javascript. In order to do so, run the code in the example file, then the following in the Python REPL: 
+In order to see the visualization, you will need to start a simple Python HTTP server and serve the html and javascript. In order to do so, run the code in the example file, then the following in the Python REPL (Ctrl-C to shutdown): 
 
 ```python
 import os
