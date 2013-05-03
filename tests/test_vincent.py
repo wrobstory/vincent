@@ -8,7 +8,6 @@ Test Vincent
 import pandas as pd
 import vincent
 import nose.tools as nt
-import os
 
 try:
     import unittest.mock as mock
@@ -16,6 +15,25 @@ try:
 except ImportError:
     # Requires mock library if version < 3.3
     import mock
+
+
+def assert_vega_equal(vis1, vis2):
+    '''Assert two Vega classes contain equal contents'''
+    attrib_compares = {
+        'width':            nt.assert_equal,
+        'height':           nt.assert_equal,
+        'padding':          nt.assert_dict_equal,
+        'viewport':         nt.assert_list_equal,
+        'visualization':    nt.assert_dict_equal,
+        'data':             nt.assert_list_equal,
+        'scales':           nt.assert_list_equal,
+        'axes':             nt.assert_list_equal,
+        'axis_labels':      nt.assert_dict_equal,
+        'marks':            nt.assert_list_equal}
+
+    for attr, assert_eq in attrib_compares.iteritems():
+        if getattr(vis1, attr):
+            assert_eq(getattr(vis1, attr), getattr(vis2, attr))
 
 
 class TestVincent(object):
@@ -166,16 +184,16 @@ class TestVincent(object):
         bar = vincent.Bar()
         area = vincent.Area()
 
-        area + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter',
-                'interpolate')
-        bar + ('red', 'marks', 0, 'properties', 'hover', 'fill', 'value')
+        area += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter',
+                 'interpolate')
+        bar += ('red', 'marks', 0, 'properties', 'hover', 'fill', 'value')
 
         assert 'interpolate' in area.marks[0]['properties']['enter']
         assert bar.marks[0]['properties']['hover']['fill']['value'] == 'red'
 
-        bar - ('domain', 'scales', 1)
+        bar -= ('domain', 'scales', 1)
         bar -= ('name', 'scales', 1)
-        area - ('scale', 'axes', 0)
+        area -= ('scale', 'axes', 0)
         area -= ('type', 'axes', 1)
 
         assert bar.scales[1] == {'nice': True, 'range': 'height'}
@@ -254,6 +272,22 @@ class TestVincent(object):
                 call(path, 'w'), call(html_path, 'w')],
                 any_order=True)
             mock_open.reset_mock()
+
+    def test_deepcopy(self):
+        '''Test class deepcopy behavior'''
+        from copy import deepcopy
+
+        # Note: Map requires some additional initialization and fails below.
+        test_classes = [
+            vincent.Bar, vincent.Area, vincent.Scatter, vincent.Line]
+        for cls in test_classes:
+            vis1 = cls()
+            vis2 = deepcopy(vis1)
+            vis3 = cls()
+            assert_vega_equal(vis1, vis2)
+            assert_vega_equal(vis2, vis3)
+            vis1 += ([0, 1], 'scales', 0, 'range')
+            assert_vega_equal(vis2, vis3)
 
 
 class TestMaps(object):

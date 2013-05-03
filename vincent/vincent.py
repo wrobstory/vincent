@@ -13,6 +13,7 @@ import os
 import json
 import time
 import itertools
+from copy import deepcopy
 from pkg_resources import resource_string
 from string import Template
 import pandas as pd
@@ -62,11 +63,20 @@ class Vega(object):
         self.marks = []
         self.build_vega()
 
+    def __deepcopy__(self, memo):
+        vis = self.__class__()
+        copy_attrib = [
+            'width', 'height', 'padding', 'viewport', 'visualization',
+            'data', 'scales', 'axes', 'axis_labels', 'marks']
+        for attr in copy_attrib:
+            setattr(vis, attr, deepcopy(getattr(self, attr), memo))
+        return vis
+
     def __add__(self, tuple):
         '''Allow for updating of Vega with add operator'''
-        print('This API/syntax will change in the next major release. Please'
-              ' use "+=" for modifying components')        
-        self.update_component('add', *tuple)
+        vis = deepcopy(self)
+        vis.update_component('add', *tuple)
+        return vis
 
     def __iadd__(self, tuple):
         '''Allow for updating of Vega with iadd operator'''
@@ -75,9 +85,9 @@ class Vega(object):
 
     def __sub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
-        print('This API/syntax will change in the next major release. Please'
-              ' use "-=" for modifying components')        
-        self.update_component('remove', *tuple)
+        vis = deepcopy(self)
+        vis.update_component('add', *tuple)
+        return vis
 
     def __isub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
