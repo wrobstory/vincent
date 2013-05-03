@@ -550,7 +550,7 @@ class Map(Vega):
     def shapefile_to_json(self, shp_path=None, json_out=None): 
         '''Write a shapefile to geoJSON via Ogre
         
-        Make a HTTP POST request to the Ogre converter: 
+        Call the Ogre shapefile converter: 
         http://ogre.adc4gis.com/ to transform shapefiles
         to geoJSON for Vincent.
         
@@ -607,7 +607,7 @@ class Map(Vega):
                                              'scale': scale})
 
     def geo_data(self, scale=100, projection='winkel3', reset=False,
-                 bind_data=None, **kwargs):
+                 bind_data=None, shapefile=False, **kwargs):
         '''Create the data for a map in Vega grammar.
 
         Each set of map data is passed as a keyword argument, with the key as
@@ -635,9 +635,13 @@ class Map(Vega):
             passed string references a geoJSON data attribute
             (id, properties, etc). This data must match the x-column of the
             tabular_data to plot correctly.
+        shapefile: boolean, default False
+            If True, Vincent will call the online Ogre converter to convert
+            the shapefile to geoJSON via the shapefile_to_json method. 
         kwargs: keyword argument
             Pass paths to map data, with the passed keyword as the name
-            of the dataset
+            of the dataset. Can pass geoJSON or shapefiles; if shapefile is 
+            passed, 'shapefile=True' must be passed as a keyword argument. 
 
         Examples:
         ---------
@@ -660,6 +664,10 @@ class Map(Vega):
         self.map_par['scale'] = self.map_par.get('scale', scale)
 
         for name, url in kwargs.iteritems():
+        
+            if shapefile: 
+                self.shapefile_to_json(shp_path=url)
+                url = '.'.join([os.path.splitext(url)[0], 'json'])
 
             self.geojson[name] = {}
             self.geojson[name]['file'] = os.path.split(url)[-1]
