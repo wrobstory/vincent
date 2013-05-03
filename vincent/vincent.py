@@ -22,9 +22,7 @@ import pandas as pd
 class Vega(object):
     '''Vega abstract base class'''
 
-    def __init__(self, width=400, height=200,
-                 padding={'top': 10, 'left': 30, 'bottom': 20, 'right': 20},
-                 viewport=None):
+    def __init__(self, width=400, height=200, padding=None, viewport=None):
         '''
         The Vega classes generate JSON output in Vega grammar, a
         declarative format for creating and saving visualization designs.
@@ -51,7 +49,9 @@ class Vega(object):
 
         self.width = width
         self.height = height
-        self.padding = padding
+        self.padding = padding or {
+            'top': 10, 'left': 30, 'bottom': 20, 'right': 20
+        }
         self.viewport = viewport
         self.visualization = {'width': self.width,
                               'padding': self.padding,
