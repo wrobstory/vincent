@@ -152,6 +152,12 @@ fig.vega + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter',
 fig.show()
 ```
 
+Dependencies
+------------
+pandas
+
+requests (for shapefiles only)
+
 Status
 ---------------
 Note: Vincent is still in beta, but we are moving quickly towards a V1.0 release. Expect API/syntax to stay mostly fixed,
