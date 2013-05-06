@@ -26,10 +26,10 @@ Now add some data. We could pass a dict, but nested tuples will keep our data so
 Pass components to the visualization grammar as keyword arguments (skipping the 'marks' component here for brevity): 
 ```python
 >>> vis.build_component(axes=[{"type":"x", "scale":"x"},{"type":"y", "scale":"y"}],
-                       scales=[{"name":"x", "type":"ordinal", "range":"width", 
-                                "domain":{"data":"table", "field":"data.x"}},
-                               {"name":"y", "range":"height", "nice":True, 
-                                "domain":{"data":"table", "field":"data.y"}}])
+                        scales=[{"name":"x", "type":"ordinal", "range":"width", 
+                                 "domain":{"data":"table", "field":"data.x"}},
+                                {"name":"y", "range":"height", "nice":True, 
+                                 "domain":{"data":"table", "field":"data.y"}}])
 ```
 One option is to output to JSON:
 ```python
@@ -70,7 +70,14 @@ For example, if we wanted to change the bar plot to an area plot:
 >>> vis += ('linear', 'scales', 0, 'type')
 >>> vis.to_json(path)
 ```
+
 ![Area](http://farm9.staticflickr.com/8540/8645065128_d2cf65bdf9_o.jpg)
+
+You can create new visualizations from existing `Vega` objects with similar syntax
+```python
+>>> new_vis = vis + ('area', 'marks', 0, 'type')
+>>> newer_vis = new_vis - ('scale', 'axes', 0)
+```
 
 Vincent also plays nice with Pandas DatetimeIndex, and allows for simple axis labeling and titling: 
 
@@ -147,7 +154,7 @@ fig = d3py.PandasFigure(df, 'd3py_area', port=8080, columns=['x', 'y'])
 fig += d3py.vega.Area()
 
 # Add interpolation to figure data
-fig.vega + ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 
+fig.vega += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 
             'interpolate')
 fig.show()
 ```

@@ -184,7 +184,7 @@ class TestVincent(object):
         assert not self.testvin.marks
 
     def test_iadd_isub(self):
-        '''Test add and subtract on some subclasses'''
+        '''Test in-place add and subtract on some subclasses'''
 
         bar = vincent.Bar()
         area = vincent.Area()
