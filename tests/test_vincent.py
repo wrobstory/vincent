@@ -183,7 +183,7 @@ class TestVincent(object):
         assert len(self.testvin.data) == 0
         assert not self.testvin.marks
 
-    def test_add_subtract(self):
+    def test_iadd_isub(self):
         '''Test add and subtract on some subclasses'''
 
         bar = vincent.Bar()
@@ -203,6 +203,20 @@ class TestVincent(object):
 
         assert bar.scales[1] == {'nice': True, 'range': 'height'}
         assert area.axes == [{'type': 'x'}, {'scale': 'y'}]
+
+    def test_add_sub(self):
+        '''Test add and subtract on some subclasses'''
+        test_classes = [
+            vincent.Bar, vincent.Area, vincent.Scatter, vincent.Line]
+        for cls in test_classes:
+            vis1 = cls()
+            vis2 = cls()
+            vis3 = cls()
+            assert_vega_equal(vis1, vis2)
+            assert_vega_equal(vis2, vis3)
+            vis1 += ([0, 1], 'scales', 0, 'range')
+            vis3 = vis2 + ([0, 1], 'scales', 0, 'range')
+            assert_vega_equal(vis1, vis3)
 
     def test_datetimeandserial(self):
         '''Test pandas serialization and datetime parsing'''
