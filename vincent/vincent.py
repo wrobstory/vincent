@@ -14,6 +14,7 @@ import os
 import json
 import time
 import itertools
+from copy import deepcopy
 from pkg_resources import resource_string
 from string import Template
 import pandas as pd
@@ -63,11 +64,20 @@ class Vega(object):
         self.marks = []
         self.build_vega()
 
+    def __deepcopy__(self, memo):
+        vis = self.__class__()
+        copy_attrib = [
+            'width', 'height', 'padding', 'viewport', 'visualization',
+            'data', 'scales', 'axes', 'axis_labels', 'marks']
+        for attr in copy_attrib:
+            setattr(vis, attr, deepcopy(getattr(self, attr), memo))
+        return vis
+
     def __add__(self, tuple):
         '''Allow for updating of Vega with add operator'''
-        print('This API/syntax will change in the next major release. Please'
-              ' use "+=" for modifying components')        
-        self.update_component('add', *tuple)
+        vis = deepcopy(self)
+        vis.update_component('add', *tuple)
+        return vis
 
     def __iadd__(self, tuple):
         '''Allow for updating of Vega with iadd operator'''
@@ -76,9 +86,9 @@ class Vega(object):
 
     def __sub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
-        print('This API/syntax will change in the next major release. Please'
-              ' use "-=" for modifying components')        
-        self.update_component('remove', *tuple)
+        vis = deepcopy(self)
+        vis.update_component('add', *tuple)
+        return vis
 
     def __isub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
@@ -547,51 +557,51 @@ class Map(Vega):
         self.geojson = {}
         self.map_par = {}
         self.build_vega('axes', 'scales')
-        
-    def spatial_to_geoJSON(self, data_path=None, json_out=None): 
+
+    def spatial_to_geoJSON(self, data_path=None, json_out=None):
         '''Write a spatial file to geoJSON via Ogre
-        
-        Call the Ogre spatial file converter: 
+
+        Call the Ogre spatial file converter:
         http://ogre.adc4gis.com/ to transform your data into
         to geoJSON for Vincent.
-        
-        Parameters: 
+
+        Parameters:
         -----------
         spatial_path: string, default None
-            Path to spatial files. Please see http://ogre.adc4gis.com/ for 
-            the type of data that can be passed. Zipped shapefiles must have 
+            Path to spatial files. Please see http://ogre.adc4gis.com/ for
+            the type of data that can be passed. Zipped shapefiles must have
             .shp, .dbf, and .shx (.prj optional)
         json_out: string, default None
             Path to write geoJSON output. If None, will default to same
-            path as shp_path  
-            
-        Examples: 
+            path as shp_path
+
+        Examples:
         ---------
-        >>>vis.shapefile_to_json(shp_path=r'countries.zip')      
-        
+        >>>vis.shapefile_to_json(shp_path=r'countries.zip')
+
         '''
         import requests
         url = r'http://ogre.adc4gis.com/convert'
         shp_data = {'upload': open(data_path, 'rb')}
         print('Calling Ogre to perform geoJSON conversion...')
-        try: 
+        try:
             r = requests.post(url, files=shp_data)
         except:
             print("There was an error with the HTTP request")
             raise
         r.raise_for_status()
-        if json_out: 
+        if json_out:
             path = '.'.join([name, 'json'])
-        else: 
+        else:
             dir, zip = os.path.split(data_path)
             geoJSON = '.'.join([zip.split('.')[0], 'json'])
             path = '/'.join([dir, geoJSON])
         print('Writing to geoJSON. This may take some time if your spatial'
               ' file is high resolution.')
-        with open(path, 'w') as f: 
+        with open(path, 'w') as f:
             json.dump(r.json, f, sort_keys=True, indent=4,
                           separators=(',', ': '))
-        
+
 
     def update_map(self, projection=None, scale=None):
         '''Update the map projection or scale'''
@@ -639,11 +649,11 @@ class Map(Vega):
             tabular_data to plot correctly.
         spatial_convert: boolean, default False
             If True, Vincent will call the online Ogre converter to convert
-            the spatial file to geoJSON via the spatial_to_geoJSON method. 
+            the spatial file to geoJSON via the spatial_to_geoJSON method.
         kwargs: keyword argument
             Pass paths to map data, with the passed keyword as the name
-            of the dataset. Can pass geoJSON or shapefiles; if shapefile is 
-            passed, 'shapefile=True' must be passed as a keyword argument. 
+            of the dataset. Can pass geoJSON or shapefiles; if shapefile is
+            passed, 'shapefile=True' must be passed as a keyword argument.
 
         Examples:
         ---------
@@ -666,8 +676,8 @@ class Map(Vega):
         self.map_par['scale'] = self.map_par.get('scale', scale)
 
         for name, url in kwargs.iteritems():
-        
-            if spatial_convert: 
+
+            if spatial_convert:
                 self.spatial_to_geoJSON(data_path=url)
                 url = '.'.join([os.path.splitext(url)[0], 'json'])
 
