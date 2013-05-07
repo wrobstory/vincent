@@ -4,10 +4,6 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-    
-from os.path import abspath, dirname, join
-
-path = abspath(dirname(__file__))
 
 classifiers = (
     'Development Status :: 3 - Alpha',
@@ -21,9 +17,9 @@ required = (
 
 kw = {
     'name': 'vincent',
-    'version': '0.1.0',
+    'version': '0.1.4',
     'description': 'A Python to Vega translator',
-    'long_description': open(join(path, 'README.md')).read(),
+    'long_description': open('README.md', 'rt').read(),
     'author': 'Rob Story',
     'author_email': 'wrobstory@gmail.com',
     'license': 'MIT License',
@@ -31,7 +27,7 @@ kw = {
     'keywords': 'data visualization',
     'classifiers': classifiers,
     'packages': ['vincent'],
-    'package_data': {'vincent': ['*.html']},
+    'package_data': {'vincent': ['vincent/*.html']},
     'install_requires': required,
     'zip_safe': True,
 }
