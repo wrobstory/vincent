@@ -1,2 +1,2 @@
-include *.md
+include *.rst
 recursive-include vincent *.html
