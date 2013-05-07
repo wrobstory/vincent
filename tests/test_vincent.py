@@ -236,7 +236,7 @@ class TestVincent(object):
 
         line = vincent.Line()
         line.tabular_data(price, columns=['AAPL'])
-        assert line.data[0]['values'][0]['x'] == 1073030400000
+        assert line.data[0]['values'][0]['x'] == 1073019600000
 
     def test_to_json(self):
         '''Test json output
