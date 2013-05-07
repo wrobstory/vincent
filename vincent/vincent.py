@@ -468,18 +468,18 @@ class Bar(Vega):
         self.axes = [{"type": "x", "scale": "x"}, {"type": "y", "scale": "y"}]
 
         self.marks = [{"type": "rect", "from": {"data": "table"},
-                      "properties": {
-                                     "enter": {
-                                     "x": {"scale": "x", "field": "data.x"},
-                                     "width": {"scale": "x", "band": True,
-                                               "offset": -1},
-                                     "y": {"scale": "y", "field": "data.y"},
-                                     "y2": {"scale": "y", "value": 0}
-                                     },
-                                     "update": {"fill": {"value": "#2a3140"}},
-                                     "hover": {"fill": {"value": "#a63737"}}
-                                      }
-                      }]
+                       "properties": {
+                           "enter": {
+                               "x": {"scale": "x", "field": "data.x"},
+                               "width": {"scale": "x", "band": True,
+                                         "offset": -1},
+                               "y": {"scale": "y", "field": "data.y"},
+                               "y2": {"scale": "y", "value": 0}
+                           },
+                           "update": {"fill": {"value": "#2a3140"}},
+                           "hover": {"fill": {"value": "#a63737"}}
+                       }
+                       }]
 
         self.build_vega()
 
@@ -600,8 +600,7 @@ class Map(Vega):
               ' file is high resolution.')
         with open(path, 'w') as f:
             json.dump(r.json, f, sort_keys=True, indent=4,
-                          separators=(',', ': '))
-
+                      separators=(',', ': '))
 
     def update_map(self, projection=None, scale=None):
         '''Update the map projection or scale'''
@@ -708,12 +707,12 @@ class Map(Vega):
             mapmark = {"type": "path", 'from': {'data': name},
                        'name': 'mapmark',
                        "properties": {
-                                      "enter": {
-                                      "stroke": {'value': '#fff'},
-                                      "strokeWidth": {"value": 1.0},
-                                      "path": {"field": "path"},
-                                      "fill": {'value': '#2a3140'}
-                                     }}}
+                           "enter": {
+                           "stroke": {'value': '#fff'},
+                           "strokeWidth": {"value": 1.0},
+                           "path": {"field": "path"},
+                           "fill": {'value': '#2a3140'}
+                           }}}
             self.marks.append(mapmark)
 
             if bind_data:
