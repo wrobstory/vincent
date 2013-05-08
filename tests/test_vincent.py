@@ -220,12 +220,12 @@ class TestVincent(object):
 
     def test_datetimeandserial(self):
         '''Test pandas serialization and datetime parsing'''
+        import pickle
 
-        import pandas.io.data as web
         all_data = {}
-        for ticker in ['AAPL', 'GOOG']:
-            all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2004',
-                                                  '1/1/2006')
+        with open('%s/all_data.pickle' % data_dir, 'rb') as f:
+            all_data = pickle.load(f)
+
         price = pd.DataFrame({tic: data['Adj Close']
                               for tic, data in all_data.iteritems()})
 
