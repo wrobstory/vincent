@@ -17,7 +17,7 @@ required = (
 
 kw = {
     'name': 'vincent',
-    'version': '0.1.4',
+    'version': '0.1.5',
     'description': 'A Python to Vega translator',
     'long_description': open('README.rst', 'rt').read(),
     'author': 'Rob Story',
