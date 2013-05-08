@@ -6,6 +6,6 @@ virtualenv:
 before_install:
   - sudo apt-get install -qq gfortran libatlas-base-dev python-numpy
 install:
-  - pip install pandas --use-mirrors
+  - pip install ipython mock pandas --use-mirrors
 script:
   - nosetests
