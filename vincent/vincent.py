@@ -263,7 +263,7 @@ class Vega(object):
             The index of dict/object in the component array you want to mod
 
         Examples:
-        >>>my_vega.update_component(add, 'w', 'axes', 0, 'scale')
+        >>>my_vega.update_component('add', 'w', 'axes', 0, 'scale')
         >>>my_vega.update_component('remove', 'width', 'marks', 0,
                                     'properties', 'enter')
 
