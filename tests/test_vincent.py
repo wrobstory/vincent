@@ -10,13 +10,6 @@ import vincent
 import nose.tools as nt
 import os.path as path
 
-try:
-    import unittest.mock as mock
-    assert mock
-except ImportError:
-    # Requires mock library if version < 3.3
-    import mock
-
 
 # Location of test data files.
 data_dir = path.join(path.dirname(path.abspath(__file__)), 'data')
