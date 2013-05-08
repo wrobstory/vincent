@@ -1,5 +1,9 @@
 #Vincent
+
+[![Travs-CI status](https://travis-ci.org/wrobstory/vincent.png)](https://travis-ci.org/wrobstory/vincent)
+
 ![Vincent](http://farm9.staticflickr.com/8521/8644902478_0d1513db92_o.jpg)
+
 ###A Python to Vega translator
 
 The folks at Trifacta are making it easy to build visualizations on top of D3 with Vega. Vincent makes it easy to build Vega with Python.  
