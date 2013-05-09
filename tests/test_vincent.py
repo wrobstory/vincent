@@ -5,6 +5,7 @@ Test Vincent
 
 '''
 
+import time
 import pandas as pd
 import numpy as np
 import vincent
@@ -212,15 +213,15 @@ class TestVincent(object):
             vis3 = vis2 + ([0, 1], 'scales', 0, 'range')
             assert_vega_equal(vis1, vis3)
 
-    # def test_datetimeandserial(self):
-    #     '''Test pandas serialization and datetime parsing'''
-    #     #Test on hold until determination of timestamp handling
-    #     rng = pd.date_range('1/1/2013', periods=30, freq='D')
-    #     ts = pd.Series(np.random.randn(len(rng)), index=rng)
+    def test_datetimeandserial(self):
+        '''Test pandas serialization and datetime parsing'''
+        rng = pd.date_range('1/1/2013', periods=30, freq='D')
+        ts = pd.Series(np.random.randn(len(rng)), index=rng)
 
-    #     scatter = vincent.Scatter()
-    #     scatter.tabular_data(ts)
-    #     assert scatter.data[0]['values'][0]['x'] == 1357027200000.0
+        scatter = vincent.Scatter()
+        scatter.tabular_data(ts)
+        timevalue = time.mktime(ts.index[0].timetuple())*1000
+        assert scatter.data[0]['values'][0]['x'] == timevalue
 
     def test_to_json(self):
         '''Test json output
