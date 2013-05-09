@@ -354,7 +354,8 @@ class Vega(object):
 
     def _serial_transform(self, str_time):
         '''Transform data to make it JSON serializable. Vega requires
-        Epoch time in milliseconds.'''
+        Epoch time in milliseconds, and it will be converted to local
+        timestamp, not UTC.'''
         for objs in self.data[0]['values']:
             for key, value in objs.iteritems():
                 if isinstance(value, pd.Period):
@@ -369,6 +370,10 @@ class Vega(object):
                      append=False, axis_time='day'):
         '''Create the data for a bar chart in Vega grammer. Data can be passed
         in a list, dict, or Pandas Dataframe.
+
+        All time series will be transformed into local Epoch time. Ensure that
+        any timestamps have been converted to local time in Pandas before
+        plotting for accurate axis timestamping.
 
         Parameters:
         -----------

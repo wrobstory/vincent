@@ -1,6 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
 '''
 Plotting some Pandas data with Vincent
+
+All time series will be transformed into local Epoch time. Ensure that
+any timestamps have been converted to local time in Pandas before plotting
+for accurate axis timestamping.
 '''
 
 import vincent
@@ -20,7 +24,7 @@ price = pd.DataFrame({tic: data['Adj Close']
                       
 path = 'vega.json'
 
-#Create line graph, with monthly plotting on the axes                       
+#Create line graph, with monthly plotting on the axes                    
 line = vincent.Line()
 line.tabular_data(price, columns=['AAPL'], axis_time='month')
 line.to_json(path)

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 '''
 A timeseries example for Vincent
+
+All time series will be transformed into local Epoch time. Ensure that
+any timestamps have been converted to local time in Pandas before plotting
+for accurate axis timestamping.
 '''
 
 import vincent
