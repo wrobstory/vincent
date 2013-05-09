@@ -6,6 +6,7 @@ Test Vincent
 '''
 
 import pandas as pd
+import numpy as np
 import vincent
 import nose.tools as nt
 import os.path as path
@@ -213,23 +214,12 @@ class TestVincent(object):
 
     def test_datetimeandserial(self):
         '''Test pandas serialization and datetime parsing'''
-        import pickle
-
-        all_data = {}
-        with open('%s/all_data.pickle' % data_dir, 'rb') as f:
-            all_data = pickle.load(f)
-
-        price = pd.DataFrame({tic: data['Adj Close']
-                              for tic, data in all_data.iteritems()})
+        rng = pd.date_range('1/1/2013', periods=30, freq='D')
+        ts = pd.Series(np.random.randn(len(rng)), index=rng)
 
         scatter = vincent.Scatter()
-        scatter.tabular_data(price, columns=['AAPL', 'GOOG'])
-        assert scatter.data[0]['values'][0]['x'] == 10.49
-        nt.assert_is_none(scatter.data[0]['values'][0]['y'])
-
-        line = vincent.Line()
-        line.tabular_data(price, columns=['AAPL'])
-        assert line.data[0]['values'][0]['x'] == 1073030400000
+        scatter.tabular_data(ts)
+        assert scatter.data[0]['values'][0]['x'] == 1357027200000.0
 
     def test_to_json(self):
         '''Test json output
