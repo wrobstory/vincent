@@ -13,19 +13,19 @@ import json
 from IPython.core.display import display, HTML, Javascript
 
 
-def ipynb_init_d3():
+def init_d3():
     '''Display html that loads d3 javascript library.'''
 
     display(HTML('''<script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>'''))
 
 
-def ipynb_init_vg():
+def init_vg():
     '''Display html that loads vega javascript library.'''
 
     display(HTML('''<script src="http://trifacta.github.com/vega/vega.js"></script>'''))
 
 
-def ipynb_display(vis):
+def display_vega(vis):
     '''Display graphic inline in IPython notebook'''
 
     # HACK: use a randomly chosen unique div id
