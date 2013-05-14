@@ -153,26 +153,44 @@ class TestVincent(object):
                                                        {'x': 100, 'y': 105}]
 
         # NumPy arrays - 1D
-        array = np.asarray(np.matrix('0, 1, 5, 10')).flatten()
+        array = np.random.random((5, ))
         expected = [{'x': x, 'y': np.asscalar(y)}
                     for x, y in zip(xrange(array.shape[0]), array)]
         self.testvin.tabular_data(array)
         nt.assert_list_equal(expected, self.testvin.data[0]['values'])
 
         # NumPy arrays - 2D - index not included
-        array = np.matrix('0, 1, 5, 10').T
+        array = np.random.random((10, 1))
         expected = [{'x': x, 'y': np.asscalar(y)}
                     for x, y in zip(xrange(array.shape[0]), array)]
         self.testvin.tabular_data(array)
         nt.assert_list_equal(expected, self.testvin.data[0]['values'])
 
         # NumPy arrays - 2D - index included
-        array = np.matrix('0, 5, 10, 15, 16; 3, 2, 5, 1, 0').T
+        array = np.random.random((10, 2))
+        idx = [np.asscalar(r[0]) for r in array]
+        dat = [np.asscalar(r[1]) for r in array]
+        expected = [{'x': x, 'y': y} for x, y in zip(idx, dat)]
+        self.testvin.tabular_data(array)
+        nt.assert_list_equal(expected, self.testvin.data[0]['values'])
+
+        # NumPy matrices iterate differently
+        array = np.matrix(np.random.random((10, 2)))
         idx = [np.asscalar(r[0, 0]) for r in array]
         dat = [np.asscalar(r[0, 1]) for r in array]
         expected = [{'x': x, 'y': y} for x, y in zip(idx, dat)]
         self.testvin.tabular_data(array)
         nt.assert_list_equal(expected, self.testvin.data[0]['values'])
+
+        # NumPy arrays - bad dimensions
+        array = np.random.random((10, 3))
+        nt.assert_raises_regexp(ValueError, 'columns.*not supported',
+                                self.testvin.tabular_data, array)
+
+        # NumPy arrays - too many dimensions
+        array = np.random.random((3, 3, 3))
+        nt.assert_raises_regexp(ValueError, 'invalid.*dimensions',
+                                self.testvin.tabular_data, array)
 
     def test_axis_title(self):
         '''Test the addition of axis and title labels'''

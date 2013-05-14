@@ -478,15 +478,20 @@ class Vega(object):
             xvals = default_range(data.shape[0], append)
             values = to_list_no_index(xvals, data)
         elif len(data.shape) == 2:
-            if data.shape[1] == 1:
-                xvals = default_range(data.shape[0], append)
-                values = to_list_no_index(xvals, data[0])
-            elif data.shape[1] == 2:
-                xvals = [np.asscalar(row[0, 0]) for row in data]
-                yvals = [np.asscalar(row[0, 1]) for row in data]
+            if data.shape[1] == 2:
+                # NumPy arrays and matrices have different iteration rules.
+                if isinstance(data, np.matrix):
+                    xidx = (0, 0)
+                    yidx = (0, 1)
+                else:
+                    xidx = 0
+                    yidx = 1
+
+                xvals = [np.asscalar(row[xidx]) for row in data]
+                yvals = [np.asscalar(row[yidx]) for row in data]
                 values = [{"x": x, "y": y} for x, y in zip(xvals, yvals)]
             else:
-                raise ValueError('multidimensional arrays not supported')
+                raise ValueError('arrays with > 2 columns not supported')
         else:
             raise ValueError('invalid dimensions for ndarray')
 
