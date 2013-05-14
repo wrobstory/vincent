@@ -206,12 +206,13 @@ class TestVincent(object):
         for cls in test_classes:
             vis1 = cls()
             vis2 = cls()
-            vis3 = cls()
             assert_vega_equal(vis1, vis2)
-            assert_vega_equal(vis2, vis3)
             vis1 += ([0, 1], 'scales', 0, 'range')
             vis3 = vis2 + ([0, 1], 'scales', 0, 'range')
             assert_vega_equal(vis1, vis3)
+            vis1 -= ('domain', 'scales', 0)
+            vis4 = vis3 - ('domain', 'scales', 0)
+            assert_vega_equal(vis1, vis4)
 
     def test_datetimeandserial(self):
         '''Test pandas serialization and datetime parsing'''
