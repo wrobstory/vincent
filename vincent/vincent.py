@@ -87,7 +87,7 @@ class Vega(object):
     def __sub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
         vis = deepcopy(self)
-        vis.update_component('add', *tuple)
+        vis.update_component('remove', *tuple)
         return vis
 
     def __isub__(self, tuple):
