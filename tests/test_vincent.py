@@ -153,13 +153,20 @@ class TestVincent(object):
                                                        {'x': 100, 'y': 105}]
 
         # NumPy arrays - 1D
+        array = np.asarray(np.matrix('0, 1, 5, 10')).flatten()
+        expected = [{'x': x, 'y': np.asscalar(y)}
+                    for x, y in zip(xrange(array.shape[0]), array)]
+        self.testvin.tabular_data(array)
+        nt.assert_list_equal(expected, self.testvin.data[0]['values'])
+
+        # NumPy arrays - 2D - index not included
         array = np.matrix('0, 1, 5, 10').T
         expected = [{'x': x, 'y': np.asscalar(y)}
                     for x, y in zip(xrange(array.shape[0]), array)]
         self.testvin.tabular_data(array)
         nt.assert_list_equal(expected, self.testvin.data[0]['values'])
 
-        # NumPy arrays - 2D
+        # NumPy arrays - 2D - index included
         array = np.matrix('0, 5, 10, 15, 16; 3, 2, 5, 1, 0').T
         idx = [np.asscalar(r[0, 0]) for r in array]
         dat = [np.asscalar(r[0, 1]) for r in array]
