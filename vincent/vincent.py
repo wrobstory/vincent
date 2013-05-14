@@ -453,24 +453,7 @@ class Vega(object):
 
         #NumPy arrays
         elif isinstance(data, np.ndarray):
-            if len(data.shape) == 1:
-                xvals = default_range(data.shape[0], append)
-                values = [{"x": x, "y": y} for x, y in zip(xvals, data)]
-            elif len(data.shape) == 2:
-                if data.shape[0] == 1:
-                    xvals = default_range(data.shape[1], append)
-                    values = [{"x": x, "y": y}
-                              for x, y in zip(xvals, data[0])]
-                elif data.shape[1] == 1:
-                    xvals = default_range(data.shape[0], append)
-                    values = [{"x": x, "y": y[0]}
-                              for x, y in zip(xvals, data)]
-                else:
-                    raise ValueError(
-                        'multidimensional arrays not supported')
-            else:
-                raise ValueError('invalid dimensions for ndarray')
-
+            values = self._numpy_to_values(data, default_range, append)
         else:
             raise TypeError('unknown data type %s' % type(data))
 
@@ -483,6 +466,31 @@ class Vega(object):
 
         self._serial_transform(axis_time)
         self.build_vega()
+
+    @staticmethod
+    def _numpy_to_values(data, default_range, append):
+        '''Convert a NumPy array to values attribute'''
+        def to_list_no_index(xvals, yvals):
+            return [{"x": x, "y": np.asscalar(y)}
+                    for x, y in zip(xvals, yvals)]
+
+        if len(data.shape) == 1 or data.shape[1] == 1:
+            xvals = default_range(data.shape[0], append)
+            values = to_list_no_index(xvals, data)
+        elif len(data.shape) == 2:
+            if data.shape[1] == 1:
+                xvals = default_range(data.shape[0], append)
+                values = to_list_no_index(xvals, data[0])
+            elif data.shape[1] == 2:
+                xvals = [np.asscalar(row[0, 0]) for row in data]
+                yvals = [np.asscalar(row[0, 1]) for row in data]
+                values = [{"x": x, "y": y} for x, y in zip(xvals, yvals)]
+            else:
+                raise ValueError('multidimensional arrays not supported')
+        else:
+            raise ValueError('invalid dimensions for ndarray')
+
+        return values
 
 
 class Bar(Vega):

@@ -152,6 +152,21 @@ class TestVincent(object):
         assert self.testvin.data[0]['values'][-2:] == [{'x': 90, 'y': 95},
                                                        {'x': 100, 'y': 105}]
 
+        # NumPy arrays - 1D
+        array = np.matrix('0, 1, 5, 10').T
+        expected = [{'x': x, 'y': np.asscalar(y)}
+                    for x, y in zip(xrange(array.shape[0]), array)]
+        self.testvin.tabular_data(array)
+        nt.assert_list_equal(expected, self.testvin.data[0]['values'])
+
+        # NumPy arrays - 2D
+        array = np.matrix('0, 5, 10, 15, 16; 3, 2, 5, 1, 0').T
+        idx = [np.asscalar(r[0, 0]) for r in array]
+        dat = [np.asscalar(r[0, 1]) for r in array]
+        expected = [{'x': x, 'y': y} for x, y in zip(idx, dat)]
+        self.testvin.tabular_data(array)
+        nt.assert_list_equal(expected, self.testvin.data[0]['values'])
+
     def test_axis_title(self):
         '''Test the addition of axis and title labels'''
 
