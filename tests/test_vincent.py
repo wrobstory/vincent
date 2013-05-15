@@ -58,7 +58,7 @@ class TestVincent(object):
         assert self.testvin.height == 200
         assert self.testvin.padding == {'top': 10, 'left': 30,
                                         'bottom': 20, 'right': 20}
-        assert self.testvin.viewport == None
+        assert self.testvin.viewport is None
         assert self.testvin.vega == self.default_vega
 
     def test_keypop(self):
@@ -221,7 +221,7 @@ class TestVincent(object):
 
         scatter = vincent.Scatter()
         scatter.tabular_data(ts)
-        timevalue = time.mktime(ts.index[0].timetuple())*1000
+        timevalue = time.mktime(ts.index[0].timetuple()) * 1000
         assert scatter.data[0]['values'][0]['x'] == timevalue
 
     def test_to_json(self):
