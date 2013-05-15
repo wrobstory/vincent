@@ -88,7 +88,7 @@ class Vega(object):
     def __sub__(self, tuple):
         '''Allow for updating of Vega with sub operator'''
         vis = deepcopy(self)
-        vis.update_component('add', *tuple)
+        vis.update_component('remove', *tuple)
         return vis
 
     def __isub__(self, tuple):
@@ -158,14 +158,14 @@ class Vega(object):
         x_mark = {"type": "text", "name": "x_label",
                   "from": {"data": "x_label"},
                   "properties": {"enter": {
-                                 "x": {"value": self.width/2},
+                                 "x": {"value": self.width / 2},
                                  "y": {"value": self.height},
                                  "dy": {"value": 35}}}}
         y_mark = {"type": "text", "name": "y_label",
                   "from": {"data": "y_label"},
                   "properties": {"enter": {
                                  "x": {"value": 0},
-                                 "y": {"value": self.height/2},
+                                 "y": {"value": self.height / 2},
                                  "dy": {"value": -45},
                                  "angle": {'value': -90}}}}
         if horiz_y:
@@ -176,7 +176,7 @@ class Vega(object):
         title_mark = {"type": "text", "name": "title",
                       "from": {"data": "title"},
                       "properties": {"enter": {
-                                     "x": {"value": self.width/2},
+                                     "x": {"value": self.width / 2},
                                      "y": {"value": 0},
                                      "dy": {"value": -20}}}}
 
@@ -365,7 +365,7 @@ class Vega(object):
                     objs[key] = None
                 elif (isinstance(value, pd.tslib.Timestamp) or
                       isinstance(value, pd.Period)):
-                    objs[key] = time.mktime(value.timetuple())*1000
+                    objs[key] = time.mktime(value.timetuple()) * 1000
 
     def tabular_data(self, data, columns=None, use_index=False,
                      append=False, axis_time='day'):

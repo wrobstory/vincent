@@ -58,7 +58,7 @@ class TestVincent(object):
         assert self.testvin.height == 200
         assert self.testvin.padding == {'top': 10, 'left': 30,
                                         'bottom': 20, 'right': 20}
-        assert self.testvin.viewport == None
+        assert self.testvin.viewport is None
         assert self.testvin.vega == self.default_vega
 
     def test_keypop(self):
@@ -246,12 +246,13 @@ class TestVincent(object):
         for cls in test_classes:
             vis1 = cls()
             vis2 = cls()
-            vis3 = cls()
             assert_vega_equal(vis1, vis2)
-            assert_vega_equal(vis2, vis3)
             vis1 += ([0, 1], 'scales', 0, 'range')
             vis3 = vis2 + ([0, 1], 'scales', 0, 'range')
             assert_vega_equal(vis1, vis3)
+            vis1 -= ('domain', 'scales', 0)
+            vis4 = vis3 - ('domain', 'scales', 0)
+            assert_vega_equal(vis1, vis4)
 
     def test_datetimeandserial(self):
         '''Test pandas serialization and datetime parsing'''
@@ -260,7 +261,7 @@ class TestVincent(object):
 
         scatter = vincent.Scatter()
         scatter.tabular_data(ts)
-        timevalue = time.mktime(ts.index[0].timetuple())*1000
+        timevalue = time.mktime(ts.index[0].timetuple()) * 1000
         assert scatter.data[0]['values'][0]['x'] == timevalue
 
     def test_to_json(self):
