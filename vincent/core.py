@@ -31,24 +31,3 @@ def field_property(validator):
             del self._field[name]
 
     return property(getter, setter, deleter, validator.__doc__)
-
-
-class Scale(object):
-    def __init__(self, name):
-        self._field = {}
-        self.name = name
-
-    @field_property
-    def name(value):
-        """Name of the scale."""
-        if not isinstance(value, str):
-            raise TypeError('name must be string')
-
-    @field_property
-    def reverse(value):
-        """If `True`, flip the range of the scale."""
-        if not isinstance(value, bool):
-            raise TypeError('reverse must be bool')
-
-    def to_json(self):
-        return json.dumps(self._field)
