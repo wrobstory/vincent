@@ -612,7 +612,7 @@ class Map(Vega):
 
         Parameters:
         -----------
-        spatial_path: string, default None
+        data_path: string, default None
             Path to spatial files. Please see http://ogre.adc4gis.com/ for
             the type of data that can be passed. Zipped shapefiles must have
             .shp, .dbf, and .shx (.prj optional)
@@ -622,7 +622,7 @@ class Map(Vega):
 
         Examples:
         ---------
-        >>>vis.shapefile_to_json(shp_path=r'countries.zip')
+        >>>vis.shapefile_to_json(data_path=r'countries.zip')
 
         '''
         import requests
@@ -636,7 +636,7 @@ class Map(Vega):
             raise
         r.raise_for_status()
         if json_out:
-            path = '.'.join([name, 'json'])
+            path = json_out
         else:
             dir, zip = os.path.split(data_path)
             geoJSON = '.'.join([zip.split('.')[0], 'json'])
