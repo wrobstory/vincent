@@ -43,21 +43,33 @@ def field_property(validator):
     return property(getter, setter, deleter, validator.__doc__)
 
 
-def _assert_is_type(name, value, type):
+def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
-    if not isinstance(value, type):
-        raise TypeError(name + ' must be a ' + str(type))
+    if not isinstance(value, value_type):
+        if type(value_type) is tuple:
+            raise TypeError(name + ' must be one of (' +
+                            ', '.join(t.__name__ for t in value_type) + ')')
+        else:
+            raise TypeError(name + ' must be a ' + value_type.__name__)
 
 
 class Data(object):
 
+    _default_index_key = '_index'
+
     class LoadError(Exception):
-        """Exception for errors on loading data from third-party objects."""
+        """Exception for errors on loading data from third-party objects"""
         pass
 
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         self._field = {}
         self.name = name
+
+        for attr, value in kwargs.iteritems():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+            else:
+                raise ValueError('unknown keyword argument ' + attr)
 
     @field_property
     def name(value):
@@ -75,21 +87,48 @@ class Data(object):
     def source(value):
         _assert_is_type('source', value, str)
 
-    def load_from(self, obj):
-        """Load values from an external object."""
-        if isinstance(obj, list):
-            self.values = obj
-        elif pd and isinstance(obj, (pd.Series, pd.DataFrame)):
-            self.load_from_pandas(obj)
-        elif np and isinstance(obj, np.ndarray):
-            self.load_from_numpy(obj)
-        else:
-            raise ValueError('unknown data type ' + str(type(obj)))
+    @field_property
+    def transform(value):
+        _assert_is_type('transform', value, list)
 
-    def load_from_pandas(self, pd_obj):
+    @classmethod
+    def from_pandas(cls, pd_obj, name=None, columns=None, use_index=True,
+                    key=None, **kwargs):
+        """Load values from a pandas Series or DataFrame
+        """
         if not pd:
-            raise self.LoadError('pandas could not be imported')
+            raise cls.LoadError('pandas could not be imported')
 
-    def load_from_numpy(self, np_obj):
+        if isinstance(pd_obj, pd.Series):
+            if name:
+                data = cls(name=name, **kwargs)
+            elif pd_obj.name:
+                data = cls(name=pd_obj.name, **kwargs)
+            else:
+                raise cls.LoadError(
+                    'name must be provided or be attribute of Series')
+
+            if not key:
+                key = data.name
+
+            data.values = [
+                {cls._default_index_key: i, key: v}
+                for i, v in pd_obj.iterkv()]
+        else:
+            raise ValueError('cannot load from data type '
+                             + type(pd_obj).__name__)
+
+        return data
+
+    def from_numpy(self, np_obj, index=None):
+        """Load values from a NumPy array
+        """
         if not np:
             raise self.LoadError('numpy could not be imported')
+        _assert_is_type('numpy object', np_obj, np.ndarray)
+
+        if not self.values:
+            self.values = []
+
+    def to_json(self):
+        return json.dumps(self._field)
