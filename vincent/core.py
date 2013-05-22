@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import json
+import time
 
 try:
     import pandas as pd
@@ -92,43 +92,75 @@ class Data(object):
         _assert_is_type('transform', value, list)
 
     @classmethod
-    def from_pandas(cls, pd_obj, name=None, columns=None, use_index=True,
-                    key=None, **kwargs):
+    def _create_index(cls, idx):
+        """Convert an index into a JSON-serializable value"""
+        if isinstance(idx, str):
+            return [(cls._default_index_key, idx)]
+        elif hasattr(idx, 'timetuple'):
+            return [(cls._default_index_key,
+                     int(time.mktime(idx.timetuple())) * 1000)]
+        elif hasattr(idx, '__float__'):
+            return [(cls._default_index_key, float(idx))]
+        elif hasattr(idx, '__int__'):
+            return [(cls._default_index_key, int(idx))]
+        else:
+            raise cls.LoadError('cannot serialize index of type '
+                                + type(idx).__name__)
+
+    @classmethod
+    def _create_value(cls, idx):
+        """Convert a value data type into a JSON-serializable value"""
+        if isinstance(idx, str):
+            return idx
+        elif hasattr(idx, '__float__'):
+            return float(idx)
+        elif hasattr(idx, '__int__'):
+            return int(idx)
+        else:
+            raise cls.LoadError('cannot serialize value of type '
+                                + type(idx).__name__)
+
+    @classmethod
+    def from_pandas(cls, pd_obj, name=None, key=None, **kwargs):
         """Load values from a pandas Series or DataFrame
         """
+        # Note: There's an experimental JSON encoder floating around in
+        # pandas land that hasn't made it into the main branch. This
+        # function should be revisited if it ever does.
         if not pd:
             raise cls.LoadError('pandas could not be imported')
 
+        if name:
+            data = cls(name=name, **kwargs)
+        elif hasattr(pd_obj, 'name') and pd_obj.name:
+            data = cls(name=pd_obj.name, **kwargs)
+        else:
+            raise cls.LoadError(
+                'name must be provided as argument or be attribute of '
+                'object')
+
         if isinstance(pd_obj, pd.Series):
-            if name:
-                data = cls(name=name, **kwargs)
-            elif pd_obj.name:
-                data = cls(name=pd_obj.name, **kwargs)
-            else:
-                raise cls.LoadError(
-                    'name must be provided or be attribute of Series')
-
-            if not key:
-                key = data.name
-
+            key = key or data.name
             data.values = [
-                {cls._default_index_key: i, key: v}
+                dict(cls._create_index(i) + [(key, cls._create_value(v))])
                 for i, v in pd_obj.iterkv()]
+        elif isinstance(pd_obj, pd.DataFrame):
+            data.values = [
+                dict(cls._create_index(i) +
+                     [(str(k), v) for k, v in row.iterkv()])
+                for i, row in pd_obj.iterrows()]
         else:
             raise ValueError('cannot load from data type '
                              + type(pd_obj).__name__)
-
         return data
 
-    def from_numpy(self, np_obj, index=None):
+    @classmethod
+    def from_numpy(cls, np_obj, index=None):
         """Load values from a NumPy array
         """
         if not np:
-            raise self.LoadError('numpy could not be imported')
+            raise cls.LoadError('numpy could not be imported')
         _assert_is_type('numpy object', np_obj, np.ndarray)
-
-        if not self.values:
-            self.values = []
 
     def to_json(self):
         return json.dumps(self._field)
