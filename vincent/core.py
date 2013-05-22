@@ -92,17 +92,16 @@ class Data(object):
         _assert_is_type('transform', value, list)
 
     @classmethod
-    def _create_index(cls, idx):
+    def _create_index(cls, key, idx):
         """Convert an index into a JSON-serializable value"""
         if isinstance(idx, str):
-            return [(cls._default_index_key, idx)]
+            return [(key, idx)]
         elif hasattr(idx, 'timetuple'):
-            return [(cls._default_index_key,
-                     int(time.mktime(idx.timetuple())) * 1000)]
+            return [(key, int(time.mktime(idx.timetuple())) * 1000)]
         elif hasattr(idx, '__float__'):
-            return [(cls._default_index_key, float(idx))]
+            return [(key, float(idx))]
         elif hasattr(idx, '__int__'):
-            return [(cls._default_index_key, int(idx))]
+            return [(key, int(idx))]
         else:
             raise cls.LoadError('cannot serialize index of type '
                                 + type(idx).__name__)
@@ -121,8 +120,29 @@ class Data(object):
                                 + type(idx).__name__)
 
     @classmethod
-    def from_pandas(cls, pd_obj, name=None, key=None, **kwargs):
+    def from_pandas(cls, pd_obj, name=None, index_key=None, data_key=None,
+                    **kwargs):
         """Load values from a pandas Series or DataFrame
+
+        Parameters
+        ----------
+        pd_obj : pandas Series or DataFrame
+            Pandas object to import data from.
+        name : string
+            Applies to the `name` attribute of the generated class. If None
+            (default), then `pd_obj` must have a `name` attribute or a
+            `LoadError` is raised.
+        index_key : string
+            In each dict entry of the `values` attribute, the index of the
+            pandas object will have this key. If None, then `_index` is
+            used.
+        data_key : string
+            Applies only to Series. If None (default), then the data is
+            indexed by the `name` attribute of the generated class.
+            Otherwise, the data will be indexed by this key. For example, if
+            `data_key` is `x`, then the entries of the `values` list will be
+
+                {'_index': ..., 'x': ...}
         """
         # Note: There's an experimental JSON encoder floating around in
         # pandas land that hasn't made it into the main branch. This
@@ -139,14 +159,19 @@ class Data(object):
                 'name must be provided as argument or be attribute of '
                 'object')
 
+        index_key = index_key or cls._default_index_key
+
         if isinstance(pd_obj, pd.Series):
-            key = key or data.name
+            data_key = data_key or data.name
             data.values = [
-                dict(cls._create_index(i) + [(key, cls._create_value(v))])
+                dict(cls._create_index(index_key, i) +
+                     [(data_key, cls._create_value(v))])
                 for i, v in pd_obj.iterkv()]
         elif isinstance(pd_obj, pd.DataFrame):
+            # We have to explicitly convert the column names to strings
+            # because the json serializer doesn't allow for integer keys.
             data.values = [
-                dict(cls._create_index(i) +
+                dict(cls._create_index(index_key, i) +
                      [(str(k), v) for k, v in row.iterkv()])
                 for i, row in pd_obj.iterrows()]
         else:
@@ -155,12 +180,47 @@ class Data(object):
         return data
 
     @classmethod
-    def from_numpy(cls, np_obj, index=None):
+    def from_numpy(cls, np_obj, name, columns, index=None, index_key=None,
+                   **kwargs):
         """Load values from a NumPy array
         """
         if not np:
             raise cls.LoadError('numpy could not be imported')
         _assert_is_type('numpy object', np_obj, np.ndarray)
 
-    def to_json(self):
+        # Integer index if none is provided
+        index = index or range(np_obj.shape[0])
+        # Explicitly map dict-keys to strings for JSON serializer.
+        columns = map(str, columns)
+
+        index_key = index_key or cls._default_index_key
+
+        if len(index) != np_obj.shape[0]:
+            raise cls.LoadError(
+                'length of index must be equal to number of rows of array')
+        elif len(columns) != np_obj.shape[1]:
+            raise cls.LoadError(
+                'length of columns must be equal to number of columns of '
+                'array')
+
+        data = cls(name=name, **kwargs)
+        data.values = [
+            dict(cls._create_index(index_key, idx) +
+                 [(col, x) for col, x in zip(columns, row)])
+            for idx, row in zip(index, np_obj.tolist())]
+
+        return data
+
+    def to_json(self, overwrite_url=False):
+        """Convert data to JSON
+
+        Parameters
+        ----------
+        overwrite_url : boolean
+            If False (default) and a file already exists at the `url`, it
+            will not be overwritten and an exception will be raised. If
+            True, the file is overwritten. If `url` is None, then this has
+            no effect.
+        """
+        #TODO: support writing to separate file
         return json.dumps(self._field)
