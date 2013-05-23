@@ -13,22 +13,19 @@ except ImportError:
     np = None
 
 
-def field_property(validator):
-    """Decorator to define properties that map to the internal `_field`
-    dict.
+def _assert_is_type(name, value, value_type):
+    """Assert that a value must be a given type."""
+    if not isinstance(value, value_type):
+        if type(value_type) is tuple:
+            raise TypeError(name + ' must be one of (' +
+                            ', '.join(t.__name__ for t in value_type) + ')')
+        else:
+            raise TypeError(name + ' must be ' + value_type.__name__)
 
-    The argument is a "validator" function that should return no value but
-    raise an exception if the provided value is not valid Vega. If the
-    validator throws no exception, then the value is assigned to the
-    `_field` dict using the validator function name as the key.
 
-    The validator function should take only one argument, so that no `self`
-    argument is included - the validator should not modify the class.
-
-    The docstring for the property is taken from the validator's docstring.
+def _field_property_creator(validator, name):
+    """Create a field property using the given name as a key.
     """
-    name = validator.__name__
-
     def setter(self, value):
         validator(value)
         self._field[name] = value
@@ -43,14 +40,178 @@ def field_property(validator):
     return property(getter, setter, deleter, validator.__doc__)
 
 
-def _assert_is_type(name, value, value_type):
-    """Assert that a value must be a given type."""
-    if not isinstance(value, value_type):
-        if type(value_type) is tuple:
-            raise TypeError(name + ' must be one of (' +
-                            ', '.join(t.__name__ for t in value_type) + ')')
-        else:
-            raise TypeError(name + ' must be a ' + value_type.__name__)
+def field_property(arg):
+    """Decorator to define properties that map to the internal `_field`
+    dict.
+
+    The argument is a "validator" function that should return no value but
+    raise an exception if the provided value is not valid Vega. If the
+    validator throws no exception, then the value is assigned to the
+    `_field` dict using the validator function name as the key.
+
+    The validator function should take only one argument, so that no `self`
+    argument is included - the validator should not modify the class.
+
+    The docstring for the property is taken from the validator's docstring.
+
+    The decorator takes an optional string argument, which will be used as
+    the key for the internal `_field` dict. This can be useful if the
+    property name conflicts with a Python keyword.
+    """
+    if isinstance(arg, str):
+        def field_property(validator):
+            return _field_property_creator(validator, arg)
+        return field_property
+    else:
+        # Assume the argument is a function.
+        return _field_property_creator(arg, arg.__name__)
+
+
+class _FieldClass(object):
+    """Base class for objects that rely on an internal `_field` dict.
+    """
+    def __init__(self, **kwargs):
+        """Initialize a _FieldClass
+
+        **kwargs are attribute-value pairs that are set on initialization.
+        """
+        self._field = {}
+
+        for attr, value in kwargs.iteritems():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+            else:
+                raise ValueError('unknown keyword argument ' + attr)
+
+    def validate(self):
+        """Validate the contents of the object.
+
+        This calls `setattr` for each attribute that has been set.
+        """
+        for key, val in self._field.iteritems():
+            setattr(self, key, val)
+
+    def to_json(self, validate=True):
+        """Convert object to JSON
+
+        Parameters
+        ----------
+        validate : boolean
+            If True (default), call the object's `validate` method before
+            serializing.
+        """
+        if validate:
+            self.validate()
+
+        return json.dumps(self._field)
+
+    def from_json(self):
+        """Load object from JSON
+        """
+        raise NotImplementedError()
+
+
+class Vis(_FieldClass):
+    """Visualization container class.
+
+    This class defines an entire visualization.
+    """
+    @field_property
+    def name(value):
+        """string : Name of the visualization (optional)
+        """
+        _assert_is_type('name', value, str)
+
+    @field_property
+    def width(value):
+        """int : Width of the visualization in pixels
+
+        Default is 500 if undefined.
+        """
+        _assert_is_type('width', value, int)
+
+    @field_property
+    def height(value):
+        """int : Height of the visualization in pixels
+
+        Default is 500 if undefined.
+        """
+        _assert_is_type('height', value, int)
+
+    @field_property
+    def viewport(value):
+        """2-element list of ints : Dimensions of the viewport
+
+        The viewport is a bounding box containing the visualization. If the
+        dimensions are smaller than the height and/or width, the
+        visualization will pan within the viewport's box.
+
+        Default is visualization width and height if undefined.
+        """
+        _assert_is_type('viewport', value, list)
+        if len(value) != 2:
+            raise ValueError('viewport must have 2 dimensions')
+        for v in value:
+            _assert_is_type('viewport dimension', v, int)
+
+    @field_property
+    def padding(value):
+        """int or dict : Padding around visualization
+
+        The padding defines the distance between the edge of the
+        visualization canvas to the visualization box. It does not count as
+        part of the visualization width/height.
+
+        If a dict, padding must have all keys 'top', 'left', 'right',
+        'bottom' with int values.
+        """
+        _assert_is_type('padding', value, (int, dict))
+        if isinstance(value, dict):
+            required_keys = ['top', 'left', 'right', 'bottom']
+            for key in required_keys:
+                if key not in value:
+                    raise ValueError('padding must have keys %s' %
+                                     ', '.join(required_keys))
+                _assert_is_type('padding: %s' % key, value[key], int)
+
+    @field_property
+    def data(value):
+        """list with elements of `Data` or dict : Data definitions
+        """
+        _assert_is_type('data', value, list)
+        for i, entry in enumerate(value):
+            _assert_is_type('data[%g]' % i, entry, (dict, Data))
+
+    @field_property
+    def scales(value):
+        """list with elements of `Scale` or dict : Scale definitions
+        """
+        _assert_is_type('scales', value, list)
+        for i, entry in enumerate(value):
+            _assert_is_type('scales[%g]' % i, entry, (dict, Scale))
+
+    @field_property
+    def axes(value):
+        """list of `Axis` : Axis definitions
+        """
+        _assert_is_type('axes', value, list)
+
+    @field_property
+    def marks(value):
+        """list of `Mark` : Mark definitions
+        """
+        _assert_is_type('marks', value, list)
+
+    def load_pandas(self, pd_obj, name=None, append=False):
+        if not append:
+            self.data = []
+            self._table_idx = 1
+
+        if not (name or hasattr(pd_obj, 'name')):
+            name = 'table%g' % self._table_idx
+            self._table_idx += 1
+
+        self.data.append(Data.from_pandas(pd_obj, name=name))
 
 
 class LoadError(Exception):
@@ -58,19 +219,12 @@ class LoadError(Exception):
     pass
 
 
-class Data(object):
-
+class Data(_FieldClass):
     _default_index_key = '_index'
 
     def __init__(self, name, **kwargs):
-        self._field = {}
+        super(Data, self).__init__(**kwargs)
         self.name = name
-
-        for attr, value in kwargs.iteritems():
-            if hasattr(self, attr):
-                setattr(self, attr, value)
-            else:
-                raise ValueError('unknown keyword argument ' + attr)
 
     @field_property
     def name(value):
@@ -171,8 +325,8 @@ class Data(object):
             Pandas object to import data from.
         name : string
             Applies to the `name` attribute of the generated class. If None
-            (default), then `pd_obj` must have a `name` attribute or a
-            `LoadError` is raised.
+            (default), then `pd_obj` the `name` attribute is used if it
+            exists, or 'table' if it doesn't.
         index_key : string
             In each dict entry of the `values` attribute, the index of the
             pandas object will have this key. If None, then `_index` is
@@ -199,9 +353,7 @@ class Data(object):
         elif hasattr(pd_obj, 'name') and pd_obj.name:
             data = cls(name=pd_obj.name, **kwargs)
         else:
-            raise LoadError(
-                'name must be provided as argument or be attribute of '
-                'object')
+            data = cls(name='table', **kwargs)
 
         index_key = index_key or cls._default_index_key
 
@@ -293,3 +445,129 @@ class Data(object):
         """
         #TODO: support writing to separate file
         return json.dumps(self._field)
+
+
+class Mark(_FieldClass):
+
+    class ValueRef(_FieldClass):
+        @field_property
+        def value(value):
+            _assert_is_type('value', value, (str, int, float))
+
+        @field_property
+        def field(value):
+            _assert_is_type('field', value, str)
+
+        @field_property
+        def scale(value):
+            _assert_is_type('scale', value, str)
+
+        @field_property
+        def mult(value):
+            _assert_is_type('mult', value, (int, float))
+
+        @field_property
+        def offset(value):
+            _assert_is_type('offset', value, (int, float))
+
+        @field_property
+        def band(value):
+            _assert_is_type('band', value, bool)
+
+    class Property(_FieldClass):
+        @field_property
+        def x(value):
+            _assert_is_type('x', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def x2(value):
+            _assert_is_type('x2', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def width(value):
+            _assert_is_type('width', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def y(value):
+            _assert_is_type('y', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def y2(value):
+            _assert_is_type('y2', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def height(value):
+            _assert_is_type('height', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def opacity(value):
+            _assert_is_type('opacity', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def fill(value):
+            _assert_is_type('fill', value, (Mark.ValueRef, dict))
+
+        @field_property('fillOpacity')
+        def fill_opacity(value):
+            _assert_is_type('fill_opacity', value, (Mark.ValueRef, dict))
+
+        @field_property
+        def stroke(value):
+            _assert_is_type('stroke', value, (Mark.ValueRef, dict))
+
+        @field_property('strokeWidth')
+        def stroke_width(value):
+            _assert_is_type('stroke_width', value, (Mark.ValueRef, dict))
+
+        @field_property('strokeOpacity')
+        def stroke_opacity(value):
+            _assert_is_type('stroke_opacity', value, (Mark.ValueRef, dict))
+
+    _valid_type_values = [
+        'rect', 'symbol', 'path', 'arc', 'area', 'line', 'image', 'text']
+
+    @field_property
+    def name(value):
+        _assert_is_type('name', value, str)
+
+    @field_property
+    def description(value):
+        _assert_is_type('description', value, str)
+
+    @field_property
+    def type(value):
+        _assert_is_type('type', value, str)
+        if value not in Mark._valid_type_values:
+            raise ValueError(
+                'invalid mark type %s, valid types are %s' % (
+                    value, Mark._valid_type_values))
+
+    @field_property('from')
+    def from_(value):
+        """dict : Description of data to visualize
+
+        Note that although the property has the name `from_` (using `from`
+        is invalid Python syntax), the JSON will contain the correct
+        property `from`.
+        """
+        _assert_is_type('from_', value, dict)
+
+    @field_property
+    def properties(value):
+        _assert_is_type('properties', value, dict)
+
+    @field_property
+    def key(value):
+        _assert_is_type('key', value, str)
+
+    @field_property
+    def delay(value):
+        _assert_is_type('delay', value, dict)
+
+    @field_property
+    def ease(value):
+        _assert_is_type('ease', value, str)
+
+
+class Scale(_FieldClass):
+    pass

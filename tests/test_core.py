@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from itertools import product
 
-from vincent.core import field_property, Data, LoadError
+from vincent.core import field_property, Data
 import nose.tools as nt
 
 import pandas as pd
@@ -117,8 +117,8 @@ class TestData(object):
 
         # Missing a name
         series = pd.Series(np.random.randn(10))
-        nt.assert_raises_regexp(
-            LoadError, 'name', Data.from_pandas, series)
+        data = Data.from_pandas(series)
+        nt.assert_equal(data.name, 'table')
 
     def test_pandas_dataframe_loading(self):
         """Pandas DataFrame objects are correctly loaded"""
@@ -160,9 +160,9 @@ class TestData(object):
             data.to_json()
 
         # Missing a name
-        test_df = pd.DataFrame(np.random.randn(10, 3))
-        nt.assert_raises_regexp(
-            LoadError, 'name', Data.from_pandas, test_df)
+        dataframe = pd.DataFrame(np.random.randn(10, 3))
+        data = Data.from_pandas(dataframe)
+        nt.assert_equal(data.name, 'table')
 
     def test_numpy_loading(self):
         """Numpy ndarray objects are correctly loaded"""
