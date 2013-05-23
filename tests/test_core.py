@@ -1,11 +1,23 @@
 # -*- coding: utf-8 -*-
-from time import mktime
+from datetime import datetime, timedelta
+from itertools import product
 
-from vincent.core import field_property, Data
+from vincent.core import field_property, Data, LoadError
 import nose.tools as nt
 
 import pandas as pd
 import numpy as np
+
+
+sequences = {
+    'int': range,
+    'float': lambda l: map(float, range(l)),
+    'char': lambda l: map(chr, range(97, 97 + l)),
+    'datetime': lambda l: [datetime.now() + timedelta(days=i)
+                           for i in xrange(l)],
+    'Timestamp': lambda l: pd.date_range('1/2/2000', periods=l),
+    'numpy float': lambda l: map(np.float32, range(l)),
+    'numpy int': lambda l: map(np.int32, range(l))}
 
 
 def test_field_property():
@@ -69,126 +81,88 @@ class TestData(object):
 
         assert_field_typechecking(field_types, Data('name'))
 
+    def test_serialize(self):
+        """Objects are serialized to JSON-compatible objects"""
+        pass
+
     def test_pandas_series_loading(self):
         """Pandas Series objects are correctly loaded"""
-        # Integer-indexed, named series
-        test_s = pd.Series(np.random.randn(10))
-        test_s.name = 'myname'
-        data = Data.from_pandas(test_s)
-        expected_values = [
-            {Data._default_index_key: x, test_s.name: y}
-            for x, y in test_s.iterkv()]
-        nt.assert_list_equal(expected_values, data.values)
-        nt.assert_equal(data.name, test_s.name)
-        data.to_json()
+        # Test valid series types
+        name = ['_x', ' name']
+        length = [0, 1, 2]
+        index_key = [None, 'ix', 1]
+        index_types = ['int', 'char', 'datetime', 'Timestamp']
+        value_key = [None, 'x', 1]
+        value_types = [
+            'int', 'char', 'datetime', 'Timestamp', 'float',
+            'numpy float', 'numpy int']
 
-        # Integer-indexed series with new name
-        new_name = 'diffname'
-        data = Data.from_pandas(test_s, name=new_name)
-        expected_values = [
-            {Data._default_index_key: x, new_name: y}
-            for x, y in test_s.iterkv()]
-        nt.assert_list_equal(expected_values, data.values)
-        nt.assert_equal(data.name, new_name)
-        data.to_json()
+        series_info = product(
+            name, length, index_key, index_types, value_key, value_types)
+        for n, l, ikey, itype, vkey, vtype in series_info:
+            index = sequences[itype](l)
+            series = pd.Series(sequences[vtype](l), index=index, name=n,)
 
-        # Integer-indexed series with new data key
-        key = 'akey'
-        data = Data.from_pandas(test_s, data_key=key)
-        expected_values = [
-            {Data._default_index_key: x, key: y}
-            for x, y in test_s.iterkv()]
-        nt.assert_list_equal(expected_values, data.values)
-        nt.assert_equal(data.name, test_s.name)
-        data.to_json()
+            ikey = ikey or Data._default_index_key
+            vkey = vkey or series.name
+            expected = [
+                {ikey: Data.serialize(i), vkey: Data.serialize(v)}
+                for i, v in zip(index, series)]
 
-        # Integer-indexed series with new index key
-        key = 'ikey'
-        data = Data.from_pandas(test_s, index_key=key)
-        expected_values = [
-            {key: x, test_s.name: y}
-            for x, y in test_s.iterkv()]
-        nt.assert_list_equal(expected_values, data.values)
-        nt.assert_equal(data.name, test_s.name)
-        data.to_json()
+            data = Data.from_pandas(series, name=n, index_key=ikey,
+                                    data_key=vkey)
+            nt.assert_list_equal(expected, data.values)
+            nt.assert_equal(n, data.name)
+            data.to_json()
 
         # Missing a name
-        test_s = pd.Series(np.random.randn(10))
+        series = pd.Series(np.random.randn(10))
         nt.assert_raises_regexp(
-            Data.LoadError, 'name', Data.from_pandas, test_s)
-
-        # String-indexed series
-        test_s = pd.Series(5., index=['a', 'b', 'c', 'd'], name=new_name)
-        data = Data.from_pandas(test_s)
-        expected_values = [
-            {Data._default_index_key: x, test_s.name: y}
-            for x, y in test_s.iterkv()]
-        nt.assert_list_equal(expected_values, data.values)
-        data.to_json()
-
-        # Timestamp-indexed series
-        test_s = pd.Series(5., index=pd.date_range('1/1/2000', periods=4),
-                           name=new_name)
-        data = Data.from_pandas(test_s)
-        to_js_time = lambda t: int(mktime(t.timetuple()) * 1000)
-        expected_values = [
-            {Data._default_index_key: to_js_time(x), test_s.name: y}
-            for x, y in test_s.iterkv()]
-        nt.assert_list_equal(expected_values, data.values)
-        data.to_json()
+            LoadError, 'name', Data.from_pandas, series)
 
     def test_pandas_dataframe_loading(self):
         """Pandas DataFrame objects are correctly loaded"""
-        # Integer-indexed columns and indices
-        test_df = pd.DataFrame(np.random.randn(10, 3))
-        data = Data.from_pandas(test_df, name='myname')
-        idx = lambda i: [(Data._default_index_key, i)]
-        expected_values = [
-            dict(idx(i) + [(str(k), v) for k, v in row.iterkv()])
-            for i, row in test_df.iterrows()]
-        nt.assert_list_equal(expected_values, data.values)
-        nt.assert_equal(data.name, 'myname')
-        data.to_json()
+        name = ['_x']
+        length = [0, 1, 2]
+        index_key = [None, 'ix', 1]
+        index_types = ['int', 'char', 'datetime', 'Timestamp']
+        column_types = ['int', 'char', 'datetime', 'Timestamp']
 
-        # Integer-indexed columns and indices with new index key
-        test_df = pd.DataFrame(np.random.randn(10, 3))
-        key = 'ikey'
-        data = Data.from_pandas(test_df, name='myname', index_key=key)
-        idx = lambda i: [(key, i)]
-        expected_values = [
-            dict(idx(i) + [(str(k), v) for k, v in row.iterkv()])
-            for i, row in test_df.iterrows()]
-        nt.assert_list_equal(expected_values, data.values)
-        data.to_json()
+        # Leaving out some basic types here because we're not worried about
+        # serialization.
+        value_types = [
+            'char', 'datetime', 'Timestamp', 'numpy float', 'numpy int']
 
-        # String-indexed columns and indices
-        test_df = pd.DataFrame({
-            'x': pd.Series(1., index=['a', 'b', 'c']),
-            'y': pd.Series(2., index=['a', 'b', 'c'])})
-        data = Data.from_pandas(test_df, name='myname')
-        expected_values = [
-            {Data._default_index_key: i, 'x': 1., 'y': 2.}
-            for i in ['a', 'b', 'c']]
-        nt.assert_list_equal(expected_values, data.values)
-        data.to_json()
+        dataframe_info = product(
+            name, length, length, index_key, index_types, column_types,
+            value_types)
+        for n, rows, cols, ikey, itype, ctype, vtype in dataframe_info:
+            index = sequences[itype](rows)
+            columns = sequences[ctype](cols)
+            series = {
+                c: pd.Series(sequences[vtype](rows), index=index, name=n)
+                for c in columns}
+            dataframe = pd.DataFrame(series)
 
-        # Timestamp-indexed dataframe
-        idx = pd.date_range('1/1/2000', periods=4)
-        test_df = pd.DataFrame({
-            'x': pd.Series(1., index=idx),
-            'y': pd.Series(2., index=idx)})
-        data = Data.from_pandas(test_df, name='myname')
-        to_js_time = lambda t: int(mktime(t.timetuple()) * 1000)
-        expected_values = [
-            {Data._default_index_key: to_js_time(i), 'x': 1., 'y': 2.}
-            for i in idx]
-        nt.assert_list_equal(expected_values, data.values)
-        data.to_json()
+            ikey = ikey or Data._default_index_key
+            if cols == 0:
+                expected = []
+            else:
+                expected = [
+                    dict([(ikey, Data.serialize(index[i]))] +
+                         [(str(c), Data.serialize(series[c][i]))
+                          for c in columns])
+                    for i in xrange(rows)]
+
+            data = Data.from_pandas(dataframe, name=n, index_key=ikey)
+            nt.assert_list_equal(expected, data.values)
+            nt.assert_equal(n, data.name)
+            data.to_json()
 
         # Missing a name
         test_df = pd.DataFrame(np.random.randn(10, 3))
         nt.assert_raises_regexp(
-            Data.LoadError, 'name', Data.from_pandas, test_df)
+            LoadError, 'name', Data.from_pandas, test_df)
 
     def test_numpy_loading(self):
         """Numpy ndarray objects are correctly loaded"""

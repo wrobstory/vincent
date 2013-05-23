@@ -53,13 +53,14 @@ def _assert_is_type(name, value, value_type):
             raise TypeError(name + ' must be a ' + value_type.__name__)
 
 
+class LoadError(Exception):
+    """Exception for errors on loading data from third-party objects"""
+    pass
+
+
 class Data(object):
 
     _default_index_key = '_index'
-
-    class LoadError(Exception):
-        """Exception for errors on loading data from third-party objects"""
-        pass
 
     def __init__(self, name, **kwargs):
         self._field = {}
@@ -91,33 +92,20 @@ class Data(object):
     def transform(value):
         _assert_is_type('transform', value, list)
 
-    @classmethod
-    def _create_index(cls, key, idx):
-        """Convert an index into a JSON-serializable value"""
-        if isinstance(idx, str):
-            return [(key, idx)]
-        elif hasattr(idx, 'timetuple'):
-            return [(key, int(time.mktime(idx.timetuple())) * 1000)]
-        elif hasattr(idx, '__float__'):
-            return [(key, float(idx))]
-        elif hasattr(idx, '__int__'):
-            return [(key, int(idx))]
+    @staticmethod
+    def serialize(obj):
+        """Convert an object into a JSON-serializable value"""
+        if isinstance(obj, str):
+            return obj
+        elif hasattr(obj, 'timetuple'):
+            return int(time.mktime(obj.timetuple())) * 1000
+        elif hasattr(obj, '__float__'):
+            return float(obj)
+        elif hasattr(obj, '__int__'):
+            return int(obj)
         else:
-            raise cls.LoadError('cannot serialize index of type '
-                                + type(idx).__name__)
-
-    @classmethod
-    def _create_value(cls, idx):
-        """Convert a value data type into a JSON-serializable value"""
-        if isinstance(idx, str):
-            return idx
-        elif hasattr(idx, '__float__'):
-            return float(idx)
-        elif hasattr(idx, '__int__'):
-            return int(idx)
-        else:
-            raise cls.LoadError('cannot serialize value of type '
-                                + type(idx).__name__)
+            raise LoadError('cannot serialize index of type '
+                            + type(obj).__name__)
 
     @classmethod
     def from_pandas(cls, pd_obj, name=None, index_key=None, data_key=None,
@@ -148,14 +136,14 @@ class Data(object):
         # pandas land that hasn't made it into the main branch. This
         # function should be revisited if it ever does.
         if not pd:
-            raise cls.LoadError('pandas could not be imported')
+            raise LoadError('pandas could not be imported')
 
         if name:
             data = cls(name=name, **kwargs)
         elif hasattr(pd_obj, 'name') and pd_obj.name:
             data = cls(name=pd_obj.name, **kwargs)
         else:
-            raise cls.LoadError(
+            raise LoadError(
                 'name must be provided as argument or be attribute of '
                 'object')
 
@@ -164,15 +152,15 @@ class Data(object):
         if isinstance(pd_obj, pd.Series):
             data_key = data_key or data.name
             data.values = [
-                dict(cls._create_index(index_key, i) +
-                     [(data_key, cls._create_value(v))])
+                dict([(index_key, cls.serialize(i))] +
+                     [(data_key, cls.serialize(v))])
                 for i, v in pd_obj.iterkv()]
         elif isinstance(pd_obj, pd.DataFrame):
             # We have to explicitly convert the column names to strings
             # because the json serializer doesn't allow for integer keys.
             data.values = [
-                dict(cls._create_index(index_key, i) +
-                     [(str(k), v) for k, v in row.iterkv()])
+                dict([(index_key, cls.serialize(i))] +
+                     [(str(k), cls.serialize(v)) for k, v in row.iterkv()])
                 for i, row in pd_obj.iterrows()]
         else:
             raise ValueError('cannot load from data type '
@@ -185,7 +173,7 @@ class Data(object):
         """Load values from a NumPy array
         """
         if not np:
-            raise cls.LoadError('numpy could not be imported')
+            raise LoadError('numpy could not be imported')
         _assert_is_type('numpy object', np_obj, np.ndarray)
 
         # Integer index if none is provided
@@ -196,16 +184,16 @@ class Data(object):
         index_key = index_key or cls._default_index_key
 
         if len(index) != np_obj.shape[0]:
-            raise cls.LoadError(
+            raise LoadError(
                 'length of index must be equal to number of rows of array')
         elif len(columns) != np_obj.shape[1]:
-            raise cls.LoadError(
+            raise LoadError(
                 'length of columns must be equal to number of columns of '
                 'array')
 
         data = cls(name=name, **kwargs)
         data.values = [
-            dict(cls._create_index(index_key, idx) +
+            dict([(index_key, cls.serialize(idx))] +
                  [(col, x) for col, x in zip(columns, row)])
             for idx, row in zip(index, np_obj.tolist())]
 
