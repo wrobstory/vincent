@@ -74,27 +74,80 @@ class Data(object):
 
     @field_property
     def name(value):
+        """String containing the name of the data. This is used by other
+        components (marks, etc.) for reference.
+        """
         _assert_is_type('name', value, str)
 
     @field_property
     def url(value):
+        """String containing URL from which to load the data. This can be
+        used as an alternative to defining the data in the `values`
+        attribute.
+        """
         _assert_is_type('url', value, str)
 
     @field_property
     def values(value):
+        """List containing data.
+
+        Data is represented in tabular form, where each element of `values`
+        corresponds to a "row" of data.  Each row of data is represented by
+        a dict. The keys of the dict are columns and the values are
+        individual data points. The keys of the dicts must be strings for
+        the data to correctly serialize to JSON.
+
+        The data will often have an `index` column representing the
+        independent variable, with the remaining columns representing the
+        dependent variables, though this is not required. The `Data` class
+        itself, however, is agnostic to which columns are dependent and
+        independent.
+
+        For example, the values attribute
+
+            [{'x': 0, 'y': 3.2}, {'x': 1, 'y': 1.3}]
+
+        could represent two rows of two variables - possibly an independent
+        variable 'x' and a dependent variable 'y'.
+
+        It may be more convenient to load data from pandas or NumPy objects.
+        See the functions `Data.from_pandas` and `Data.from_numpy`.
+        """
         _assert_is_type('values', value, list)
+        for row in value:
+            _assert_is_type('values row', row, dict)
 
     @field_property
     def source(value):
+        """String containing the `name` of another data set to use for this
+        data set. Typically used with data transforms.
+        """
         _assert_is_type('source', value, str)
 
     @field_property
     def transform(value):
+        """A list of possible transforms to apply to the data.
+
+        Note: No additional validation is currently implemented.
+        """
         _assert_is_type('transform', value, list)
+
+    @field_property
+    def format(value):
+        """A dict containing information about the data format. Only used
+        when loading data from a URL.
+
+        Note: No additional validation is currently implemented.
+        """
+        _assert_is_type('format', value, dict)
 
     @staticmethod
     def serialize(obj):
-        """Convert an object into a JSON-serializable value"""
+        """Convert an object into a JSON-serializable value
+
+        This is used by the `from_pandas` and `from_numpy` functions to
+        convert data to JSON-serializable types when loading.
+        """
         if isinstance(obj, str):
             return obj
         elif hasattr(obj, 'timetuple'):
@@ -131,6 +184,9 @@ class Data(object):
             `data_key` is `x`, then the entries of the `values` list will be
 
                 {'_index': ..., 'x': ...}
+
+        **kwargs : dict
+            Additional arguments passed to the `Data` constructor.
         """
         # Note: There's an experimental JSON encoder floating around in
         # pandas land that hasn't made it into the main branch. This
@@ -171,6 +227,27 @@ class Data(object):
     def from_numpy(cls, np_obj, name, columns, index=None, index_key=None,
                    **kwargs):
         """Load values from a NumPy array
+
+        Parameters
+        ----------
+        np_obj : numpy.ndarray
+            NumPy array to load data from.
+        name : string
+            `name` field of the data.
+        columns : iterable
+            Sequence of column names, from left to right. Must have same
+            length as the number of columns of `np_obj`.
+        index : iterable
+            Sequence of indices from top to bottom. If None (default), then
+            the indices are integers starting at 0. Must have same length as
+            the number of rows of `np_obj`.
+        index_key : string
+            Key to use for the index. If None, `_index` is used.
+        **kwargs : dict
+            Additional arguments passed to the `Data` constructor.
+
+        The individual elements of `np_obj`, `columns`, and `index` must
+        return valid values from the `Data.serialize` function.
         """
         if not np:
             raise LoadError('numpy could not be imported')
@@ -199,16 +276,20 @@ class Data(object):
 
         return data
 
-    def to_json(self, overwrite_url=False):
+    def to_json(self, data_path=None):
         """Convert data to JSON
 
         Parameters
         ----------
-        overwrite_url : boolean
-            If False (default) and a file already exists at the `url`, it
-            will not be overwritten and an exception will be raised. If
-            True, the file is overwritten. If `url` is None, then this has
-            no effect.
+        data_path : string
+            If not None, then data is written to a separate file at the
+            specified path. Note that the `url` attribute must be set
+            independently.
+
+        Returns
+        -------
+        vega_json : string
+            Valid Vega JSON.
         """
         #TODO: support writing to separate file
         return json.dumps(self._field)
