@@ -23,23 +23,6 @@ def _assert_is_type(name, value, value_type):
             raise TypeError(name + ' must be ' + value_type.__name__)
 
 
-def _field_property_creator(validator, name):
-    """Create a field property using the given name as a key.
-    """
-    def setter(self, value):
-        validator(value)
-        self._field[name] = value
-
-    def getter(self):
-        return self._field.get(name, None)
-
-    def deleter(self):
-        if name in self._field:
-            del self._field[name]
-
-    return property(getter, setter, deleter, validator.__doc__)
-
-
 def field_property(arg):
     """Decorator to define properties that map to the internal `_field`
     dict.
@@ -58,6 +41,20 @@ def field_property(arg):
     the key for the internal `_field` dict. This can be useful if the
     property name conflicts with a Python keyword.
     """
+    def _field_property_creator(validator, name):
+        def setter(self, value):
+            validator(value)
+            self._field[name] = value
+
+        def getter(self):
+            return self._field.get(name, None)
+
+        def deleter(self):
+            if name in self._field:
+                del self._field[name]
+
+        return property(getter, setter, deleter, validator.__doc__)
+
     if isinstance(arg, str):
         def field_property(validator):
             return _field_property_creator(validator, arg)
@@ -67,11 +64,11 @@ def field_property(arg):
         return _field_property_creator(arg, arg.__name__)
 
 
-class _FieldClass(object):
+class FieldClass(object):
     """Base class for objects that rely on an internal `_field` dict.
     """
     def __init__(self, **kwargs):
-        """Initialize a _FieldClass
+        """Initialize a FieldClass
 
         **kwargs are attribute-value pairs that are set on initialization.
         """
@@ -111,7 +108,7 @@ class _FieldClass(object):
         raise NotImplementedError()
 
 
-class Vis(_FieldClass):
+class Vis(FieldClass):
     """Visualization container class.
 
     This class defines an entire visualization.
@@ -176,11 +173,11 @@ class Vis(_FieldClass):
 
     @field_property
     def data(value):
-        """list with elements of `Data` or dict : Data definitions
+        """list with elements of `Data` : Data definitions
         """
         _assert_is_type('data', value, list)
         for i, entry in enumerate(value):
-            _assert_is_type('data[%g]' % i, entry, (dict, Data))
+            _assert_is_type('data[%g]' % i, entry,  Data)
 
     @field_property
     def scales(value):
@@ -202,6 +199,13 @@ class Vis(_FieldClass):
         """
         _assert_is_type('marks', value, list)
 
+    def validate(self):
+        """Validate the visualization contents.
+        """
+        super(self.__class__, self).validate()
+        for elem in (self.data + self.scales + self.axes + self.marks):
+            elem.validate()
+
     def load_pandas(self, pd_obj, name=None, append=False):
         if not append:
             self.data = []
@@ -219,11 +223,11 @@ class LoadError(Exception):
     pass
 
 
-class Data(_FieldClass):
+class Data(FieldClass):
     _default_index_key = '_index'
 
     def __init__(self, name, **kwargs):
-        super(Data, self).__init__(**kwargs)
+        super(self.__class__, self).__init__(**kwargs)
         self.name = name
 
     @field_property
@@ -247,9 +251,9 @@ class Data(_FieldClass):
 
         Data is represented in tabular form, where each element of `values`
         corresponds to a "row" of data.  Each row of data is represented by
-        a dict. The keys of the dict are columns and the values are
-        individual data points. The keys of the dicts must be strings for
-        the data to correctly serialize to JSON.
+        a dict or a raw number. The keys of the dict are columns and the
+        values are individual data points. The keys of the dicts must be
+        strings for the data to correctly serialize to JSON.
 
         The data will often have an `index` column representing the
         independent variable, with the remaining columns representing the
@@ -264,12 +268,17 @@ class Data(_FieldClass):
         could represent two rows of two variables - possibly an independent
         variable 'x' and a dependent variable 'y'.
 
+        For simple data sets, an alternative values attribute could be a
+        simple list of numbers:
+
+            [2, 12, 3, 5]
+
         It may be more convenient to load data from pandas or NumPy objects.
         See the functions `Data.from_pandas` and `Data.from_numpy`.
         """
         _assert_is_type('values', value, list)
         for row in value:
-            _assert_is_type('values row', row, dict)
+            _assert_is_type('values row', row, (float, int, dict))
 
     @field_property
     def source(value):
@@ -447,81 +456,204 @@ class Data(_FieldClass):
         return json.dumps(self._field)
 
 
-class Mark(_FieldClass):
+class Mark(FieldClass):
 
-    class ValueRef(_FieldClass):
-        @field_property
-        def value(value):
-            _assert_is_type('value', value, (str, int, float))
-
-        @field_property
-        def field(value):
-            _assert_is_type('field', value, str)
-
-        @field_property
-        def scale(value):
-            _assert_is_type('scale', value, str)
-
-        @field_property
-        def mult(value):
-            _assert_is_type('mult', value, (int, float))
-
-        @field_property
-        def offset(value):
-            _assert_is_type('offset', value, (int, float))
-
-        @field_property
-        def band(value):
-            _assert_is_type('band', value, bool)
-
-    class Property(_FieldClass):
+    class Properties(FieldClass):
         @field_property
         def x(value):
-            _assert_is_type('x', value, (Mark.ValueRef, dict))
+            _assert_is_type('x', value, ValueRef)
 
         @field_property
         def x2(value):
-            _assert_is_type('x2', value, (Mark.ValueRef, dict))
+            _assert_is_type('x2', value, ValueRef)
 
         @field_property
         def width(value):
-            _assert_is_type('width', value, (Mark.ValueRef, dict))
+            _assert_is_type('width', value, ValueRef)
 
         @field_property
         def y(value):
-            _assert_is_type('y', value, (Mark.ValueRef, dict))
+            _assert_is_type('y', value, ValueRef)
 
         @field_property
         def y2(value):
-            _assert_is_type('y2', value, (Mark.ValueRef, dict))
+            _assert_is_type('y2', value, ValueRef)
 
         @field_property
         def height(value):
-            _assert_is_type('height', value, (Mark.ValueRef, dict))
+            _assert_is_type('height', value, ValueRef)
 
         @field_property
         def opacity(value):
-            _assert_is_type('opacity', value, (Mark.ValueRef, dict))
+            _assert_is_type('opacity', value, ValueRef)
 
         @field_property
         def fill(value):
-            _assert_is_type('fill', value, (Mark.ValueRef, dict))
+            _assert_is_type('fill', value, ValueRef)
 
         @field_property('fillOpacity')
         def fill_opacity(value):
-            _assert_is_type('fill_opacity', value, (Mark.ValueRef, dict))
+            _assert_is_type('fill_opacity', value, ValueRef)
 
         @field_property
         def stroke(value):
-            _assert_is_type('stroke', value, (Mark.ValueRef, dict))
+            _assert_is_type('stroke', value, ValueRef)
 
         @field_property('strokeWidth')
         def stroke_width(value):
-            _assert_is_type('stroke_width', value, (Mark.ValueRef, dict))
+            _assert_is_type('stroke_width', value, ValueRef)
 
         @field_property('strokeOpacity')
         def stroke_opacity(value):
-            _assert_is_type('stroke_opacity', value, (Mark.ValueRef, dict))
+            _assert_is_type('stroke_opacity', value, ValueRef)
+
+        @field_property
+        def size(value):
+            _assert_is_type('size', value, ValueRef)
+
+        @field_property
+        def shape(value):
+            _assert_is_type('shape', value, ValueRef)
+
+        @field_property
+        def path(value):
+            _assert_is_type('path', value, ValueRef)
+
+        @field_property('innerRadius')
+        def inner_radius(value):
+            """ValueRef - number, inner radius of arc in pixels
+
+            Only used if `type` is `'arc'`."""
+            _assert_is_type('inner_radius', value, ValueRef)
+
+        @field_property('outerRadius')
+        def outer_radius(value):
+            """ValueRef - number, outer radius of the arc in pixels
+
+            Only used if `type` is `'arc'`."""
+            _assert_is_type('outer_radius', value, ValueRef)
+
+        @field_property('startAngle')
+        def start_angle(value):
+            """ValueRef - number, start angle of the arc in radians
+
+            Only used if `type` is `'arc'`."""
+            _assert_is_type('start_angle', value, ValueRef)
+
+        @field_property('endAngle')
+        def end_angle(value):
+            """ValueRef - number, end angle of the arc in radians
+
+            Only used if `type` is `'arc'`."""
+            _assert_is_type('end_angle', value, ValueRef)
+
+        @field_property
+        def interpolate(value):
+            """ValueRef - string, line interpolation method to use
+
+            Possible values for `area` types are `'linear'`,
+            `'step-before'`, `'step-after'`, `'basis'`, `'basis-open'`,
+            `'cardinal'`, `'cardinal-open'`, `'monotone'`. `line` types
+            have all values for `area` as well as `'basis-closed'`,
+            `'bundle'`, and `'cardinal-closed'`.
+
+            Only used if `type` is `'area'` or `'line'`."""
+            _assert_is_type('interpolate', value, ValueRef)
+            #TODO check values
+
+        @field_property
+        def tension(value):
+            """ValueRef - number, tension used for interpolation
+
+            Only used if `type` is `'area'` or `'line'`."""
+            _assert_is_type('tension', value, ValueRef)
+
+        @field_property
+        def url(value):
+            """ValueRef - string, url of image
+
+            Only used if `type` is `'image'`."""
+            _assert_is_type('url', value, ValueRef)
+
+        @field_property
+        def align(value):
+            """ValueRef - string, horizontal alignment of mark
+
+            Possible values are `'left'`, `'right'`, and `'center'`. Only
+            used if `type` is `'image'` or `'text'`."""
+            _assert_is_type('align', value, ValueRef)
+            #TODO check values
+
+        @field_property
+        def baseline(value):
+            """ValueRef - string, vertical alignment of mark
+
+            Possible values are `'top'`, `'middle'`, and `'bottom'`. Only
+            used if `type` is `'image'` or `'text'`."""
+            _assert_is_type('baseline', value, ValueRef)
+            #TODO check values
+
+        @field_property
+        def text(value):
+            """ValueRef - string, text to display
+
+            Only used if `type` is `'text'`."""
+            _assert_is_type('text', value, ValueRef)
+
+        @field_property
+        def dx(value):
+            """ValueRef - number, horizontal margin between text and anchor
+            point in pixels
+
+            Ignored if `align` is `'center'`. Only used if `type` is
+            `'text'`."""
+            _assert_is_type('dx', value, ValueRef)
+
+        @field_property
+        def dy(value):
+            """ValueRef - number, vertical margin between text and anchor
+            point in pixels
+
+            Ignored if `baseline` is `'middle'`. Only used if `type` is
+            `'text'`."""
+            _assert_is_type('dy', value, ValueRef)
+
+        @field_property
+        def angle(value):
+            """ValueRef - number, rotation of text in degrees
+
+            Only used if `type` is `'text'`."""
+            _assert_is_type('angle', value, ValueRef)
+
+        @field_property
+        def font(value):
+            """ValueRef - string, typeface for text
+
+            Only used if `type` is `'text'`."""
+            _assert_is_type('font', value, ValueRef)
+
+        @field_property('fontSize')
+        def font_size(value):
+            """ValueRef - number, font size in pixels
+
+            Only used if `type` is `'text'`."""
+            _assert_is_type('font_size', value, ValueRef)
+
+        @field_property('fontWeight')
+        def font_weight(value):
+            """ValueRef - string, font weight
+
+            Should be a valid SVG font weight. Only used if `type` is
+            `'text'`."""
+            _assert_is_type('font_weight', value, ValueRef)
+
+        @field_property('fontStyle')
+        def font_style(value):
+            """ValueRef - string, font style
+
+            Should be a valid SVG font style. Only used if `type` is
+            `'text'`."""
+            _assert_is_type('font_style', value, ValueRef)
 
     _valid_type_values = [
         'rect', 'symbol', 'path', 'arc', 'area', 'line', 'image', 'text']
@@ -554,7 +686,7 @@ class Mark(_FieldClass):
 
     @field_property
     def properties(value):
-        _assert_is_type('properties', value, dict)
+        _assert_is_type('properties', value, Mark.Properties)
 
     @field_property
     def key(value):
@@ -569,5 +701,31 @@ class Mark(_FieldClass):
         _assert_is_type('ease', value, str)
 
 
-class Scale(_FieldClass):
+class ValueRef(FieldClass):
+    @field_property
+    def value(value):
+        _assert_is_type('value', value, (str, int, float))
+
+    @field_property
+    def field(value):
+        _assert_is_type('field', value, str)
+
+    @field_property
+    def scale(value):
+        _assert_is_type('scale', value, str)
+
+    @field_property
+    def mult(value):
+        _assert_is_type('mult', value, (int, float))
+
+    @field_property
+    def offset(value):
+        _assert_is_type('offset', value, (int, float))
+
+    @field_property
+    def band(value):
+        _assert_is_type('band', value, bool)
+
+
+class Scale(FieldClass):
     pass
