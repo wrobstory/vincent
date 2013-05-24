@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
+
+from vincent.core import field_property, Data
+=======
 from datetime import datetime, timedelta
 from itertools import product
 
 from vincent.core import field_property, Data, LoadError
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
 import nose.tools as nt
 
 import pandas as pd
 import numpy as np
 
 
+<<<<<<< HEAD
+=======
 sequences = {
     'int': range,
     'float': lambda l: map(float, range(l)),
@@ -20,6 +27,7 @@ sequences = {
     'numpy int': lambda l: map(np.int32, range(l))}
 
 
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
 def test_field_property():
     """Field property decorator behaves correctly."""
     validator_fail = False
@@ -81,6 +89,34 @@ class TestData(object):
 
         assert_field_typechecking(field_types, Data('name'))
 
+<<<<<<< HEAD
+    def test_pandas_series_loading(self):
+        """Pandas Series objects are correctly loaded"""
+        test_s = pd.Series(np.random.randn(10))
+        test_s.name = 'myname'
+        data = Data.from_pandas(test_s)
+        expected_values = [
+            {Data._default_index_key: x, test_s.name: y}
+            for x, y in test_s.iterkv()]
+        nt.assert_list_equal(expected_values, data.values)
+        nt.assert_equal(data.name, test_s.name)
+
+        new_name = 'diffname'
+        data = Data.from_pandas(test_s, name=new_name)
+        expected_values = [
+            {Data._default_index_key: x, new_name: y}
+            for x, y in test_s.iterkv()]
+        nt.assert_list_equal(expected_values, data.values)
+        nt.assert_equal(data.name, new_name)
+
+        key = 'akey'
+        data = Data.from_pandas(test_s, key=key)
+        expected_values = [
+            {Data._default_index_key: x, key: y}
+            for x, y in test_s.iterkv()]
+        nt.assert_list_equal(expected_values, data.values)
+        nt.assert_equal(data.name, test_s.name)
+=======
     def test_serialize(self):
         """Objects are serialized to JSON-compatible objects"""
         pass
@@ -193,3 +229,4 @@ class TestData(object):
             {ikey: i, 'a': row[0], 'b': row[1], 'c': row[2]}
             for i, row in zip(index, test_data.tolist())]
         nt.assert_list_equal(expected_values, data.values)
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4

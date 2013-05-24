@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
+
+import json
+=======
 import json
 import time
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
 
 try:
     import pandas as pd
@@ -53,15 +58,25 @@ def _assert_is_type(name, value, value_type):
             raise TypeError(name + ' must be a ' + value_type.__name__)
 
 
+<<<<<<< HEAD
+=======
 class LoadError(Exception):
     """Exception for errors on loading data from third-party objects"""
     pass
 
 
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
 class Data(object):
 
     _default_index_key = '_index'
 
+<<<<<<< HEAD
+    class LoadError(Exception):
+        """Exception for errors on loading data from third-party objects"""
+        pass
+
+=======
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
     def __init__(self, name, **kwargs):
         self._field = {}
         self.name = name
@@ -74,21 +89,33 @@ class Data(object):
 
     @field_property
     def name(value):
+<<<<<<< HEAD
+=======
         """String containing the name of the data. This is used by other
         components (marks, etc.) for reference.
         """
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
         _assert_is_type('name', value, str)
 
     @field_property
     def url(value):
+<<<<<<< HEAD
+=======
         """String containing URL from which to load the data. This can be
         used as an alternative to defining the data in the `values`
         attribute.
         """
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
         _assert_is_type('url', value, str)
 
     @field_property
     def values(value):
+<<<<<<< HEAD
+        _assert_is_type('values', value, list)
+
+    @field_property
+    def source(value):
+=======
         """List containing data.
 
         Data is represented in tabular form, where each element of `values`
@@ -122,10 +149,55 @@ class Data(object):
         """String containing the `name` of another data set to use for this
         data set. Typically used with data transforms.
         """
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
         _assert_is_type('source', value, str)
 
     @field_property
     def transform(value):
+<<<<<<< HEAD
+        _assert_is_type('transform', value, list)
+
+    @classmethod
+    def from_pandas(cls, pd_obj, name=None, columns=None, use_index=True,
+                    key=None, **kwargs):
+        """Load values from a pandas Series or DataFrame
+        """
+        if not pd:
+            raise cls.LoadError('pandas could not be imported')
+
+        if isinstance(pd_obj, pd.Series):
+            if name:
+                data = cls(name=name, **kwargs)
+            elif pd_obj.name:
+                data = cls(name=pd_obj.name, **kwargs)
+            else:
+                raise cls.LoadError(
+                    'name must be provided or be attribute of Series')
+
+            if not key:
+                key = data.name
+
+            data.values = [
+                {cls._default_index_key: i, key: v}
+                for i, v in pd_obj.iterkv()]
+        else:
+            raise ValueError('cannot load from data type '
+                             + type(pd_obj).__name__)
+
+        return data
+
+    def from_numpy(self, np_obj, index=None):
+        """Load values from a NumPy array
+        """
+        if not np:
+            raise self.LoadError('numpy could not be imported')
+        _assert_is_type('numpy object', np_obj, np.ndarray)
+
+        if not self.values:
+            self.values = []
+
+    def to_json(self):
+=======
         """A list of possible transforms to apply to the data.
 
         Note: No additional validation is currently implemented.
@@ -292,4 +364,5 @@ class Data(object):
             Valid Vega JSON.
         """
         #TODO: support writing to separate file
+>>>>>>> 8cacea357e8e5f39183f6aaa091b9511635b34a4
         return json.dumps(self._field)
