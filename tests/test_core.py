@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from itertools import product
+import json
 
-from vincent.core import field_property, Data
+from vincent.core import field_property, Data, ValueRef, Mark
 import nose.tools as nt
 
 import pandas as pd
@@ -193,3 +194,56 @@ class TestData(object):
             {ikey: i, 'a': row[0], 'b': row[1], 'c': row[2]}
             for i, row in zip(index, test_data.tolist())]
         nt.assert_list_equal(expected_values, data.values)
+
+
+class TestValueRef(object):
+    def test_field_typechecking(self):
+        """ValueRef fields are correctly type-checked"""
+        field_types = [
+            ('value', str),
+            ('value', int),
+            ('value', float),
+            ('field', str),
+            ('scale', str),
+            ('mult', int),
+            ('mult', float),
+            ('offset', int),
+            ('offset', float),
+            ('band', bool)]
+        assert_field_typechecking(field_types, ValueRef())
+
+    def test_json_serialization(self):
+        """ValueRef JSON is correctly serialized"""
+        vref = ValueRef()
+        nt.assert_equal(json.dumps({}), vref.to_json())
+
+        props = {
+            'value': 'test-value',
+            'band': True}
+        vref = ValueRef(**props)
+        nt.assert_equal(json.dumps(props), vref.to_json())
+
+        props = {
+            'value': 'test-value',
+            'field': 'test-field',
+            'scale': 'test-scale',
+            'mult': 1.2,
+            'offset': 4,
+            'band': True}
+        vref = ValueRef(**props)
+        nt.assert_equal(json.dumps(props), vref.to_json())
+
+
+class TestMarkPropertySet(object):
+    def test_field_typechecking(self):
+        """Mark.PropertySet fields are correctly type-checked"""
+        # All fields must be ValueRef for Mark properties
+        fields = [
+            'x', 'x2', 'width', 'y', 'y2', 'height', 'opacity', 'fill',
+            'fill_opacity', 'stroke', 'stroke_width', 'stroke_opacity',
+            'size', 'shape', 'path', 'inner_radius', 'outer_radius',
+            'start_angle', 'end_angle', 'interpolate', 'tension', 'url',
+            'align', 'baseline', 'text', 'dx', 'dy', 'angle', 'font',
+            'font_size', 'font_weight', 'font_style']
+        field_types = [(f, ValueRef) for f in fields]
+        assert_field_typechecking(field_types, Mark.PropertySet())
