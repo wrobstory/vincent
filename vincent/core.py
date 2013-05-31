@@ -246,73 +246,78 @@ class Data(FieldClass):
 
     @field_property(str)
     def name(value):
-        """String containing the name of the data. This is used by other
-        components (marks, etc.) for reference.
+        """string : Name of the data
+
+        This is used by other components (`Mark`, etc.) for reference.
         """
 
     @field_property(str)
     def url(value):
-        """String containing URL from which to load the data. This can be
-        used as an alternative to defining the data in the `values`
-        attribute.
+        """string : URL from which to load the data
+
+        This can be used as an alternative to defining the data in the
+        ``values`` attribute.
         """
 
     @field_property(list)
     def values(value):
-        """List containing data.
+        """list : Data contents
 
-        Data is represented in tabular form, where each element of `values`
-        corresponds to a "row" of data.  Each row of data is represented by
-        a dict or a raw number. The keys of the dict are columns and the
-        values are individual data points. The keys of the dicts must be
-        strings for the data to correctly serialize to JSON.
+        Data is represented in tabular form, where each element of
+        ``values`` corresponds to a row of data.  Each row of data is
+        represented by a dict or a raw number. The keys of the dict are
+        columns and the values are individual data points. The keys of the
+        dicts must be strings for the data to correctly serialize to JSON.
 
-        The data will often have an `index` column representing the
+        The data will often have an "index" column representing the
         independent variable, with the remaining columns representing the
-        dependent variables, though this is not required. The `Data` class
+        dependent variables, though this is not required. The ``Data`` class
         itself, however, is agnostic to which columns are dependent and
         independent.
 
         For example, the values attribute
-
-            [{'x': 0, 'y': 3.2}, {'x': 1, 'y': 1.3}]
-
+        ``[{'x': 0, 'y': 3.2}, {'x': 1, 'y': 1.3}]``
         could represent two rows of two variables - possibly an independent
-        variable 'x' and a dependent variable 'y'.
-
+        variable ``'x'`` and a dependent variable ``'y'``.
         For simple data sets, an alternative values attribute could be a
-        simple list of numbers:
-
-            [2, 12, 3, 5]
+        simple list of numbers such as
+        ``[2, 12, 3, 5]``.
 
         It may be more convenient to load data from pandas or NumPy objects.
-        See the methods `Data.from_pandas` and `Data.from_numpy`.
+        See the methods :func:`Data.from_pandas` and
+        :func:`Data.from_numpy`.
         """
         for row in value:
             _assert_is_type('values row', row, (float, int, dict))
 
     @field_property(str)
     def source(value):
-        """String containing the `name` of another data set to use for this
-        data set. Typically used with data transforms.
+        """string : ``name`` field of another data set
+
+        This is typically used with data transforms to create new data
+        values.
         """
 
     @field_property(list)
     def transform(value):
-        """A list of possible transforms to apply to the data.
+        """list : transforms to apply to the data
+
+        Note: Transform-relational classes are not yet implemented.
         """
 
     @field_property(dict)
     def format(value):
-        """A dict containing information about the data format. Only used
-        when loading data from a URL.
+        """dict : information about the data format
+
+        This is only used when loading data from the ``url`` attribute.
+        Format-relational classes are not yet implemented.
         """
 
     @staticmethod
     def serialize(obj):
         """Convert an object into a JSON-serializable value
 
-        This is used by the `from_pandas` and `from_numpy` functions to
+        This is used by the ``from_pandas`` and ``from_numpy`` functions to
         convert data to JSON-serializable types when loading.
         """
         if isinstance(obj, str):
@@ -332,30 +337,28 @@ class Data(FieldClass):
     @classmethod
     def from_pandas(cls, pd_obj, name=None, index_key=None, data_key=None,
                     **kwargs):
-        """Load values from a pandas Series or DataFrame
+        """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters
         ----------
-        pd_obj : pandas Series or DataFrame
+        pd_obj : pandas ``Series`` or ``DataFrame``
             Pandas object to import data from.
         name : string
-            Applies to the `name` attribute of the generated class. If None
-            (default), then `pd_obj` the `name` attribute is used if it
-            exists, or 'table' if it doesn't.
+            Applies to the ``name`` attribute of the generated class. If
+            ``None`` (default), then the ``name`` attribute of ``pd_obj`` is
+            used if it exists, or ``'table'`` if it doesn't.
         index_key : string
-            In each dict entry of the `values` attribute, the index of the
-            pandas object will have this key. If None, then `_index` is
-            used.
+            In each :class:`dict` entry of the ``values`` attribute, the
+            index of the pandas object will have this key. If ``None``
+            (default), then ``_index`` is used.
         data_key : string
-            Applies only to Series. If None (default), then the data is
-            indexed by the `name` attribute of the generated class.
+            Applies only to ``Series``. If ``None`` (default), then the data is
+            indexed by the ``name`` attribute of the generated class.
             Otherwise, the data will be indexed by this key. For example, if
-            `data_key` is `x`, then the entries of the `values` list will be
-
-                {'_index': ..., 'x': ...}
-
+            ``data_key`` is ``'x'``, then the entries of the ``values`` list
+            will be ``{'_index': ..., 'x': ...}``.
         **kwargs : dict
-            Additional arguments passed to the `Data` constructor.
+            Additional arguments passed to the :class:`Data` constructor.
         """
         # Note: There's an experimental JSON encoder floating around in
         # pandas land that hasn't made it into the main branch. This
@@ -393,30 +396,37 @@ class Data(FieldClass):
     @classmethod
     def from_numpy(cls, np_obj, name, columns, index=None, index_key=None,
                    **kwargs):
-        """Load values from a NumPy array
+        """Load values from a numpy array
 
         Parameters
         ----------
         np_obj : numpy.ndarray
-            NumPy array to load data from.
+            numpy array to load data from
         name : string
-            `name` field of the data.
+            ``name`` field for the data
         columns : iterable
             Sequence of column names, from left to right. Must have same
-            length as the number of columns of `np_obj`.
+            length as the number of columns of ``np_obj``.
         index : iterable
-            Sequence of indices from top to bottom. If None (default), then
-            the indices are integers starting at 0. Must have same length as
-            the number of rows of `np_obj`.
+            Sequence of indices from top to bottom. If ``None`` (default),
+            then the indices are integers starting at 0. Must have same
+            length as the number of rows of ``np_obj``.
         index_key : string
-            Key to use for the index. If None, `_index` is used.
+            Key to use for the index. If ``None`` (default), ``_index`` is
+            used.
         **kwargs : dict
-            Additional arguments passed to the `Data` constructor.
+            Additional arguments passed to the :class:`Data` constructor
 
         Notes
         -----
-        The individual elements of `np_obj`, `columns`, and `index` must
-        return valid values from the `Data.serialize` function.
+        The individual elements of ``np_obj``, ``columns``, and ``index``
+        must return valid values from :func:`Data.serialize`.
+
+        Raises
+        ------
+        LoadError : if numpy could not be imported or dimensions of
+        arguments do not agree
+        TypeError : if ``np_obj`` is not an instance of ``ndarray``
         """
         if not np:
             raise LoadError('numpy could not be imported')
@@ -842,27 +852,27 @@ class DataRef(FieldClass):
 class Scale(FieldClass):
     @field_property(str)
     def name(value):
-        """str : Unique name for the scale
+        """string : Unique name for the scale
 
-        This is used for referencing by other components (mainly `Mark`s).
+        This is used for referencing by other components (mainly ``Mark``).
         """
 
     @field_property(str)
     def type(value):
-        """str : Type of the scale
+        """string : Type of the scale
 
         Valid types are as follows:
-            - `'ordinal'`: all ordinal scale types
-            - `'time'` or `'utc'`: all time scale types
-            - `'linear'`, `'log'`, `'pow'`, `'sqrt'`, `'quantile'`,
-              `'quantize'`, and `'threshold'`: all quantitative scale types
 
-        See the d3 documentation for details of scale types.
+        * ``'ordinal'``: ordinal scale types
+        * ``'time'`` or ``'utc'``: time scale types
+        * ``'linear'``, ``'log'``, ``'pow'``, ``'sqrt'``, ``'quantile'``,
+          ``'quantize'``, and ``'threshold'``: quantitative scale types
 
-        For time scales, the value should be a numeric value of seconds.
-        `'time'` implies the value is in local time.
+        For time scales, the value should be a Javascript-style numeric
+        value of seconds.  ``'time'`` implies the value is in local time.
 
-        If unspecified, then the scale is assumed to be linear.
+        If unspecified, then the scale is assumed to be linear. See the d3
+        documentation for scale type details.
         """
 
     @field_property((list, DataRef))
@@ -875,7 +885,7 @@ class Scale(FieldClass):
         """float, int, or DataRef : Minimum domain value
 
         Only used for quantitative/time scales. This takes precedence over
-        the minimum of the `domain` property.
+        the minimum of the ``domain`` property.
         """
 
     @field_property(field_type=(float, int, DataRef),
@@ -884,26 +894,25 @@ class Scale(FieldClass):
         """float, int, or DataRef : Maximum domain value
 
         Only used for quantitative/time scales. This takes precedence over
-        the maximum of the `domain` property.
+        the maximum of the ``domain`` property.
         """
 
     @field_property((list, str))
     def range(value):
-        """list or str : Range of the scale
+        """list or string : Range of the scale
 
         For quantitative scales, the range may be specified as a two-element
         list of min/max values. For ordinal scales, the range should be a
         list of output values mapped to the input values.
 
         String values may be used to automatically set a range:
-            - 'width': Set the range to the width of the visualization
-            - 'height': Set the range to the height of the visualization
-            - 'shapes': Equivalent to the symbol types:
-
-                ["circle", "cross", "diamond", "square", "triangle-down",
-                "triangle-up"]
-            - 'category10': A pre-determined 10-color pallet
-            - 'category20': A pre-determined 20-color pallet
+            - ``'width'``: Set the range to the width of the visualization
+            - ``'height'``: Set the range to the height of the visualization
+            - ``'shapes'``: Equivalent to the symbol types:
+                ``["circle", "cross", "diamond", "square", "triangle-down",
+                "triangle-up"]``
+            - ``'category10'``: A pre-determined 10-color pallet
+            - ``'category20'``: A pre-determined 20-color pallet
         """
 
     @field_property(field_type=(float, int, DataRef), field_name='rangeMin')
@@ -911,7 +920,7 @@ class Scale(FieldClass):
         """float, int, or DataRef : Minimum range value
 
         Only used for quantitative/time scales. This takes precedence over
-        the minimum of the `range` property.
+        the minimum of the ``range`` property.
         """
 
     @field_property(field_type=(float, int, DataRef), field_name='rangeMax')
@@ -919,7 +928,7 @@ class Scale(FieldClass):
         """float, int, or DataRef : Maximum range value
 
         Only used for quantitative/time scales. This takes precedence over
-        the maximum of the `range` property.
+        the maximum of the ``range`` property.
         """
 
     @field_property(bool)
@@ -934,7 +943,7 @@ class Scale(FieldClass):
     @field_property(bool)
     def points(value):
         """boolean : If True, distribute ordinal values over evenly spaced
-        points between `range_min` and `range_max`
+        points between ``range_min`` and ``range_max``
 
         Ignored for non-ordinal scales.
         """
@@ -951,11 +960,11 @@ class Scale(FieldClass):
     def nice(value):
         """boolean or string : scale the domain to a more human-friendly set
 
-        If the scale `type` is `'time'` or `'utc'`, then the value should be
-        one of `'second'`, `'minute'`, `'hour'`, `'day'`, `'week'`,
-        `'month'`, or `'year'`.
+        If the scale ``type`` is ``'time'`` or ``'utc'``, then the value
+        should be one of ``'second'``, ``'minute'``, ``'hour'``, ``'day'``,
+        ``'week'``, ``'month'``, or ``'year'``.
 
-        If the scale `type` is a quantitative scale, then the value should
+        If the scale ``type`` is a quantitative scale, then the value should
         be a boolean. The input values are rounded to a more human-friendly
         value. The details of the rounding are in the d3 documentation.
 
@@ -964,9 +973,9 @@ class Scale(FieldClass):
 
     @field_property((float, int))
     def exponent(value):
-        """float or int : Exponent for `'pow'` scale types
+        """float or int : Exponent for ``'pow'`` scale types
 
-        Ignored for all scale types but `'pow'`.
+        Ignored for all scale types other than ``'pow'``.
         """
 
     @field_property(bool)
@@ -975,4 +984,30 @@ class Scale(FieldClass):
 
         Only valid for quantitative scale types. This is useful if the
         domain is defined as a DataRef that may not include 0 exactly.
+        """
+
+
+class Axis(FieldClass):
+    @field_property(str)
+    def type(value):
+        """string : Type of axis - `'x'` or `'y'`"""
+        if value not in ('x', 'y'):
+            raise ValueError('Axis.type must be "x" or "y"')
+
+    @field_property(str)
+    def scale(value):
+        """string : Name of scale used for axis"""
+
+    @field_property(str)
+    def orient(value):
+        """string : Orientation of the axis
+
+        Should be one of `'top'`, `'bottom'`, `'left'`, or `'right'`.
+        """
+
+    @field_property(str)
+    def format(value):
+        """string : Formatting to use for axis labels
+
+        See d3's formatting documentation for format pattern.
         """
