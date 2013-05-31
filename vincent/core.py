@@ -122,7 +122,7 @@ class FieldClass(object):
         raise NotImplementedError()
 
 
-class Vis(FieldClass):
+class Visualization(FieldClass):
     """Visualization container class.
 
     This class defines an entire visualization.
@@ -248,15 +248,17 @@ class Data(FieldClass):
     def name(value):
         """string : Name of the data
 
-        This is used by other components (`Mark`, etc.) for reference.
+        This is used by other components (``Mark``, etc.) for reference.
         """
 
     @field_property(str)
     def url(value):
         """string : URL from which to load the data
 
-        This can be used as an alternative to defining the data in the
-        ``values`` attribute.
+        .. rst-class:: wut
+
+            This can be used as an alternative to defining the data in the
+            ``values`` attribute.
         """
 
     @field_property(list)
@@ -421,12 +423,6 @@ class Data(FieldClass):
         -----
         The individual elements of ``np_obj``, ``columns``, and ``index``
         must return valid values from :func:`Data.serialize`.
-
-        Raises
-        ------
-        LoadError : if numpy could not be imported or dimensions of
-        arguments do not agree
-        TypeError : if ``np_obj`` is not an instance of ``ndarray``
         """
         if not np:
             raise LoadError('numpy could not be imported')
@@ -479,53 +475,51 @@ class ValueRef(FieldClass):
     """
     @field_property((str, int, float))
     def value(value):
-        """number or string, used for constant values
+        """int, float, or string : used for constant values
 
-        This is ignored if the `field` property is defined.
+        This is ignored if the ``field`` property is defined.
         """
 
     @field_property(str)
     def field(value):
-        """string, references field of the data in dot-notation
+        """string : references field of the data in dot-notation
 
-        The data is taken from the Mark's `from_` property. For instance, if
+        The data is taken from the Mark's ``from_`` property. For instance, if
         the data has a definition
-
-            [{'x': 2}, {'x': 3}, {'x': 1}]
-
-        then the data should be referenced as `data.x`. Note that the first
+        ``[{'x': 2}, {'x': 3}, {'x': 1}]``
+        then the data should be referenced as ``data.x``. Note that the first
         element is always `data` regardless of the name of the data.
         """
 
     @field_property(str)
     def scale(value):
-        """string, references the name of a `Scale`
+        """string : references the name of a ``Scale``
 
-        The scale is applied to the `value` and `field` attributes.
+        The scale is applied to the ``value`` and ``field`` attributes.
         """
 
     @field_property((int, float))
     def mult(value):
-        """number, multiplier applied to the data after any scaling
+        """int or float : multiplier applied to the data after any scaling
         """
 
     @field_property((int, float))
     def offset(value):
-        """number, additive offset applied to the data after any scaling and
-        multipliers
+        """int or float : additive offset applied to the data after any
+        scaling and multipliers
         """
 
     @field_property(bool)
     def band(value):
-        """boolean, use the range of the scale if applicable
+        """boolean : use the range of the scale if applicable
 
-        If this is True and `scale` is defined, then the value referenced
+        If this is True and ``scale`` is defined, then the value referenced
         is the range band referenced scale. See the d3 documentation on
-        `ordinal.rangeBand` for more info.
+        ``ordinal.rangeBand`` for more info.
         """
 
 
-class MarkPropertySet(FieldClass):
+class PropertySet(FieldClass):
     """Define a set of properties for `Mark` objects"""
 
     # This is only imported as Mark.PropertySet, so this is a bit of a hack
@@ -534,107 +528,103 @@ class MarkPropertySet(FieldClass):
 
     @field_property(ValueRef)
     def x(value):
-        """ValueRef - number, left-most x-coordinate
+        """ValueRef : number, left-most x-coordinate
 
         For most marks, this will be equal to the field of the independent
         variable. For example,
-
-            {"scale": "x", "field": "data.x"}
-
+        ``{"scale": "x", "field": "data.x"}``
         will place a mark with its left-most coordinate at the x-values of
         the data. Something like
-
-            {"scale": "x", "value": 10}
-
+        ``{"scale": "x", "value": 10}``
         will place a single mark at given x-coordinate.
         """
 
     @field_property(ValueRef)
     def x2(value):
-        """ValueRef - number, right-most x-coordinate
+        """ValueRef : number, right-most x-coordinate
 
         Generally, for marks where the width is significant, it's better to
-        use the `width` property.
+        use the ``width`` property.
         """
 
     @field_property(ValueRef)
     def width(value):
-        """ValueRef - number, width of the mark
+        """ValueRef : number, width of the mark
 
-        Set the `band` property of the `ValueRef` to True to use the full
-        width.
+        Set the ``band`` property of the ``ValueRef`` to True to use the
+        full width.
         """
 
     @field_property(ValueRef)
     def y(value):
-        """ValueRef - number, top-most y-coordinate
+        """ValueRef : number, top-most y-coordinate
 
-        The same remarks for the `x` property are valid here.
+        The same remarks for the ``x`` property apply here.
         """
 
     @field_property(ValueRef)
     def y2(value):
-        """ValueRef - number, bottom-most y-coordinate
+        """ValueRef : number, bottom-most y-coordinate
 
-        The same remarks for the `x2` property are valid here.
+        The same remarks for the ``x2`` property apply here.
         """
 
     @field_property(ValueRef)
     def height(value):
-        """ValueRef - number, height of the mark
+        """ValueRef : number, height of the mark
         """
 
     @field_property(ValueRef)
     def opacity(value):
-        """ValueRef - number, overall opacity (0 to 1)
+        """ValueRef : number, overall opacity (0 to 1)
         """
 
     @field_property(ValueRef)
     def fill(value):
-        """ValueRef - color, fill color for the mark
+        """ValueRef : color, fill color for the mark
         """
 
     @field_property(field_type=ValueRef, field_name='fillOpacity')
     def fill_opacity(value):
-        """ValueRef - number, opacity of the fill (0 to 1)
+        """ValueRef : number, opacity of the fill (0 to 1)
         """
 
     @field_property(ValueRef)
     def stroke(value):
-        """ValueRef - color, stroke color for the mark
+        """ValueRef : color, stroke color for the mark
         """
 
     @field_property(field_type=ValueRef, field_name='strokeWidth')
     def stroke_width(value):
-        """ValueRef - number, width of the stroke in pixels
+        """ValueRef : number, width of the stroke in pixels
         """
 
     @field_property(field_type=ValueRef, field_name='strokeOpacity')
     def stroke_opacity(value):
-        """ValueRef - number, opacity of the stroke (0 to 1)
+        """ValueRef : number, opacity of the stroke (0 to 1)
         """
 
     @field_property(ValueRef)
     def size(value):
-        """ValueRef - number, area of the mark in pixels
+        """ValueRef : number, area of the mark in pixels
 
-        This is the total area of a symbol. For example, a value of 500
-        and a `shape` of `'circle'` would result in circles with an area of
-        500 square pixels. Only used if `type` is `'symbol'`.
+        This is the total area of a symbol. For example, a value of 500 and
+        a ``shape`` of ``'circle'`` would result in circles with an area of
+        500 square pixels. Only used if ``type`` is ``'symbol'``.
         """
 
     @field_property(ValueRef)
     def shape(value):
-        """ValueRef - string, type of symbol to use
+        """ValueRef : string, type of symbol to use
 
-        Possible values are `'circle'` (default), `'square'`, `'cross'`,
-        `'diamond'`, `'triangle-up'`, and `'triangle-down'`. Only used if
-        `type` is `'symbol'`.
+        Possible values are ``'circle'`` (default), ``'square'``,
+        ``'cross'``, ``'diamond'``, ``'triangle-up'``, and
+        ``'triangle-down'``. Only used if ``type`` is ``'symbol'``.
         """
 
     @field_property(ValueRef)
     def path(value):
-        """ValueRef - string, SVG path string
+        """ValueRef : string, SVG path string
 
         This would typically be used for maps and other things where the
         path is taken from the data.
@@ -642,197 +632,225 @@ class MarkPropertySet(FieldClass):
 
     @field_property(field_type=ValueRef, field_name='innerRadius')
     def inner_radius(value):
-        """ValueRef - number, inner radius of arc in pixels
+        """ValueRef : number, inner radius of arc in pixels
 
-        Only used if `type` is `'arc'`."""
+        Only used if ``type`` is ``'arc'``."""
 
     @field_property(field_type=ValueRef, field_name='outerRadius')
     def outer_radius(value):
-        """ValueRef - number, outer radius of the arc in pixels
+        """ValueRef : number, outer radius of the arc in pixels
 
-        Only used if `type` is `'arc'`."""
+        Only used if ``type`` is ``'arc'``."""
 
     @field_property(field_type=ValueRef, field_name='startAngle')
     def start_angle(value):
-        """ValueRef - number, start angle of the arc in radians
+        """ValueRef : number, start angle of the arc in radians
 
-        Only used if `type` is `'arc'`."""
+        Only used if ``type`` is ``'arc'``."""
 
     @field_property(field_type=ValueRef, field_name='endAngle')
     def end_angle(value):
-        """ValueRef - number, end angle of the arc in radians
+        """ValueRef : number, end angle of the arc in radians
 
-        Only used if `type` is `'arc'`."""
+        Only used if ``type`` is ``'arc'``."""
 
     @field_property(ValueRef)
     def interpolate(value):
-        """ValueRef - string, line interpolation method to use
+        """ValueRef : string, line interpolation method to use
 
-        Possible values for `area` types are `'linear'`,
-        `'step-before'`, `'step-after'`, `'basis'`, `'basis-open'`,
-        `'cardinal'`, `'cardinal-open'`, `'monotone'`. `line` types
-        have all values for `area` as well as `'basis-closed'`,
-        `'bundle'`, and `'cardinal-closed'`.
+        Possible values for ``area`` types are `'linear'`,
+        ``'step-before'``, ``'step-after'``, ``'basis'``, ``'basis-open'``,
+        ``'cardinal'``, ``'cardinal-open'``, ``'monotone'``. ``line`` types
+        have all values for ``area`` as well as ``'basis-closed'``,
+        ``'bundle'``, and ``'cardinal-closed'``.
 
-        Only used if `type` is `'area'` or `'line'`."""
+        Only used if ``type`` is ``'area'`` or ``'line'``.
+        """
         #TODO check values
 
     @field_property(ValueRef)
     def tension(value):
-        """ValueRef - number, tension used for interpolation
+        """ValueRef : number, tension used for interpolation
 
-        Only used if `type` is `'area'` or `'line'`."""
+        Only used if ``type`` is ``'area'`` or ``'line'``.
+        """
 
     @field_property(ValueRef)
     def url(value):
-        """ValueRef - string, url of image
+        """ValueRef : string, url of image
 
-        Only used if `type` is `'image'`."""
+        Only used if ``type`` is ``'image'``.
+        """
 
     @field_property(ValueRef)
     def align(value):
-        """ValueRef - string, horizontal alignment of mark
+        """ValueRef : string, horizontal alignment of mark
 
-        Possible values are `'left'`, `'right'`, and `'center'`. Only
-        used if `type` is `'image'` or `'text'`."""
+        Possible values are ``'left'``, ``'right'``, and ``'center'``. Only
+        used if ``type`` is ``'image'`` or ``'text'``.
+        """
         #TODO check values
 
     @field_property(ValueRef)
     def baseline(value):
-        """ValueRef - string, vertical alignment of mark
+        """ValueRef : string, vertical alignment of mark
 
-        Possible values are `'top'`, `'middle'`, and `'bottom'`. Only
-        used if `type` is `'image'` or `'text'`."""
+        Possible values are ``'top'``, ``'middle'``, and ``'bottom'``. Only
+        used if ``type`` is ``'image'`` or ``'text'``.
+        """
         #TODO check values
 
     @field_property(ValueRef)
     def text(value):
-        """ValueRef - string, text to display
+        """ValueRef : string, text to display
 
-        Only used if `type` is `'text'`."""
+        Only used if ``type`` is ``'text'``."""
 
     @field_property(ValueRef)
     def dx(value):
-        """ValueRef - number, horizontal margin between text and anchor
+        """ValueRef : number, horizontal margin between text and anchor
         point in pixels
 
-        Ignored if `align` is `'center'`. Only used if `type` is
-        `'text'`."""
+        Ignored if ``align`` is ``'center'``. Only used if ``type`` is
+        ``'text'``.
+        """
 
     @field_property(ValueRef)
     def dy(value):
-        """ValueRef - number, vertical margin between text and anchor
+        """ValueRef : number, vertical margin between text and anchor
         point in pixels
 
-        Ignored if `baseline` is `'middle'`. Only used if `type` is
-        `'text'`."""
+        Ignored if ``baseline`` is ``'middle'``. Only used if ``type`` is
+        ``'text'``.
+        """
 
     @field_property(ValueRef)
     def angle(value):
-        """ValueRef - number, rotation of text in degrees
+        """ValueRef : number, rotation of text in degrees
 
-        Only used if `type` is `'text'`."""
+        Only used if ``type`` is ``'text'``.
+        """
 
     @field_property(ValueRef)
     def font(value):
-        """ValueRef - string, typeface for text
+        """ValueRef : string, typeface for text
 
-        Only used if `type` is `'text'`."""
+        Only used if ``type`` is ``'text'``.
+        """
 
     @field_property(field_type=ValueRef, field_name='fontSize')
     def font_size(value):
-        """ValueRef - number, font size in pixels
+        """ValueRef : number, font size in pixels
 
-        Only used if `type` is `'text'`."""
+        Only used if ``type`` is ``'text'``.
+        """
 
     @field_property(field_type=ValueRef, field_name='fontWeight')
     def font_weight(value):
-        """ValueRef - string, font weight
+        """ValueRef : string, font weight
 
-        Should be a valid SVG font weight. Only used if `type` is
-        `'text'`."""
+        Should be a valid SVG font weight. Only used if ``type`` is
+        ``'text'``.
+        """
 
     @field_property(field_type=ValueRef, field_name='fontStyle')
     def font_style(value):
-        """ValueRef - string, font style
+        """ValueRef : string, font style
 
-        Should be a valid SVG font style. Only used if `type` is
-        `'text'`."""
+        Should be a valid SVG font style. Only used if ``type`` is
+        ``'text'``.
+        """
+
+
+class Properties(FieldClass):
+    @field_property(PropertySet)
+    def enter(value):
+        """PropertySet : properties applied when data is loaded
+        """
+
+    @field_property(PropertySet)
+    def exit(value):
+        """PropertySet : properties applied when data is removed
+        """
+
+    @field_property(PropertySet)
+    def update(value):
+        """PropertySet : properties applied for all non-exiting data
+
+        (This is vague. Need better Vega docs.)
+        """
+
+    @field_property(PropertySet)
+    def hover(value):
+        """PropertySet, properties applied on mouse-over
+
+        On mouse out, the ``update`` properties are applied.
+        """
 
 
 class Mark(FieldClass):
-
-    PropertySet = MarkPropertySet
-
-    class Properties(FieldClass):
-        @field_property(MarkPropertySet)
-        def enter(value):
-            """PropertySet, properties applied when data is loaded
-            """
-
-        @field_property(MarkPropertySet)
-        def exit(value):
-            """PropertySet, properties applied when data is removed
-            """
-
-        @field_property(MarkPropertySet)
-        def update(value):
-            """PropertySet, properties applied for all non-exiting data
-
-            (This is vague. Need better Vega docs.)
-            """
-
-        @field_property(MarkPropertySet)
-        def hover(value):
-            """PropertySet, properties applied on mouse-over
-
-            On mouse out, the `update` properties are applied.
-            """
 
     _valid_type_values = [
         'rect', 'symbol', 'path', 'arc', 'area', 'line', 'image', 'text']
 
     @field_property(str)
     def name(value):
-        """name"""
+        """string : Optional unique name for mark"""
 
-    @field_property
+    @field_property(str)
     def description(value):
-        _assert_is_type('description', value, str)
+        """string : Optional description for mark"""
 
-    @field_property
+    @field_property(str)
     def type(value):
-        _assert_is_type('type', value, str)
+        """string : Type of mark
+
+        Valid types are ``'rect'``, ``'symbol'``, ``'path'``, ``'arc'``,
+        ``'area'``, ``'line'``, ``'image'``, and ``'text'``.
+        """
         if value not in Mark._valid_type_values:
             raise ValueError(
                 'invalid mark type %s, valid types are %s' % (
                     value, Mark._valid_type_values))
 
-    @field_property(field_name='from')
+    @field_property(field_type=dict, field_name='from')
     def from_(value):
         """dict : Description of data to visualize
 
-        Note that although the property has the name `from_` (using `from`
-        is invalid Python syntax), the JSON will contain the correct
-        property `from`.
+        Note that although the property has the name ``from_`` (using
+        ``from`` is invalid Python syntax), the JSON will contain the
+        correct property ``from``.
         """
-        _assert_is_type('from_', value, dict)
 
-    @field_property
+    @field_property(Properties)
     def properties(value):
-        _assert_is_type('properties', value, Mark.Properties)
+        """Properties : Mark property set definitions"""
 
-    @field_property
+    @field_property(str)
     def key(value):
-        _assert_is_type('key', value, str)
+        """string : Field to use for data binding
 
-    @field_property
+        When updating data dynamically, restrict dynamic transitions from
+        affecting data with the given key. This can be useful for something
+        like scrolling time series. See the Vega examples.
+        """
+
+    @field_property(ValueRef)
     def delay(value):
-        _assert_is_type('delay', value, dict)
+        """ValueRef, number : Transitional delay in milliseconds.
+        """
 
-    @field_property
+    @field_property(str)
     def ease(value):
-        _assert_is_type('ease', value, str)
+        """string : Type of transition easing
+
+        Valid types are ``'linear'``, ``'quad'``, ``'cubic'``, ``'sin'``,
+        ``'exp'``, ``'circle'``, and ``'bounce'``, which can be appended
+        with the modifiers ``'in'``, ``'out'``, ``'in-out'``, and
+        ``'out-in'``. The default is ``'cubic-in-out'``.
+
+        See the documentation for the d3 ease function for more details.
+        """
 
 
 class DataRef(FieldClass):
@@ -906,13 +924,13 @@ class Scale(FieldClass):
         list of output values mapped to the input values.
 
         String values may be used to automatically set a range:
-            - ``'width'``: Set the range to the width of the visualization
-            - ``'height'``: Set the range to the height of the visualization
-            - ``'shapes'``: Equivalent to the symbol types:
-                ``["circle", "cross", "diamond", "square", "triangle-down",
-                "triangle-up"]``
-            - ``'category10'``: A pre-determined 10-color pallet
-            - ``'category20'``: A pre-determined 20-color pallet
+            - ``'width'`` - Set the range to the width of the visualization
+            - ``'height'`` - Set the range to the height of the visualization
+            - ``'shapes'`` - Equivalent to the symbol types ``['circle',
+              'cross', 'diamond', 'square', 'triangle-down',
+              'triangle-up']``
+            - ``'category10'`` - A pre-determined 10-color pallet
+            - ``'category20'`` - A pre-determined 20-color pallet
         """
 
     @field_property(field_type=(float, int, DataRef), field_name='rangeMin')
