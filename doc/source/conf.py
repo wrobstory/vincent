@@ -16,6 +16,29 @@ import sphinx_bootstrap_theme
 html_theme = 'bootstrap'
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
+# (Optional) Logo. Should be exactly 24x24 px to fit the nav. bar.
+# Path should be relative to the static files directory.
+#html_logo = "vincent.jpg"
+
+# Theme options are theme-specific and customize the look and feel of a
+# theme further.
+html_theme_options = {
+    # Global TOC depth for "site" navbar tab. (Default: 1)
+    # Switching to -1 shows all levels.
+    'globaltoc_depth': 2,
+
+    # HTML navbar class (Default: "navbar") to attach to <div> element.
+    # For black navbar, do "navbar navbar-inverse"
+    #'navbar_class': "navbar navbar-inverse",
+
+    # Bootswatch (http://bootswatch.com/) theme.
+    #
+    # Options are nothing with "" (default) or the name of a valid theme
+    # such as "amelia" or "cosmo".
+    #
+    # Note that this is served off CDN, so won't be available offline.
+    #'bootswatch_theme': "spacelab",
+}
 
 import sys, os
 
