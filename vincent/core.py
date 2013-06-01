@@ -24,22 +24,40 @@ def _assert_is_type(name, value, value_type):
 
 
 def field_property(field_type=None, field_name=None):
-    """Decorator to define properties that map to the internal `_field`
-    dict.
+    """Decorator to define properties that map to the internal ``_field``
+    dict
 
-    The argument is a "validator" function that should return no value but
-    raise an exception if the provided value is not valid Vega. If the
+    This decorator is intended for classes that map to some pre-defined JSON
+    structure. It is assumed that this decorates functions with an instance
+    of ``self._field``.
+
+    Parameters
+    ----------
+    field_type : type or tuple of types
+        If the argument to the decorated function is not of the given types,
+        then a ValueError is raised. No type checking is done if the type is
+        None (default).
+    field_name : string
+        An optional name to map to the internal ``_field`` dict. If None
+        (default), then the key for the dict is the name of the function
+        being decorated. If not None, then it will be the name specified
+        here. This is useful if the expected JSON field name is a Python
+        keyword or has an un-Pythonic name.
+
+    This should decorate a "validator" function that should return no value
+    but raise an exception if the provided value is not valid Vega. If the
     validator throws no exception, then the value is assigned to the
-    `_field` dict using the validator function name as the key.
+    ``_field`` dict.
 
-    The validator function should take only one argument, so that no `self`
-    argument is included - the validator should not modify the class.
+    The validator function should take only one argument - the value to be
+    validated - so that no ``self`` argument is included; the validator
+    should not modify the class.
 
-    The docstring for the property is taken from the validator's docstring.
+    If no arguments are given, then no type-checking is done the property
+    will be mapped to a field with the name of the decorated function.
 
-    The decorator takes an optional string argument, which will be used as
-    the key for the internal `_field` dict. This can be useful if the
-    property name conflicts with a Python keyword.
+    The doc string for the property is taken from the validator functions's
+    doc string.
     """
     def field_property_creator(validator, name):
         def setter(self, value):
@@ -78,13 +96,29 @@ def field_property(field_type=None, field_name=None):
         return field_property_creator(field_type, field_type.__name__)
 
 
+class ValidationError(Exception):
+    """Exception raised with validation fails
+
+    This exception is raised only when the ``validate`` functions of classes
+    that inherit from ``FieldClass`` are called. It implies that the classes
+    do not contain valid Vega JSON."""
+    pass
+
+
 class FieldClass(object):
-    """Base class for objects that rely on an internal `_field` dict
+    """Base class for objects that rely on an internal ``_field`` dict
+
+    This should be used as a superclass for classes that map to some JSON
+    structure. The JSON content is stored in an internal dict named
+    ``_field``.
     """
     def __init__(self, **kwargs):
         """Initialize a FieldClass
 
         **kwargs are attribute-value pairs that are set on initialization.
+        These will generally be keys for the ``_field`` dict. If the
+        attribute does not already exist as a property, then a
+        ``ValueError`` is raised.
         """
         self._field = {}
 
@@ -97,27 +131,47 @@ class FieldClass(object):
     def validate(self):
         """Validate the contents of the object.
 
-        This calls `setattr` for each attribute that has been set.
+        This calls ``setattr`` for each of the class's field properties. It
+        will catch ``ValueError``s raised by the field property's setters
+        and re-raise them as :class:`ValidationError`.
         """
         for key, val in self._field.iteritems():
-            setattr(self, key, val)
+            try:
+                setattr(self, key, val)
+            except ValueError as e:
+                raise ValidationError('invalid contents: ' + e.message)
 
-    def to_json(self, validate=True):
+    def to_json(self, validate=False, pretty_print=True):
         """Convert object to JSON
 
         Parameters
         ----------
         validate : boolean
-            If True (default), call the object's `validate` method before
-            serializing.
+            If True, call the object's `validate` method before
+            serializing. Default is False.
+        pretty_print : boolean
+            If True (default), JSON is printed in more-readable form with
+            indentation and spaces.
+
+        Returns
+        -------
+        string
+            JSON serialization of the class's field properties.
         """
         if validate:
             self.validate()
 
-        return json.dumps(self._field)
+        if pretty_print:
+            dumps_args = {'indent': 4, 'separators': (',', ': ')}
+        else:
+            dumps_args = {}
+
+        return json.dumps(self._field, **dumps_args)
 
     def from_json(self):
         """Load object from JSON
+
+        Not yet implemented.
         """
         raise NotImplementedError()
 
@@ -125,7 +179,8 @@ class FieldClass(object):
 class Visualization(FieldClass):
     """Visualization container class.
 
-    This class defines an entire visualization.
+    This class defines the full visualization. Calling its ``to_json``
+    method should return a complete Vega definition.
     """
     @field_property(str)
     def name(value):
@@ -155,15 +210,17 @@ class Visualization(FieldClass):
         """2-element list of ints : Dimensions of the viewport
 
         The viewport is a bounding box containing the visualization. If the
-        dimensions are smaller than the height and/or width, the
-        visualization will pan within the viewport's box.
+        dimensions of the visualization are larger than the viewport, then
+        the visualization will be scrollable.
 
-        Default is visualization width and height if undefined.
+        If undefined, then the full visualization is shown.
         """
         if len(value) != 2:
             raise ValueError('viewport must have 2 dimensions')
         for v in value:
             _assert_is_type('viewport dimension', v, int)
+            if v < 0:
+                raise ValueError('viewport dimensions cannot be negative')
 
     @field_property((int, dict))
     def padding(value):
@@ -171,10 +228,10 @@ class Visualization(FieldClass):
 
         The padding defines the distance between the edge of the
         visualization canvas to the visualization box. It does not count as
-        part of the visualization width/height.
+        part of the visualization width/height. Values cannot be negative.
 
-        If a dict, padding must have all keys 'top', 'left', 'right',
-        'bottom' with int values.
+        If a dict, padding must have all keys ``''top'``, ``'left'``,
+        ``'right'``, and ``'bottom'`` with int values.
         """
         if isinstance(value, dict):
             required_keys = ['top', 'left', 'right', 'bottom']
@@ -191,45 +248,71 @@ class Visualization(FieldClass):
 
     @field_property(list)
     def data(value):
-        """list with elements of `Data` : Data definitions
+        """list of ``Data`` : Data definitions
+
+        This defines the data being visualized. See the :class:`Data` class
+        for details.
         """
         for i, entry in enumerate(value):
             _assert_is_type('data[%g]' % i, entry,  Data)
 
     @field_property(list)
     def scales(value):
-        """list with elements of `Scale` or dict : Scale definitions
+        """list of ``Scale`` : Scale definitions
+
+        Scales map the data from the domain of the data to some
+        visualization space (such as an x-axis). See the :class:`Scale`
+        class for details.
         """
         for i, entry in enumerate(value):
-            _assert_is_type('scales[%g]' % i, entry, (dict, Scale))
+            _assert_is_type('scales[%g]' % i, entry, Scale)
 
     @field_property(list)
     def axes(value):
-        """list of `Axis` : Axis definitions
+        """list of ``Axis`` : Axis definitions
+
+        Axes define the locations of the data being mapped by the scales.
+        See the :class:`Axis` class for details.
         """
+        for i, entry in enumerate(value):
+            _assert_is_type('axes[%g]' % i, entry, Axis)
 
     @field_property(list)
     def marks(value):
-        """list of `Mark` : Mark definitions
-        """
+        """list of ``Mark`` : Mark definitions
 
-    def validate(self):
+        Marks are the visual objects (such as lines, bars, etc.) that
+        represent the data in the visualization space. See the :class:`Mark`
+        class for details.
+        """
+        for i, entry in enumerate(value):
+            _assert_is_type('marks[%g]' % i, entry, Mark)
+
+    def validate(self, require_all_fields=True):
         """Validate the visualization contents.
+
+        Parameters
+        ----------
+        require_all_fields : boolean
+            If True (default), then all fields ``data``, ``scales``,
+            ``axes``, and ``marks`` must be defined. The user is allowed to
+            disable this if the intent is to define the elements
+            client-side.
+
+        If the contents of the visualization are not valid Vega, then a
+        :class:`ValidationError` is raised.
         """
         super(self.__class__, self).validate()
-        for elem in (self.data + self.scales + self.axes + self.marks):
-            elem.validate()
-
-    def load_pandas(self, pd_obj, name=None, append=False):
-        if not append:
-            self.data = []
-            self._table_idx = 1
-
-        if not (name or hasattr(pd_obj, 'name')):
-            name = 'table%g' % self._table_idx
-            self._table_idx += 1
-
-        self.data.append(Data.from_pandas(pd_obj, name=name))
+        required_attribs = ('data', 'scales', 'axes', 'marks')
+        for elem in required_attribs:
+            attr = getattr(self, elem)
+            if attr:
+                # Validate each element of the sets of data, etc
+                for entry in attr:
+                    entry.validate()
+            elif require_all_fields:
+                raise ValidationError(
+                    elem + ' must be defined for valid visualization')
 
 
 class LoadError(Exception):
@@ -240,9 +323,19 @@ class LoadError(Exception):
 class Data(FieldClass):
     _default_index_key = '_index'
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name=None, **kwargs):
+        """Initialize a Data object
+
+        Parameters
+        ----------
+        name : string
+            Name of the data set. If None (default), then the name will be
+            set to ``'table'``.
+        **kwargs : dict
+            Attributes to set on initialization.
+        """
         super(self.__class__, self).__init__(**kwargs)
-        self.name = name
+        self.name = name if name else 'table'
 
     @field_property(str)
     def name(value):
@@ -254,8 +347,6 @@ class Data(FieldClass):
     @field_property(str)
     def url(value):
         """string : URL from which to load the data
-
-        .. rst-class:: wut
 
             This can be used as an alternative to defining the data in the
             ``values`` attribute.
@@ -314,6 +405,13 @@ class Data(FieldClass):
         This is only used when loading data from the ``url`` attribute.
         Format-relational classes are not yet implemented.
         """
+
+    def validate(self, *args):
+        """Validate contents of class
+        """
+        super(self.__class__, self).validate(*args)
+        if not self.name:
+            raise ValidationError('name is required for Data')
 
     @staticmethod
     def serialize(obj):
@@ -451,23 +549,57 @@ class Data(FieldClass):
 
         return data
 
-    def to_json(self, data_path=None):
+    @classmethod
+    def from_iters(cls, name=None, **kwargs):
+        """Load values from lists
+
+        Parameters
+        ----------
+        name : string
+            Name of the data set. If None (default), the name will be set to
+            ``'table'``.
+        **kwargs : dict of iterables
+            The ``values`` field will contain dictionaries with keys for
+            each of the iterables provided. For example,
+
+                d = Data.from_iters(x=[0, 1, 5], y=(10, 20, 30))
+
+            would result in ``d`` having a ``values`` field with
+
+                [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 5, 'y': 30}]
+
+            If the iterables are not the same length, then ValueError is
+            raised.
+        """
+        lengths = [len(v) for v in kwargs.values()]
+        if len(set(lengths)) != 1:
+            raise ValueError('iterables must all be same length')
+        else:
+            values = [{} for i in xrange(lengths[0])]
+
+        for k, v in kwargs.iteritems():
+            for i, x in enumerate(v):
+                values[i][k] = x
+
+        return cls(name, values=values)
+
+    def to_json(self, validate=False, pretty_print=True, data_path=None):
         """Convert data to JSON
 
         Parameters
         ----------
         data_path : string
             If not None, then data is written to a separate file at the
-            specified path. Note that the `url` attribute must be set
-            independently.
+            specified path. Note that the ``url`` attribute if the data must
+            be set independently for the data to load correctly.
 
         Returns
         -------
-        vega_json : string
+        string
             Valid Vega JSON.
         """
         #TODO: support writing to separate file
-        return json.dumps(self._field)
+        return super(self.__class__, self).to_json(validate, pretty_print)
 
 
 class ValueRef(FieldClass):
@@ -1008,7 +1140,7 @@ class Scale(FieldClass):
 class Axis(FieldClass):
     @field_property(str)
     def type(value):
-        """string : Type of axis - `'x'` or `'y'`"""
+        """string : Type of axis - ``'x'`` or ``'y'``"""
         if value not in ('x', 'y'):
             raise ValueError('Axis.type must be "x" or "y"')
 
@@ -1020,7 +1152,7 @@ class Axis(FieldClass):
     def orient(value):
         """string : Orientation of the axis
 
-        Should be one of `'top'`, `'bottom'`, `'left'`, or `'right'`.
+        Should be one of ``'top'``, ``'bottom'``, ``'left'``, or ``'right'``.
         """
 
     @field_property(str)
