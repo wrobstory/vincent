@@ -652,11 +652,8 @@ class ValueRef(FieldClass):
 
 
 class PropertySet(FieldClass):
-    """Define a set of properties for `Mark` objects"""
-
-    # This is only imported as Mark.PropertySet, so this is a bit of a hack
-    # to make TypeError messages more useful.
-    __name__ = 'Mark.PropertySet'
+    """Definition of properties for ``Mark`` objects and labels of ``Axis``
+    objects"""
 
     @field_property(ValueRef)
     def x(value):
@@ -894,7 +891,7 @@ class PropertySet(FieldClass):
         """
 
 
-class Properties(FieldClass):
+class MarkProperties(FieldClass):
     @field_property(PropertySet)
     def enter(value):
         """PropertySet : properties applied when data is loaded
@@ -954,9 +951,9 @@ class Mark(FieldClass):
         correct property ``from``.
         """
 
-    @field_property(Properties)
+    @field_property(MarkProperties)
     def properties(value):
-        """Properties : Mark property set definitions"""
+        """MarkProperties : Mark property set definitions"""
 
     @field_property(str)
     def key(value):
@@ -1137,6 +1134,24 @@ class Scale(FieldClass):
         """
 
 
+class AxisProperties(FieldClass):
+    @field_property(field_type=PropertySet, field_name='majorTicks')
+    def major_ticks(value):
+        """PropertySet : Definition of major tick marks"""
+
+    @field_property(field_type=PropertySet, field_name='minorTicks')
+    def minor_ticks(value):
+        """PropertySet : Definition of minor tick marks"""
+
+    @field_property(PropertySet)
+    def label(value):
+        """PropertySet : Definition of marks for axis labels"""
+
+    @field_property(PropertySet)
+    def axis(value):
+        """PropertySet : Definition of axis line style"""
+
+
 class Axis(FieldClass):
     @field_property(str)
     def type(value):
@@ -1160,4 +1175,55 @@ class Axis(FieldClass):
         """string : Formatting to use for axis labels
 
         See d3's formatting documentation for format pattern.
+        """
+
+    @field_property(int)
+    def ticks(value):
+        """int : Number of ticks to use"""
+
+    @field_property(list)
+    def values(value):
+        """list of objects in scale's domain : Explicit definitions for
+        values
+
+        Values should be in the domain of the Axis's scale. Custom ticks can
+        be used by setting ``properties``.
+        """
+
+    @field_property((int, float))
+    def subdivide(value):
+        """int or float : Number of minor ticks in between major ticks
+
+        Only valid for quantitative scales.
+        """
+
+    @field_property(field_type=int, field_name='tickPadding')
+    def tick_padding(value):
+        """int : Pixels between ticks and text labels"""
+
+    @field_property(field_type=int, field_name='tickSize')
+    def tick_size(value):
+        """int : Size in pixels of all ticks"""
+
+    @field_property(field_type=int, field_name='tickSizeMajor')
+    def tick_size_major(value):
+        """int : Size in pixels of major ticks"""
+
+    @field_property(field_type=int, field_name='tickSizeMinor')
+    def tick_size_minor(value):
+        """int : Size in pixels of minor ticks"""
+
+    @field_property(field_type=int, field_name='tickSizeEnd')
+    def tick_size_end(value):
+        """int : Size in pixels of end ticks"""
+
+    @field_property(int)
+    def offset(value):
+        """int : Offset in pixels to displace the edge of the axis from the
+        referenced area
+        """
+
+    @field_property(AxisProperties)
+    def properties(value):
+        """AxisProperties : Custom styling for ticks and tick labels
         """
