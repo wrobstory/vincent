@@ -197,6 +197,10 @@ class Visualization(FieldClass):
 
     This class defines the full visualization. Calling its ``to_json``
     method should return a complete Vega definition.
+
+    The sub-elements of the visualization are stored in the ``data``,
+    ``axes``, ``marks``, and ``scales`` attributes. See the docs for each
+    attribute for details.
     """
     def __init__(self, *args, **kwargs):
         """Initialize a Visualization
@@ -351,6 +355,12 @@ class LoadError(Exception):
 
 
 class Data(FieldClass):
+    """Data container for visualization
+
+    The Vega document may contain the data itself or a reference to a URL
+    containing the data and formatting instructions. Additionally, new data
+    can be created from old data via the transform fields.
+    """
     _default_index_key = '_index'
 
     def __init__(self, name=None, **kwargs):
@@ -633,7 +643,16 @@ class Data(FieldClass):
 
 
 class ValueRef(FieldClass):
-    """Define values for Mark properties
+    """Container for the value-referencing properties of marks
+
+    It is often useful for marks to share properties to maintain consistency
+    when parts of the visualization are changed. Additionally, the marks
+    themselves may have properties somehow mapped from the data (i.e. mark
+    size proportional to some data field). The ``ValueRef`` class can
+    be used to either define values locally or reference other fields.
+
+    ValueRefs can reference numbers, strings, or arbitrary objects,
+    depending on their use.
     """
     @field_property((str, int, float))
     def value(value):
@@ -683,8 +702,10 @@ class ValueRef(FieldClass):
 
 class PropertySet(FieldClass):
     """Definition of properties for ``Mark`` objects and labels of ``Axis``
-    objects"""
+    objects
 
+    These define the appearance details for marks and axes.
+    """
     @field_property(ValueRef)
     def x(value):
         """ValueRef : number, left-most x-coordinate
@@ -922,6 +943,12 @@ class PropertySet(FieldClass):
 
 
 class MarkProperties(FieldClass):
+    """Sets of all Mark properties
+
+    Mark properties can change depending on user interaction or changing
+    data. This class defines four events for which the properties may
+    change.
+    """
     @field_property(PropertySet)
     def enter(value):
         """PropertySet : properties applied when data is loaded
@@ -948,7 +975,12 @@ class MarkProperties(FieldClass):
 
 
 class Mark(FieldClass):
+    """Definitions for data marks
 
+    Marks are the fundamental component that the viewer sees - such as a
+    bar, line etc.. This class defines how the marks appear and what data
+    the marks represent.
+    """
     _valid_type_values = [
         'rect', 'symbol', 'path', 'arc', 'area', 'line', 'image', 'text']
 
@@ -1013,6 +1045,11 @@ class Mark(FieldClass):
 
 
 class DataRef(FieldClass):
+    """Definitions for how data is referenced by scales
+
+    Data can be referenced in multiple ways, and sometimes it makes sense to
+    reference multiple data fields at once.
+    """
     @field_property(str)
     def data(value):
         """string : Name of data-set containing the domain values"""
@@ -1027,6 +1064,12 @@ class DataRef(FieldClass):
 
 
 class Scale(FieldClass):
+    """Definitions for mapping from data space to visual space
+
+    Scales determine the way in which data is mapped from a data space (such
+    as numbers, time stamps, etc.) to a visual space (length of a line,
+    height of a bar, etc.), for both independent and dependent variables.
+    """
     @field_property(str)
     def name(value):
         """string : Unique name for the scale
@@ -1165,6 +1208,12 @@ class Scale(FieldClass):
 
 
 class AxisProperties(FieldClass):
+    """Definitions for the rendering of axes
+
+    Like Marks, axis properties can be broken into various subcomponents,
+    but instead of events, the axes are divided into major ticks, minor
+    ticks, labels, and the axis itself.
+    """
     @field_property(field_type=PropertySet, field_name='majorTicks')
     def major_ticks(value):
         """PropertySet : Definition of major tick marks"""
@@ -1183,6 +1232,11 @@ class AxisProperties(FieldClass):
 
 
 class Axis(FieldClass):
+    """Definitions for axes
+
+    Axes are visual cues that the viewer uses to interpret the marks
+    representing the data itself.
+    """
     @field_property(str)
     def type(value):
         """string : Type of axis - ``'x'`` or ``'y'``"""
