@@ -415,7 +415,6 @@ class Visualization(FieldClass):
         b = Javascript('vg.parse.spec(%s, function(chart) '
                        '{ chart({el:"#vis%d"}).update(); });' %
                        (self.to_json(pretty_print=False), id))
-        initialize_notebook()
         display(a, b)
 
 
