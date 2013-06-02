@@ -44,7 +44,7 @@ class TestVincent(object):
 
         self.testvin = vincent.Vega()
 
-        self.default_vega = {'width': 400, 'height': 200,
+        self.default_vega = {'width': 600, 'height': 300,
                              'viewport': None, 'axes': [],
                              'padding': {'top': 10, 'left': 30,
                                          'bottom': 20, 'right': 20},
@@ -54,8 +54,8 @@ class TestVincent(object):
     def test_atts(self):
         '''Test init attributes'''
 
-        assert self.testvin.width == 400
-        assert self.testvin.height == 200
+        assert self.testvin.width == 600
+        assert self.testvin.height == 300
         assert self.testvin.padding == {'top': 10, 'left': 30,
                                         'bottom': 20, 'right': 20}
         assert self.testvin.viewport is None
@@ -226,10 +226,10 @@ class TestVincent(object):
 
         area += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter',
                  'interpolate')
-        bar += ('red', 'marks', 0, 'properties', 'hover', 'fill', 'value')
+        bar += ('red', 'marks', 0, 'properties', 'update', 'fill', 'value')
 
         assert 'interpolate' in area.marks[0]['properties']['enter']
-        assert bar.marks[0]['properties']['hover']['fill']['value'] == 'red'
+        assert bar.marks[0]['properties']['update']['fill']['value'] == 'red'
 
         bar -= ('domain', 'scales', 1)
         bar -= ('name', 'scales', 1)

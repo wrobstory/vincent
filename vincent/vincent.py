@@ -24,7 +24,7 @@ import numpy as np
 class Vega(object):
     '''Vega abstract base class'''
 
-    def __init__(self, width=400, height=200, padding=None, viewport=None):
+    def __init__(self, width=600, height=300, padding=None, viewport=None):
         '''
         The Vega classes generate JSON output in Vega grammar, a
         declarative format for creating and saving visualization designs.
@@ -38,9 +38,9 @@ class Vega(object):
         Parameters:
         -----------
 
-        width: int, default 800
+        width: int, default 600
             Width of the visualization
-        height: int, default 400
+        height: int, default 300
             Height of the visualization
         padding: dict, default {'top': 10, 'left': 30, 'bottom':20, 'right':10}
             Internal margins for the visualization, Top, Left, Bottom, Right
@@ -521,8 +521,7 @@ class Bar(Vega):
                                "y": {"scale": "y", "field": "data.y"},
                                "y2": {"scale": "y", "value": 0}
                            },
-                           "update": {"fill": {"value": "#2a3140"}},
-                           "hover": {"fill": {"value": "#a63737"}}
+                           "update": {"fill": {"value": "#2a3140"}}
                        }
                        }]
 
@@ -557,7 +556,6 @@ class Scatter(Bar):
                             'enter'),
                            ('remove', 'y2', 'marks', 0, 'properties',
                             'enter'),
-                           ('remove', 'hover', 'marks', 0, 'properties'),
                            ('add', {'value': '#2a3140'}, 'marks', 0,
                             'properties', 'enter', 'stroke'),
                            ('add', {'value': 0.9}, 'marks', 0, 'properties',
@@ -577,7 +575,6 @@ class Line(Bar):
         super(Line, self).__init__(**kwargs)
         line_updates = [('add', 'linear', 'scales', 0, 'type'),
                         ('remove', 'update', 'marks', 0, 'properties'),
-                        ('remove', 'hover', 'marks', 0, 'properties'),
                         ('remove', 'width', 'marks', 0, 'properties', 'enter'),
                         ('remove', 'y2', 'marks', 0, 'properties',
                          'enter'),
