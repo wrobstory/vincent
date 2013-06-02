@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from itertools import product
 import json
 
-from vincent.core import field_property, Data, ValueRef, Mark
+from vincent.vega import field_property, Data, ValueRef, Mark, PropertySet
 import nose.tools as nt
 
 import pandas as pd
@@ -25,12 +25,25 @@ def test_field_property():
     """Field property decorator behaves correctly."""
     validator_fail = False
 
+    class DummyType(object):
+        pass
+
     class TestFieldClass(object):
         def __init__(self):
             self._field = {}
 
         @field_property
         def test_field(value):
+            if validator_fail:
+                raise ValueError('validator failed')
+
+        @field_property(field_type=DummyType)
+        def test_field_with_type(value):
+            if validator_fail:
+                raise ValueError('validator failed')
+
+        @field_property(field_name='a name')
+        def test_field_with_name(value):
             if validator_fail:
                 raise ValueError('validator failed')
 
@@ -50,6 +63,29 @@ def test_field_property():
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
                             'test_field', 'testing')
 
+    # field_property with type checking
+    test = TestFieldClass()
+    validator_fail = False
+    dummy = DummyType()
+    test.test_field_with_type = dummy
+    nt.assert_equal(test.test_field_with_type, dummy)
+    nt.assert_dict_equal(test._field, {'test_field_with_type': dummy})
+    nt.assert_raises_regexp(ValueError, 'must be DummyType', setattr, test,
+                            'test_field_with_type', 'testing')
+    validator_fail = True
+    nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
+                            'test_field_with_type', dummy)
+
+    # field_property with field name
+    test = TestFieldClass()
+    validator_fail = False
+    test.test_field_with_name = 'testing'
+    nt.assert_equal(test.test_field_with_name, 'testing')
+    nt.assert_dict_equal(test._field, {'a name': 'testing'})
+    validator_fail = True
+    nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
+                            'test_field_with_name', 'testing')
+
 
 def assert_field_typechecking(field_types, test_obj):
     """Assert that the fields of a test object are correctly type-checked.
@@ -65,7 +101,7 @@ def assert_field_typechecking(field_types, test_obj):
         setattr(test_obj, name, tmp_obj)
         nt.assert_equal(getattr(test_obj, name), tmp_obj)
         bad_obj = BadType()
-        nt.assert_raises_regexp(TypeError, name + '.*' + obj.__name__,
+        nt.assert_raises_regexp(ValueError, name + '.*' + obj.__name__,
                                 setattr, test_obj, name, bad_obj)
         nt.assert_equal(getattr(test_obj, name), tmp_obj)
 
@@ -195,6 +231,9 @@ class TestData(object):
             for i, row in zip(index, test_data.tolist())]
         nt.assert_list_equal(expected_values, data.values)
 
+    def test_iter_loading(self):
+        pass
+
 
 class TestValueRef(object):
     def test_field_typechecking(self):
@@ -215,13 +254,13 @@ class TestValueRef(object):
     def test_json_serialization(self):
         """ValueRef JSON is correctly serialized"""
         vref = ValueRef()
-        nt.assert_equal(json.dumps({}), vref.to_json())
+        nt.assert_equal(json.dumps({}), vref.to_json(pretty_print=False))
 
         props = {
             'value': 'test-value',
             'band': True}
         vref = ValueRef(**props)
-        nt.assert_equal(json.dumps(props), vref.to_json())
+        nt.assert_equal(json.dumps(props), vref.to_json(pretty_print=False))
 
         props = {
             'value': 'test-value',
@@ -231,12 +270,12 @@ class TestValueRef(object):
             'offset': 4,
             'band': True}
         vref = ValueRef(**props)
-        nt.assert_equal(json.dumps(props), vref.to_json())
+        nt.assert_equal(json.dumps(props), vref.to_json(pretty_print=False))
 
 
-class TestMarkPropertySet(object):
+class TestPropertySet(object):
     def test_field_typechecking(self):
-        """Mark.PropertySet fields are correctly type-checked"""
+        """PropertySet fields are correctly type-checked"""
         # All fields must be ValueRef for Mark properties
         fields = [
             'x', 'x2', 'width', 'y', 'y2', 'height', 'opacity', 'fill',
@@ -246,4 +285,4 @@ class TestMarkPropertySet(object):
             'align', 'baseline', 'text', 'dx', 'dy', 'angle', 'font',
             'font_size', 'font_weight', 'font_style']
         field_types = [(f, ValueRef) for f in fields]
-        assert_field_typechecking(field_types, Mark.PropertySet())
+        assert_field_typechecking(field_types, PropertySet())

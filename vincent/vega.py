@@ -36,10 +36,10 @@ def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
     if not isinstance(value, value_type):
         if type(value_type) is tuple:
-            raise TypeError(name + ' must be one of (' +
-                            ', '.join(t.__name__ for t in value_type) + ')')
+            raise ValueError(name + ' must be one of (' +
+                             ', '.join(t.__name__ for t in value_type) + ')')
         else:
-            raise TypeError(name + ' must be ' + value_type.__name__)
+            raise ValueError(name + ' must be ' + value_type.__name__)
 
 
 def field_property(field_type=None, field_name=None):
@@ -717,8 +717,8 @@ class ValueRef(FieldClass):
     It is often useful for marks to share properties to maintain consistency
     when parts of the visualization are changed. Additionally, the marks
     themselves may have properties somehow mapped from the data (i.e. mark
-    size proportional to some data field). The ``ValueRef`` class can
-    be used to either define values locally or reference other fields.
+    size proportional to some data field). The ``ValueRef`` class can be
+    used to either define values locally or reference other fields.
 
     ValueRefs can reference numbers, strings, or arbitrary objects,
     depending on their use.
@@ -732,7 +732,7 @@ class ValueRef(FieldClass):
 
     @field_property(str)
     def field(value):
-        """string : references field of the data in dot-notation
+        """string : reference to a field of the data in dot-notation
 
         The data is taken from the Mark's ``from_`` property. For instance, if
         the data has a definition
@@ -743,7 +743,7 @@ class ValueRef(FieldClass):
 
     @field_property(str)
     def scale(value):
-        """string : references the name of a ``Scale``
+        """string : reference to the name of a ``Scale``
 
         The scale is applied to the ``value`` and ``field`` attributes.
         """
@@ -774,6 +774,10 @@ class PropertySet(FieldClass):
     objects
 
     These define the appearance details for marks and axes.
+
+    All properties are defined by ``ValueRef`` classes. As a warning,
+    validation of the values is only performed on the ``value`` field of the
+    class, which is ignored by Vega if the ``field`` property is set.
     """
     @field_property(ValueRef)
     def x(value):
@@ -830,28 +834,56 @@ class PropertySet(FieldClass):
 
     @field_property(ValueRef)
     def fill(value):
-        """ValueRef : color, fill color for the mark
+        """ValueRef : string, fill color for the mark
+
+        Colors can be specified in standard HTML hex notation or as CSS3
+        compatible strings. The color string is not validated due to its
+        large number of valid values.
         """
+        if value.value:
+            _assert_is_type('fill.value', value.value, str)
 
     @field_property(field_type=ValueRef, field_name='fillOpacity')
     def fill_opacity(value):
-        """ValueRef : number, opacity of the fill (0 to 1)
+        """ValueRef : int or float, opacity of the fill (0 to 1)
         """
+        if value.value:
+            _assert_is_type('fill_opacity.value', value.value,
+                            (float, int))
+            if value.value < 0 or value.value > 1:
+                raise ValueError(
+                    'fill_opacity.value must be between 0 and 1')
 
     @field_property(ValueRef)
     def stroke(value):
         """ValueRef : color, stroke color for the mark
+
+        Colors can be specified in standard HTML hex notation or as CSS3
+        compatible strings. The color string is not validated due to its
+        large number of valid values.
         """
+        if value.value:
+            _assert_is_type('stroke.value', value.value, str)
 
     @field_property(field_type=ValueRef, field_name='strokeWidth')
     def stroke_width(value):
-        """ValueRef : number, width of the stroke in pixels
+        """ValueRef : int, width of the stroke in pixels
         """
+        if value.value:
+            _assert_is_type('stroke_width.value', value.value, int)
+            if value.value < 0:
+                raise ValueError('stroke width cannot be negative')
 
     @field_property(field_type=ValueRef, field_name='strokeOpacity')
     def stroke_opacity(value):
         """ValueRef : number, opacity of the stroke (0 to 1)
         """
+        if value.value:
+            _assert_is_type('stroke_opacity.value', value.value,
+                            (float, int))
+            if value.value < 0 or value.value > 1:
+                raise ValueError(
+                    'stroke_opacity.value must be between 0 and 1')
 
     @field_property(ValueRef)
     def size(value):
@@ -861,6 +893,14 @@ class PropertySet(FieldClass):
         a ``shape`` of ``'circle'`` would result in circles with an area of
         500 square pixels. Only used if ``type`` is ``'symbol'``.
         """
+        if value.value:
+            _assert_is_type('size.value', value.value, int)
+            if value.value < 0:
+                raise ValueError('size cannot be negative')
+
+    _valid_shapes = (
+        'circle', 'square', 'cross', 'diamond', 'triangle-up',
+        'triangle-down')
 
     @field_property(ValueRef)
     def shape(value):
@@ -870,6 +910,10 @@ class PropertySet(FieldClass):
         ``'cross'``, ``'diamond'``, ``'triangle-up'``, and
         ``'triangle-down'``. Only used if ``type`` is ``'symbol'``.
         """
+        if value.value:
+            _assert_is_type('shape.value', value.value, str)
+            if value.value not in PropertySet._valid_shapes:
+                raise ValueError(value.value + ' is not a valid shape')
 
     @field_property(ValueRef)
     def path(value):
@@ -878,6 +922,8 @@ class PropertySet(FieldClass):
         This would typically be used for maps and other things where the
         path is taken from the data.
         """
+        if value.value:
+            _assert_is_type('path.value', value.value, str)
 
     @field_property(field_type=ValueRef, field_name='innerRadius')
     def inner_radius(value):
