@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import time
+import random
 
 try:
     import pandas as pd
@@ -11,6 +12,24 @@ try:
     import numpy as np
 except ImportError:
     np = None
+
+
+def initialize_notebook():
+    """Initialize the iPython notebook display elements"""
+    # Note - order is important here apparently.
+    display(HTML('<script src="%s"></script>' % d3_js_url))
+    display(HTML('<script src="%s"></script>' % vega_js_url))
+
+
+# TODO: keep local copies?
+d3_js_url = 'http://trifacta.github.com/vega/d3.v3.min.js'
+vega_js_url = 'http://trifacta.github.com/vega/vega.js'
+try:
+    from IPython.core.display import display, HTML, Javascript
+    has_ipython = True
+    initialize_notebook()
+except ImportError:
+    has_ipython = False
 
 
 def _assert_is_type(name, value, value_type):
@@ -162,11 +181,15 @@ class FieldClass(object):
             self.validate()
 
         if pretty_print:
-            dumps_args = {'indent': 4, 'separators': (',', ': ')}
+            dumps_args = {'indent': 2, 'separators': (',', ': ')}
         else:
             dumps_args = {}
 
-        return json.dumps(self._field, **dumps_args)
+        def encoder(obj):
+            if hasattr(obj, '_field'):
+                return obj._field
+
+        return json.dumps(self._field, default=encoder, **dumps_args)
 
     def from_json(self):
         """Load object from JSON
@@ -179,17 +202,43 @@ class FieldClass(object):
 class KeyedList(list):
     """A list that can optionally be indexed by the ``name`` attribute of
     its elements"""
-    def __getitem__(self, item):
-        if isinstance(item, str):
-            names = [x.name for x in self]
-            if len(names) != len(set(names)):
-                raise ValidationError('duplicate names in list')
-            elif item not in names:
-                raise KeyError('invalid name %s' % item)
+    def __init__(self, attr_name='name', *args, **kwargs):
+        self.attr_name = attr_name
+        list.__init__(self, *args, **kwargs)
+
+    def __get_keys(self):
+        keys = [getattr(x, self.attr_name) for x in self]
+        if len(keys) != len(set(keys)):
+            raise ValidationError('duplicate keys found')
+        return keys
+
+    def __getitem__(self, key):
+        if isinstance(key, str):
+            keys = self.__get_keys()
+            if key not in keys:
+                raise KeyError('invalid key %s' % key)
             else:
-                return self[names.index(item)]
+                return self[keys.index(key)]
         else:
-            return list.__getitem__(self, item)
+            return list.__getitem__(self, key)
+
+    def __setitem__(self, key, value):
+        if isinstance(key, str):
+            if not hasattr(value, self.attr_name):
+                raise ValidationError(
+                    'object must have ' + self.attr_name + ' attribute')
+            elif getattr(value, self.attr_name) != key:
+                raise ValidationError(
+                    "key must be equal to '" + self.attr_name +
+                    "'attribute")
+
+            keys = self.__get_keys()
+            if key not in keys:
+                self.append(value)
+            else:
+                list.__setitem__(self, keys.index(key), value)
+        else:
+            list.__setitem__(self, key, value)
 
 
 class Visualization(FieldClass):
@@ -209,9 +258,16 @@ class Visualization(FieldClass):
         scales, and axes properties to empty KeyedLists if they aren't
         defined by the arguments.
         """
-        for attrib in ('data', 'marks', 'scales', 'axes'):
-            setattr(self, attrib, KeyedList())
         super(Visualization, self).__init__(*args, **kwargs)
+        for attrib in ('data', 'scales'):
+            if not getattr(self, attrib):
+                setattr(self, attrib, KeyedList(attr_name='name'))
+        # The axes get keyed by "type" instead of name.
+        if not self.axes:
+            self.axes = KeyedList(attr_name='type')
+        # Marks don't get keyed.
+        if not self.marks:
+            self.marks = []
 
     @field_property(str)
     def name(value):
@@ -268,8 +324,8 @@ class Visualization(FieldClass):
             required_keys = ['top', 'left', 'right', 'bottom']
             for key in required_keys:
                 if key not in value:
-                    raise ValueError('padding must have keys %s' %
-                                     ', '.join(required_keys))
+                    raise ValueError('padding must have keys "%s' %
+                                     '", "'.join(required_keys) + '"')
                 _assert_is_type('padding: %s' % key, value[key], int)
                 if value[key] < 0:
                     raise ValueError('padding cannot be negative')
@@ -347,6 +403,20 @@ class Visualization(FieldClass):
             elif require_all_fields:
                 raise ValidationError(
                     elem + ' must be defined for valid visualization')
+
+    def display(self):
+        """Display visualization inline in IPython notebook"""
+        if not has_ipython:
+            raise LoadError('IPython notebook could not be loaded')
+        # Copied from vincent.ipynb:
+        # HACK: use a randomly chosen unique div id
+        id = random.randint(0, 2 ** 16)
+        a = HTML('<div id="vis%d"></div>' % id)
+        b = Javascript('vg.parse.spec(%s, function(chart) '
+                       '{ chart({el:"#vis%d"}).update(); });' %
+                       (self.to_json(pretty_print=False), id))
+        initialize_notebook()
+        display(a, b)
 
 
 class LoadError(Exception):
@@ -974,6 +1044,18 @@ class MarkProperties(FieldClass):
         """
 
 
+class MarkRef(FieldClass):
+    """Definitions for Mark source data
+    """
+    @field_property(str)
+    def data(value):
+        """string : Name of the source `Data`"""
+
+    @field_property(list)
+    def transform(value):
+        """list : List of transforms to apply to the data"""
+
+
 class Mark(FieldClass):
     """Definitions for data marks
 
@@ -1004,7 +1086,7 @@ class Mark(FieldClass):
                 'invalid mark type %s, valid types are %s' % (
                     value, Mark._valid_type_values))
 
-    @field_property(field_type=dict, field_name='from')
+    @field_property(field_type=MarkRef, field_name='from')
     def from_(value):
         """dict : Description of data to visualize
 
