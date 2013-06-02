@@ -176,12 +176,39 @@ class FieldClass(object):
         raise NotImplementedError()
 
 
+class KeyedList(list):
+    """A list that can optionally be indexed by the ``name`` attribute of
+    its elements"""
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            names = [x.name for x in self]
+            if len(names) != len(set(names)):
+                raise ValidationError('duplicate names in list')
+            elif item not in names:
+                raise KeyError('invalid name %s' % item)
+            else:
+                return self[names.index(item)]
+        else:
+            return list.__getitem__(self, item)
+
+
 class Visualization(FieldClass):
     """Visualization container class.
 
     This class defines the full visualization. Calling its ``to_json``
     method should return a complete Vega definition.
     """
+    def __init__(self, *args, **kwargs):
+        """Initialize a Visualization
+
+        In addition to setting any attributes, this sets the data, marks,
+        scales, and axes properties to empty KeyedLists if they aren't
+        defined by the arguments.
+        """
+        for attrib in ('data', 'marks', 'scales', 'axes'):
+            setattr(self, attrib, KeyedList())
+        super(Visualization, self).__init__(*args, **kwargs)
+
     @field_property(str)
     def name(value):
         """string : Name of the visualization (optional)
@@ -246,9 +273,9 @@ class Visualization(FieldClass):
             if value < 0:
                 raise ValueError('padding cannot be negative')
 
-    @field_property(list)
+    @field_property((list, KeyedList))
     def data(value):
-        """list of ``Data`` : Data definitions
+        """list or KeyedList of ``Data`` : Data definitions
 
         This defines the data being visualized. See the :class:`Data` class
         for details.
@@ -256,9 +283,9 @@ class Visualization(FieldClass):
         for i, entry in enumerate(value):
             _assert_is_type('data[%g]' % i, entry,  Data)
 
-    @field_property(list)
+    @field_property((list, KeyedList))
     def scales(value):
-        """list of ``Scale`` : Scale definitions
+        """list or KeyedList of ``Scale`` : Scale definitions
 
         Scales map the data from the domain of the data to some
         visualization space (such as an x-axis). See the :class:`Scale`
@@ -267,9 +294,9 @@ class Visualization(FieldClass):
         for i, entry in enumerate(value):
             _assert_is_type('scales[%g]' % i, entry, Scale)
 
-    @field_property(list)
+    @field_property((list, KeyedList))
     def axes(value):
-        """list of ``Axis`` : Axis definitions
+        """list or KeyedList of ``Axis`` : Axis definitions
 
         Axes define the locations of the data being mapped by the scales.
         See the :class:`Axis` class for details.
@@ -277,9 +304,9 @@ class Visualization(FieldClass):
         for i, entry in enumerate(value):
             _assert_is_type('axes[%g]' % i, entry, Axis)
 
-    @field_property(list)
+    @field_property((list, KeyedList))
     def marks(value):
-        """list of ``Mark`` : Mark definitions
+        """list or KeyedList of ``Mark`` : Mark definitions
 
         Marks are the visual objects (such as lines, bars, etc.) that
         represent the data in the visualization space. See the :class:`Mark`
@@ -310,6 +337,9 @@ class Visualization(FieldClass):
                 # Validate each element of the sets of data, etc
                 for entry in attr:
                     entry.validate()
+                names = [a.name for a in attr]
+                if len(names) != len(set(names)):
+                    raise ValidationError(elem + ' has duplicate names')
             elif require_all_fields:
                 raise ValidationError(
                     elem + ' must be defined for valid visualization')
