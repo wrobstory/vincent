@@ -44,11 +44,11 @@ def _assert_is_type(name, value, value_type):
 
 def field_property(field_type=None, field_name=None):
     """Decorator to define properties that map to the internal ``_field``
-    dict
+    dict.
 
     This decorator is intended for classes that map to some pre-defined JSON
-    structure. It is assumed that this decorates functions with an instance
-    of ``self._field``.
+    structure, such as axes, data, marks, scales, etc. It is assumed that this
+    decorates functions with an instance of ``self._field``.
 
     Parameters
     ----------
@@ -125,7 +125,8 @@ class ValidationError(Exception):
 
 
 class FieldClass(object):
-    """Base class for objects that rely on an internal ``_field`` dict
+    """Base class for objects that rely on an internal ``_field`` dict. This
+    dict contains the complete Vega grammar.
 
     This should be used as a superclass for classes that map to some JSON
     structure. The JSON content is stored in an internal dict named
@@ -160,7 +161,7 @@ class FieldClass(object):
             except ValueError as e:
                 raise ValidationError('invalid contents: ' + e.message)
 
-    def to_json(self, validate=False, pretty_print=True):
+    def to_json(self, path=None, validate=False, pretty_print=True):
         """Convert object to JSON
 
         Parameters
@@ -189,7 +190,11 @@ class FieldClass(object):
             if hasattr(obj, '_field'):
                 return obj._field
 
-        return json.dumps(self._field, default=encoder, **dumps_args)
+        if path:
+            with open(path, 'w') as f:
+                json.dump(self._field, f)
+        else:
+            return json.dumps(self._field, default=encoder, **dumps_args)
 
     def from_json(self):
         """Load object from JSON
