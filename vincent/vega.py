@@ -197,7 +197,7 @@ class GrammarClass(object):
 
         if path:
             with open(path, 'w') as f:
-                json.dump(self.grammar, f)
+                json.dump(self.grammar, f, default=encoder, **dumps_args)
         else:
             return json.dumps(self.grammar, default=encoder, **dumps_args)
 
@@ -701,6 +701,64 @@ class Data(GrammarClass):
             for i, x in enumerate(v):
                 values[i][k] = x
 
+        return cls(name, values=values)
+
+    @classmethod
+    def from_list(cls, data, name=None):
+        """Convenience method for loading data from a single list. Defaults
+        to numerical indexing for x-axis.
+
+        Parameters
+        ----------
+        data: list
+            List of data
+        name: string, default None
+            Name of the data set. If None (default), the name will be set to
+            ``'table'``.
+
+        """
+        values = [{"x": x, "y": y}
+                  for x, y in zip(range(len(data)), data)]
+        return cls(name, values=values)
+
+    @classmethod
+    def from_tuple(cls, data, name=None):
+        """Convenience method for loading data from a tuple of tuples. Defaults
+        to numerical indexing for x-axis.
+
+        Parameters
+        ----------
+        data: tuple
+            Tuple of paired tuples
+        name: string, default None
+            Name of the data set. If None (default), the name will be set to
+            ``'table'``.
+
+        Example:
+        >>>data = Data.from_tuples([(1,2), (3,4), (5,6)])
+
+        """
+        values = [{"x": x[0], "y": x[1]} for x in data]
+        return cls(name, values=values)
+
+    @classmethod
+    def from_dict(cls, data, name=None):
+        """Convenience method for loading data from dict
+
+        Parameters
+        ----------
+        data: dict
+            Dict of data
+        name: string, default None
+            Name of the data set. If None (default), the name will be set to
+            ``'table'``.
+
+        Example
+        -------
+        >>>data = Data.from_dict({'apples': 10, 'oranges': 2, 'pears': 3})
+
+        """
+        values = [{"x": x, "y": y} for x, y in data.iteritems()]
         return cls(name, values=values)
 
     def to_json(self, validate=False, pretty_print=True, data_path=None):
