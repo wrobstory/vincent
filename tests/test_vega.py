@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from itertools import product
 import json
 
-from vincent.vega import field_property, Data, ValueRef, Mark, PropertySet
+from vincent.vega import grammar, Data, ValueRef, Mark, PropertySet
 import nose.tools as nt
 
 import pandas as pd
@@ -21,70 +21,70 @@ sequences = {
     'numpy int': lambda l: map(np.int32, range(l))}
 
 
-def test_field_property():
-    """Field property decorator behaves correctly."""
+def test_grammar():
+    """Grammar decorator behaves correctly."""
     validator_fail = False
 
     class DummyType(object):
         pass
 
-    class TestFieldClass(object):
+    class TestGrammarClass(object):
         def __init__(self):
-            self._field = {}
+            self.grammar = {}
 
-        @field_property
-        def test_field(value):
+        @grammar
+        def test_grammar(value):
             if validator_fail:
                 raise ValueError('validator failed')
 
-        @field_property(field_type=DummyType)
-        def test_field_with_type(value):
+        @grammar(grammar_type=DummyType)
+        def test_grammar_with_type(value):
             if validator_fail:
                 raise ValueError('validator failed')
 
-        @field_property(field_name='a name')
-        def test_field_with_name(value):
+        @grammar(grammar_name='a name')
+        def test_grammar_with_name(value):
             if validator_fail:
                 raise ValueError('validator failed')
 
-    test = TestFieldClass()
-    nt.assert_is_none(test.test_field)
-    nt.assert_dict_equal(test._field, {})
+    test = TestGrammarClass()
+    nt.assert_is_none(test.test_grammar)
+    nt.assert_dict_equal(test.grammar, {})
 
-    test.test_field = 'testing'
-    nt.assert_equal(test.test_field, 'testing')
-    nt.assert_dict_equal(test._field, {'test_field': 'testing'})
+    test.test_grammar = 'testing'
+    nt.assert_equal(test.test_grammar, 'testing')
+    nt.assert_dict_equal(test.grammar, {'test_grammar': 'testing'})
 
-    del test.test_field
-    nt.assert_is_none(test.test_field)
-    nt.assert_dict_equal(test._field, {})
+    del test.test_grammar
+    nt.assert_is_none(test.test_grammar)
+    nt.assert_dict_equal(test.grammar, {})
 
     validator_fail = True
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
-                            'test_field', 'testing')
+                            'test_grammar', 'testing')
 
-    # field_property with type checking
-    test = TestFieldClass()
+    # grammar with type checking
+    test = TestGrammarClass()
     validator_fail = False
     dummy = DummyType()
-    test.test_field_with_type = dummy
-    nt.assert_equal(test.test_field_with_type, dummy)
-    nt.assert_dict_equal(test._field, {'test_field_with_type': dummy})
+    test.test_grammar_with_type = dummy
+    nt.assert_equal(test.test_grammar_with_type, dummy)
+    nt.assert_dict_equal(test.grammar, {'test_grammar_with_type': dummy})
     nt.assert_raises_regexp(ValueError, 'must be DummyType', setattr, test,
-                            'test_field_with_type', 'testing')
+                            'test_grammar_with_type', 'testing')
     validator_fail = True
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
-                            'test_field_with_type', dummy)
+                            'test_grammar_with_type', dummy)
 
-    # field_property with field name
-    test = TestFieldClass()
+    # grammar with field name
+    test = TestGrammarClass()
     validator_fail = False
-    test.test_field_with_name = 'testing'
-    nt.assert_equal(test.test_field_with_name, 'testing')
-    nt.assert_dict_equal(test._field, {'a name': 'testing'})
+    test.test_grammar_with_name = 'testing'
+    nt.assert_equal(test.test_grammar_with_name, 'testing')
+    nt.assert_dict_equal(test.grammar, {'a name': 'testing'})
     validator_fail = True
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
-                            'test_field_with_name', 'testing')
+                            'test_grammar_with_name', 'testing')
 
 
 def assert_field_typechecking(field_types, test_obj):

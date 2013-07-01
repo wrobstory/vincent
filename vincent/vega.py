@@ -36,37 +36,39 @@ def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
     if not isinstance(value, value_type):
         if type(value_type) is tuple:
-            raise ValueError(name + ' must be one of (' +
-                             ', '.join(t.__name__ for t in value_type) + ')')
+            types = ', '.join(t.__name__ for t in value_type)
+            raise ValueError('{0} must be one of ({1})'.format(name, types))
         else:
-            raise ValueError(name + ' must be ' + value_type.__name__)
+            raise ValueError('{0} must be {1}'
+                             .format(name, value_type.__name__))
 
 
-def field_property(field_type=None, field_name=None):
-    """Decorator to define properties that map to the internal ``_field``
-    dict.
+def grammar(grammar_type=None, grammar_name=None):
+    """Decorator to define properties that map to the ``grammar``
+    dict. This dict is the canonical representation of the Vega grammar
+    within Vincent.
 
     This decorator is intended for classes that map to some pre-defined JSON
     structure, such as axes, data, marks, scales, etc. It is assumed that this
-    decorates functions with an instance of ``self._field``.
+    decorates functions with an instance of ``self.grammar``.
 
     Parameters
     ----------
-    field_type : type or tuple of types
+    grammar_type : type or tuple of types, default None
         If the argument to the decorated function is not of the given types,
         then a ValueError is raised. No type checking is done if the type is
         None (default).
-    field_name : string
-        An optional name to map to the internal ``_field`` dict. If None
+    grammar_name : string, default None
+        An optional name to map to the internal ``grammar`` dict. If None
         (default), then the key for the dict is the name of the function
         being decorated. If not None, then it will be the name specified
         here. This is useful if the expected JSON field name is a Python
         keyword or has an un-Pythonic name.
 
     This should decorate a "validator" function that should return no value
-    but raise an exception if the provided value is not valid Vega. If the
-    validator throws no exception, then the value is assigned to the
-    ``_field`` dict.
+    but raise an exception if the provided value is not valid Vega grammar. If
+    the validator throws no exception, then the value is assigned to the
+    ``grammar`` dict.
 
     The validator function should take only one argument - the value to be
     validated - so that no ``self`` argument is included; the validator
@@ -78,41 +80,41 @@ def field_property(field_type=None, field_name=None):
     The doc string for the property is taken from the validator functions's
     doc string.
     """
-    def field_property_creator(validator, name):
+    def grammar_creator(validator, name):
         def setter(self, value):
-            if isinstance(field_type, (type, tuple)):
-                _assert_is_type(validator.__name__, value, field_type)
+            if isinstance(grammar_type, (type, tuple)):
+                _assert_is_type(validator.__name__, value, grammar_type)
             validator(value)
-            self._field[name] = value
+            self.grammar[name] = value
 
         def getter(self):
-            return self._field.get(name, None)
+            return self.grammar.get(name, None)
 
         def deleter(self):
-            if name in self._field:
-                del self._field[name]
+            if name in self.grammar:
+                del self.grammar[name]
 
         return property(getter, setter, deleter, validator.__doc__)
 
-    if isinstance(field_type, (type, tuple)):
-        # If field_type is a type, return another decorator.
-        def field_property_dec(validator):
-            # Make sure to use the field name if it's there.
-            if field_name:
-                return field_property_creator(validator, field_name)
+    if isinstance(grammar_type, (type, tuple)):
+        # If grammar_type is a type, return another decorator.
+        def grammar_dec(validator):
+            # Make sure to use the grammar name if it's there.
+            if grammar_name:
+                return grammar_creator(validator, grammar_name)
             else:
-                return field_property_creator(validator, validator.__name__)
-        return field_property_dec
-    elif isinstance(field_name, str):
-        # If field_name is a string, use that name and return another
+                return grammar_creator(validator, validator.__name__)
+        return grammar_dec
+    elif isinstance(grammar_name, str):
+        # If grammar_name is a string, use that name and return another
         # decorator.
-        def field_property_dec(validator):
-            return field_property_creator(validator, field_name)
-        return field_property_dec
+        def grammar_dec(validator):
+            return grammar_creator(validator, grammar_name)
+        return grammar_dec
     else:
-        # Otherwise we assume that field_type is actually the function being
+        # Otherwise we assume that grammar_type is actually the function being
         # decorated.
-        return field_property_creator(field_type, field_type.__name__)
+        return grammar_creator(grammar_type, grammar_type.__name__)
 
 
 class ValidationError(Exception):
@@ -124,23 +126,23 @@ class ValidationError(Exception):
     pass
 
 
-class FieldClass(object):
-    """Base class for objects that rely on an internal ``_field`` dict. This
+class GrammarClass(object):
+    """Base class for objects that rely on an internal ``grammar`` dict. This
     dict contains the complete Vega grammar.
 
     This should be used as a superclass for classes that map to some JSON
     structure. The JSON content is stored in an internal dict named
-    ``_field``.
+    ``grammar``.
     """
     def __init__(self, **kwargs):
-        """Initialize a FieldClass
+        """Initialize a GrammarClass
 
         **kwargs are attribute-value pairs that are set on initialization.
-        These will generally be keys for the ``_field`` dict. If the
+        These will generally be keys for the ``grammar`` dict. If the
         attribute does not already exist as a property, then a
         ``ValueError`` is raised.
         """
-        self._field = {}
+        self.grammar = {}
 
         for attr, value in kwargs.iteritems():
             if hasattr(self, attr):
@@ -151,11 +153,11 @@ class FieldClass(object):
     def validate(self):
         """Validate the contents of the object.
 
-        This calls ``setattr`` for each of the class's field properties. It
-        will catch ``ValueError``s raised by the field property's setters
+        This calls ``setattr`` for each of the class's grammar properties. It
+        will catch ``ValueError``s raised by the grammar property's setters
         and re-raise them as :class:`ValidationError`.
         """
-        for key, val in self._field.iteritems():
+        for key, val in self.grammar.iteritems():
             try:
                 setattr(self, key, val)
             except ValueError as e:
@@ -166,6 +168,9 @@ class FieldClass(object):
 
         Parameters
         ----------
+        path: string, default None
+            Path to write JSON out. If there is no path provided, JSON
+            will be returned as a string to the console.
         validate : boolean
             If True, call the object's `validate` method before
             serializing. Default is False.
@@ -176,7 +181,7 @@ class FieldClass(object):
         Returns
         -------
         string
-            JSON serialization of the class's field properties.
+            JSON serialization of the class's grammar properties.
         """
         if validate:
             self.validate()
@@ -187,14 +192,14 @@ class FieldClass(object):
             dumps_args = {}
 
         def encoder(obj):
-            if hasattr(obj, '_field'):
-                return obj._field
+            if hasattr(obj, 'grammar'):
+                return obj.grammar
 
         if path:
             with open(path, 'w') as f:
-                json.dump(self._field, f)
+                json.dump(self.grammar, f)
         else:
-            return json.dumps(self._field, default=encoder, **dumps_args)
+            return json.dumps(self.grammar, default=encoder, **dumps_args)
 
     def from_json(self):
         """Load object from JSON
@@ -246,7 +251,7 @@ class KeyedList(list):
             list.__setitem__(self, key, value)
 
 
-class Visualization(FieldClass):
+class Visualization(GrammarClass):
     """Visualization container class.
 
     This class defines the full visualization. Calling its ``to_json``
@@ -274,12 +279,12 @@ class Visualization(FieldClass):
         if not self.marks:
             self.marks = []
 
-    @field_property(str)
+    @grammar(str)
     def name(value):
         """string : Name of the visualization (optional)
         """
 
-    @field_property(int)
+    @grammar(int)
     def width(value):
         """int : Width of the visualization in pixels
 
@@ -288,7 +293,7 @@ class Visualization(FieldClass):
         if value < 0:
             raise ValueError('width cannot be negative')
 
-    @field_property(int)
+    @grammar(int)
     def height(value):
         """int : Height of the visualization in pixels
 
@@ -297,7 +302,7 @@ class Visualization(FieldClass):
         if value < 0:
             raise ValueError('height cannot be negative')
 
-    @field_property(list)
+    @grammar(list)
     def viewport(value):
         """2-element list of ints : Dimensions of the viewport
 
@@ -314,7 +319,7 @@ class Visualization(FieldClass):
             if v < 0:
                 raise ValueError('viewport dimensions cannot be negative')
 
-    @field_property((int, dict))
+    @grammar((int, dict))
     def padding(value):
         """int or dict : Padding around visualization
 
@@ -329,16 +334,17 @@ class Visualization(FieldClass):
             required_keys = ['top', 'left', 'right', 'bottom']
             for key in required_keys:
                 if key not in value:
-                    raise ValueError('padding must have keys "%s' %
-                                     '", "'.join(required_keys) + '"')
-                _assert_is_type('padding: %s' % key, value[key], int)
+                    error = ('Padding must have keys "{0}.'
+                             .format('", "'.join(required_keys)))
+                    raise ValueError(error)
+                _assert_is_type('padding: {0}'.format(key), value[key], int)
                 if value[key] < 0:
-                    raise ValueError('padding cannot be negative')
+                    raise ValueError('Padding cannot be negative.')
         else:
             if value < 0:
-                raise ValueError('padding cannot be negative')
+                raise ValueError('Padding cannot be negative.')
 
-    @field_property((list, KeyedList))
+    @grammar((list, KeyedList))
     def data(value):
         """list or KeyedList of ``Data`` : Data definitions
 
@@ -346,9 +352,9 @@ class Visualization(FieldClass):
         for details.
         """
         for i, entry in enumerate(value):
-            _assert_is_type('data[%g]' % i, entry,  Data)
+            _assert_is_type('data[{0}]'.format(i), entry,  Data)
 
-    @field_property((list, KeyedList))
+    @grammar((list, KeyedList))
     def scales(value):
         """list or KeyedList of ``Scale`` : Scale definitions
 
@@ -357,9 +363,9 @@ class Visualization(FieldClass):
         class for details.
         """
         for i, entry in enumerate(value):
-            _assert_is_type('scales[%g]' % i, entry, Scale)
+            _assert_is_type('scales[{0}]'.format(i), entry, Scale)
 
-    @field_property((list, KeyedList))
+    @grammar((list, KeyedList))
     def axes(value):
         """list or KeyedList of ``Axis`` : Axis definitions
 
@@ -367,9 +373,9 @@ class Visualization(FieldClass):
         See the :class:`Axis` class for details.
         """
         for i, entry in enumerate(value):
-            _assert_is_type('axes[%g]' % i, entry, Axis)
+            _assert_is_type('axes[{0}]'.format(i), entry, Axis)
 
-    @field_property((list, KeyedList))
+    @grammar((list, KeyedList))
     def marks(value):
         """list or KeyedList of ``Mark`` : Mark definitions
 
@@ -378,14 +384,14 @@ class Visualization(FieldClass):
         class for details.
         """
         for i, entry in enumerate(value):
-            _assert_is_type('marks[%g]' % i, entry, Mark)
+            _assert_is_type('marks[{0}]'.format(i), entry, Mark)
 
-    def validate(self, require_all_fields=True):
+    def validate(self, require_all=True):
         """Validate the visualization contents.
 
         Parameters
         ----------
-        require_all_fields : boolean
+        require_all : boolean, default True
             If True (default), then all fields ``data``, ``scales``,
             ``axes``, and ``marks`` must be defined. The user is allowed to
             disable this if the intent is to define the elements
@@ -405,7 +411,7 @@ class Visualization(FieldClass):
                 names = [a.name for a in attr]
                 if len(names) != len(set(names)):
                     raise ValidationError(elem + ' has duplicate names')
-            elif require_all_fields:
+            elif require_all:
                 raise ValidationError(
                     elem + ' must be defined for valid visualization')
 
@@ -428,7 +434,7 @@ class LoadError(Exception):
     pass
 
 
-class Data(FieldClass):
+class Data(GrammarClass):
     """Data container for visualization
 
     The Vega document may contain the data itself or a reference to a URL
@@ -442,7 +448,7 @@ class Data(FieldClass):
 
         Parameters
         ----------
-        name : string
+        name : string, default None
             Name of the data set. If None (default), then the name will be
             set to ``'table'``.
         **kwargs : dict
@@ -451,14 +457,14 @@ class Data(FieldClass):
         super(self.__class__, self).__init__(**kwargs)
         self.name = name if name else 'table'
 
-    @field_property(str)
+    @grammar(str)
     def name(value):
         """string : Name of the data
 
         This is used by other components (``Mark``, etc.) for reference.
         """
 
-    @field_property(str)
+    @grammar(str)
     def url(value):
         """string : URL from which to load the data
 
@@ -466,7 +472,7 @@ class Data(FieldClass):
             ``values`` attribute.
         """
 
-    @field_property(list)
+    @grammar(list)
     def values(value):
         """list : Data contents
 
@@ -497,7 +503,7 @@ class Data(FieldClass):
         for row in value:
             _assert_is_type('values row', row, (float, int, dict))
 
-    @field_property(str)
+    @grammar(str)
     def source(value):
         """string : ``name`` field of another data set
 
@@ -505,14 +511,14 @@ class Data(FieldClass):
         values.
         """
 
-    @field_property(list)
+    @grammar(list)
     def transform(value):
         """list : transforms to apply to the data
 
         Note: Transform-relational classes are not yet implemented.
         """
 
-    @field_property(dict)
+    @grammar(dict)
     def format(value):
         """dict : information about the data format
 
@@ -557,15 +563,15 @@ class Data(FieldClass):
         ----------
         pd_obj : pandas ``Series`` or ``DataFrame``
             Pandas object to import data from.
-        name : string
+        name : string, default None
             Applies to the ``name`` attribute of the generated class. If
             ``None`` (default), then the ``name`` attribute of ``pd_obj`` is
             used if it exists, or ``'table'`` if it doesn't.
-        index_key : string
+        index_key : string, default None
             In each :class:`dict` entry of the ``values`` attribute, the
             index of the pandas object will have this key. If ``None``
             (default), then ``_index`` is used.
-        data_key : string
+        data_key : string, default None
             Applies only to ``Series``. If ``None`` (default), then the data is
             indexed by the ``name`` attribute of the generated class.
             Otherwise, the data will be indexed by this key. For example, if
@@ -621,11 +627,11 @@ class Data(FieldClass):
         columns : iterable
             Sequence of column names, from left to right. Must have same
             length as the number of columns of ``np_obj``.
-        index : iterable
+        index : iterable, default None
             Sequence of indices from top to bottom. If ``None`` (default),
             then the indices are integers starting at 0. Must have same
             length as the number of rows of ``np_obj``.
-        index_key : string
+        index_key : string, default None
             Key to use for the index. If ``None`` (default), ``_index`` is
             used.
         **kwargs : dict
@@ -669,7 +675,7 @@ class Data(FieldClass):
 
         Parameters
         ----------
-        name : string
+        name : string, default None
             Name of the data set. If None (default), the name will be set to
             ``'table'``.
         **kwargs : dict of iterables
@@ -716,7 +722,7 @@ class Data(FieldClass):
         return super(self.__class__, self).to_json(validate, pretty_print)
 
 
-class ValueRef(FieldClass):
+class ValueRef(GrammarClass):
     """Container for the value-referencing properties of marks
 
     It is often useful for marks to share properties to maintain consistency
@@ -728,14 +734,14 @@ class ValueRef(FieldClass):
     ValueRefs can reference numbers, strings, or arbitrary objects,
     depending on their use.
     """
-    @field_property((str, int, float))
+    @grammar((str, int, float))
     def value(value):
         """int, float, or string : used for constant values
 
         This is ignored if the ``field`` property is defined.
         """
 
-    @field_property(str)
+    @grammar(str)
     def field(value):
         """string : reference to a field of the data in dot-notation
 
@@ -746,25 +752,25 @@ class ValueRef(FieldClass):
         element is always `data` regardless of the name of the data.
         """
 
-    @field_property(str)
+    @grammar(str)
     def scale(value):
         """string : reference to the name of a ``Scale``
 
         The scale is applied to the ``value`` and ``field`` attributes.
         """
 
-    @field_property((int, float))
+    @grammar((int, float))
     def mult(value):
         """int or float : multiplier applied to the data after any scaling
         """
 
-    @field_property((int, float))
+    @grammar((int, float))
     def offset(value):
         """int or float : additive offset applied to the data after any
         scaling and multipliers
         """
 
-    @field_property(bool)
+    @grammar(bool)
     def band(value):
         """boolean : use the range of the scale if applicable
 
@@ -774,7 +780,7 @@ class ValueRef(FieldClass):
         """
 
 
-class PropertySet(FieldClass):
+class PropertySet(GrammarClass):
     """Definition of properties for ``Mark`` objects and labels of ``Axis``
     objects
 
@@ -784,7 +790,7 @@ class PropertySet(FieldClass):
     validation of the values is only performed on the ``value`` field of the
     class, which is ignored by Vega if the ``field`` property is set.
     """
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def x(value):
         """ValueRef : number, left-most x-coordinate
 
@@ -797,7 +803,7 @@ class PropertySet(FieldClass):
         will place a single mark at given x-coordinate.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def x2(value):
         """ValueRef : number, right-most x-coordinate
 
@@ -805,7 +811,7 @@ class PropertySet(FieldClass):
         use the ``width`` property.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def width(value):
         """ValueRef : number, width of the mark
 
@@ -813,31 +819,31 @@ class PropertySet(FieldClass):
         full width.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def y(value):
         """ValueRef : number, top-most y-coordinate
 
         The same remarks for the ``x`` property apply here.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def y2(value):
         """ValueRef : number, bottom-most y-coordinate
 
         The same remarks for the ``x2`` property apply here.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def height(value):
         """ValueRef : number, height of the mark
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def opacity(value):
         """ValueRef : number, overall opacity (0 to 1)
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def fill(value):
         """ValueRef : string, fill color for the mark
 
@@ -848,7 +854,7 @@ class PropertySet(FieldClass):
         if value.value:
             _assert_is_type('fill.value', value.value, str)
 
-    @field_property(field_type=ValueRef, field_name='fillOpacity')
+    @grammar(grammar_type=ValueRef, grammar_name='fillOpacity')
     def fill_opacity(value):
         """ValueRef : int or float, opacity of the fill (0 to 1)
         """
@@ -859,7 +865,7 @@ class PropertySet(FieldClass):
                 raise ValueError(
                     'fill_opacity.value must be between 0 and 1')
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def stroke(value):
         """ValueRef : color, stroke color for the mark
 
@@ -870,7 +876,7 @@ class PropertySet(FieldClass):
         if value.value:
             _assert_is_type('stroke.value', value.value, str)
 
-    @field_property(field_type=ValueRef, field_name='strokeWidth')
+    @grammar(grammar_type=ValueRef, grammar_name='strokeWidth')
     def stroke_width(value):
         """ValueRef : int, width of the stroke in pixels
         """
@@ -879,7 +885,7 @@ class PropertySet(FieldClass):
             if value.value < 0:
                 raise ValueError('stroke width cannot be negative')
 
-    @field_property(field_type=ValueRef, field_name='strokeOpacity')
+    @grammar(grammar_type=ValueRef, grammar_name='strokeOpacity')
     def stroke_opacity(value):
         """ValueRef : number, opacity of the stroke (0 to 1)
         """
@@ -890,7 +896,7 @@ class PropertySet(FieldClass):
                 raise ValueError(
                     'stroke_opacity.value must be between 0 and 1')
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def size(value):
         """ValueRef : number, area of the mark in pixels
 
@@ -907,7 +913,7 @@ class PropertySet(FieldClass):
         'circle', 'square', 'cross', 'diamond', 'triangle-up',
         'triangle-down')
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def shape(value):
         """ValueRef : string, type of symbol to use
 
@@ -920,7 +926,7 @@ class PropertySet(FieldClass):
             if value.value not in PropertySet._valid_shapes:
                 raise ValueError(value.value + ' is not a valid shape')
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def path(value):
         """ValueRef : string, SVG path string
 
@@ -930,31 +936,31 @@ class PropertySet(FieldClass):
         if value.value:
             _assert_is_type('path.value', value.value, str)
 
-    @field_property(field_type=ValueRef, field_name='innerRadius')
+    @grammar(grammar_type=ValueRef, grammar_name='innerRadius')
     def inner_radius(value):
         """ValueRef : number, inner radius of arc in pixels
 
         Only used if ``type`` is ``'arc'``."""
 
-    @field_property(field_type=ValueRef, field_name='outerRadius')
+    @grammar(grammar_type=ValueRef, grammar_name='outerRadius')
     def outer_radius(value):
         """ValueRef : number, outer radius of the arc in pixels
 
         Only used if ``type`` is ``'arc'``."""
 
-    @field_property(field_type=ValueRef, field_name='startAngle')
+    @grammar(grammar_type=ValueRef, grammar_name='startAngle')
     def start_angle(value):
         """ValueRef : number, start angle of the arc in radians
 
         Only used if ``type`` is ``'arc'``."""
 
-    @field_property(field_type=ValueRef, field_name='endAngle')
+    @grammar(grammar_type=ValueRef, grammar_name='endAngle')
     def end_angle(value):
         """ValueRef : number, end angle of the arc in radians
 
         Only used if ``type`` is ``'arc'``."""
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def interpolate(value):
         """ValueRef : string, line interpolation method to use
 
@@ -968,21 +974,21 @@ class PropertySet(FieldClass):
         """
         #TODO check values
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def tension(value):
         """ValueRef : number, tension used for interpolation
 
         Only used if ``type`` is ``'area'`` or ``'line'``.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def url(value):
         """ValueRef : string, url of image
 
         Only used if ``type`` is ``'image'``.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def align(value):
         """ValueRef : string, horizontal alignment of mark
 
@@ -991,7 +997,7 @@ class PropertySet(FieldClass):
         """
         #TODO check values
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def baseline(value):
         """ValueRef : string, vertical alignment of mark
 
@@ -1000,13 +1006,13 @@ class PropertySet(FieldClass):
         """
         #TODO check values
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def text(value):
         """ValueRef : string, text to display
 
         Only used if ``type`` is ``'text'``."""
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def dx(value):
         """ValueRef : number, horizontal margin between text and anchor
         point in pixels
@@ -1015,7 +1021,7 @@ class PropertySet(FieldClass):
         ``'text'``.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def dy(value):
         """ValueRef : number, vertical margin between text and anchor
         point in pixels
@@ -1024,28 +1030,28 @@ class PropertySet(FieldClass):
         ``'text'``.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def angle(value):
         """ValueRef : number, rotation of text in degrees
 
         Only used if ``type`` is ``'text'``.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def font(value):
         """ValueRef : string, typeface for text
 
         Only used if ``type`` is ``'text'``.
         """
 
-    @field_property(field_type=ValueRef, field_name='fontSize')
+    @grammar(grammar_type=ValueRef, grammar_name='fontSize')
     def font_size(value):
         """ValueRef : number, font size in pixels
 
         Only used if ``type`` is ``'text'``.
         """
 
-    @field_property(field_type=ValueRef, field_name='fontWeight')
+    @grammar(grammar_type=ValueRef, grammar_name='fontWeight')
     def font_weight(value):
         """ValueRef : string, font weight
 
@@ -1053,7 +1059,7 @@ class PropertySet(FieldClass):
         ``'text'``.
         """
 
-    @field_property(field_type=ValueRef, field_name='fontStyle')
+    @grammar(grammar_type=ValueRef, grammar_name='fontStyle')
     def font_style(value):
         """ValueRef : string, font style
 
@@ -1062,31 +1068,31 @@ class PropertySet(FieldClass):
         """
 
 
-class MarkProperties(FieldClass):
+class MarkProperties(GrammarClass):
     """Sets of all Mark properties
 
     Mark properties can change depending on user interaction or changing
     data. This class defines four events for which the properties may
     change.
     """
-    @field_property(PropertySet)
+    @grammar(PropertySet)
     def enter(value):
         """PropertySet : properties applied when data is loaded
         """
 
-    @field_property(PropertySet)
+    @grammar(PropertySet)
     def exit(value):
         """PropertySet : properties applied when data is removed
         """
 
-    @field_property(PropertySet)
+    @grammar(PropertySet)
     def update(value):
         """PropertySet : properties applied for all non-exiting data
 
         (This is vague. Need better Vega docs.)
         """
 
-    @field_property(PropertySet)
+    @grammar(PropertySet)
     def hover(value):
         """PropertySet, properties applied on mouse-over
 
@@ -1094,19 +1100,19 @@ class MarkProperties(FieldClass):
         """
 
 
-class MarkRef(FieldClass):
+class MarkRef(GrammarClass):
     """Definitions for Mark source data
     """
-    @field_property(str)
+    @grammar(str)
     def data(value):
         """string : Name of the source `Data`"""
 
-    @field_property(list)
+    @grammar(list)
     def transform(value):
         """list : List of transforms to apply to the data"""
 
 
-class Mark(FieldClass):
+class Mark(GrammarClass):
     """Definitions for data marks
 
     Marks are the fundamental component that the viewer sees - such as a
@@ -1116,15 +1122,15 @@ class Mark(FieldClass):
     _valid_type_values = [
         'rect', 'symbol', 'path', 'arc', 'area', 'line', 'image', 'text']
 
-    @field_property(str)
+    @grammar(str)
     def name(value):
         """string : Optional unique name for mark"""
 
-    @field_property(str)
+    @grammar(str)
     def description(value):
         """string : Optional description for mark"""
 
-    @field_property(str)
+    @grammar(str)
     def type(value):
         """string : Type of mark
 
@@ -1136,7 +1142,7 @@ class Mark(FieldClass):
                 'invalid mark type %s, valid types are %s' % (
                     value, Mark._valid_type_values))
 
-    @field_property(field_type=MarkRef, field_name='from')
+    @grammar(grammar_type=MarkRef, grammar_name='from')
     def from_(value):
         """dict : Description of data to visualize
 
@@ -1145,11 +1151,11 @@ class Mark(FieldClass):
         correct property ``from``.
         """
 
-    @field_property(MarkProperties)
+    @grammar(MarkProperties)
     def properties(value):
         """MarkProperties : Mark property set definitions"""
 
-    @field_property(str)
+    @grammar(str)
     def key(value):
         """string : Field to use for data binding
 
@@ -1158,12 +1164,12 @@ class Mark(FieldClass):
         like scrolling time series. See the Vega examples.
         """
 
-    @field_property(ValueRef)
+    @grammar(ValueRef)
     def delay(value):
         """ValueRef, number : Transitional delay in milliseconds.
         """
 
-    @field_property(str)
+    @grammar(str)
     def ease(value):
         """string : Type of transition easing
 
@@ -1176,17 +1182,17 @@ class Mark(FieldClass):
         """
 
 
-class DataRef(FieldClass):
+class DataRef(GrammarClass):
     """Definitions for how data is referenced by scales
 
     Data can be referenced in multiple ways, and sometimes it makes sense to
     reference multiple data fields at once.
     """
-    @field_property(str)
+    @grammar(str)
     def data(value):
         """string : Name of data-set containing the domain values"""
 
-    @field_property((list, str))
+    @grammar((list, str))
     def field(value):
         """string or list of strings : Reference to desired data field(s)
 
@@ -1195,21 +1201,21 @@ class DataRef(FieldClass):
         """
 
 
-class Scale(FieldClass):
+class Scale(GrammarClass):
     """Definitions for mapping from data space to visual space
 
     Scales determine the way in which data is mapped from a data space (such
     as numbers, time stamps, etc.) to a visual space (length of a line,
     height of a bar, etc.), for both independent and dependent variables.
     """
-    @field_property(str)
+    @grammar(str)
     def name(value):
         """string : Unique name for the scale
 
         This is used for referencing by other components (mainly ``Mark``).
         """
 
-    @field_property(str)
+    @grammar(str)
     def type(value):
         """string : Type of the scale
 
@@ -1227,12 +1233,12 @@ class Scale(FieldClass):
         documentation for scale type details.
         """
 
-    @field_property((list, DataRef))
+    @grammar((list, DataRef))
     def domain(value):
         """list or DataRef : Domain of the scale
         """
 
-    @field_property(field_type=(float, int, DataRef), field_name='domainMin')
+    @grammar(grammar_type=(float, int, DataRef), grammar_name='domainMin')
     def domain_min(value):
         """float, int, or DataRef : Minimum domain value
 
@@ -1240,8 +1246,8 @@ class Scale(FieldClass):
         the minimum of the ``domain`` property.
         """
 
-    @field_property(field_type=(float, int, DataRef),
-                    field_name='domainMax')
+    @grammar(grammar_type=(float, int, DataRef),
+             grammar_name='domainMax')
     def domain_max(value):
         """float, int, or DataRef : Maximum domain value
 
@@ -1249,7 +1255,7 @@ class Scale(FieldClass):
         the maximum of the ``domain`` property.
         """
 
-    @field_property((list, str))
+    @grammar((list, str))
     def range(value):
         """list or string : Range of the scale
 
@@ -1267,7 +1273,7 @@ class Scale(FieldClass):
             - ``'category20'`` - A pre-determined 20-color pallet
         """
 
-    @field_property(field_type=(float, int, DataRef), field_name='rangeMin')
+    @grammar(grammar_type=(float, int, DataRef), grammar_name='rangeMin')
     def range_min(value):
         """float, int, or DataRef : Minimum range value
 
@@ -1275,7 +1281,7 @@ class Scale(FieldClass):
         the minimum of the ``range`` property.
         """
 
-    @field_property(field_type=(float, int, DataRef), field_name='rangeMax')
+    @grammar(grammar_type=(float, int, DataRef), grammar_name='rangeMax')
     def range_max(value):
         """float, int, or DataRef : Maximum range value
 
@@ -1283,16 +1289,16 @@ class Scale(FieldClass):
         the maximum of the ``range`` property.
         """
 
-    @field_property(bool)
+    @grammar(bool)
     def reverse(value):
         """boolean : If True, flip the scale range"""
 
-    @field_property(bool)
+    @grammar(bool)
     def round(value):
         """boolean : If True, numeric output values are rounded to
         integers"""
 
-    @field_property(bool)
+    @grammar(bool)
     def points(value):
         """boolean : If True, distribute ordinal values over evenly spaced
         points between ``range_min`` and ``range_max``
@@ -1300,7 +1306,7 @@ class Scale(FieldClass):
         Ignored for non-ordinal scales.
         """
 
-    @field_property(bool)
+    @grammar(bool)
     def clamp(value):
         """boolean : If True, values that exceed the domain are clamped to
         within the domain
@@ -1308,7 +1314,7 @@ class Scale(FieldClass):
         Ignored for ordinal scales.
         """
 
-    @field_property((bool, str))
+    @grammar((bool, str))
     def nice(value):
         """boolean or string : scale the domain to a more human-friendly set
 
@@ -1323,14 +1329,14 @@ class Scale(FieldClass):
         Ignored for ordinal scales.
         """
 
-    @field_property((float, int))
+    @grammar((float, int))
     def exponent(value):
         """float or int : Exponent for ``'pow'`` scale types
 
         Ignored for all scale types other than ``'pow'``.
         """
 
-    @field_property(bool)
+    @grammar(bool)
     def zero(value):
         """boolean : If True, include zero in the domain
 
@@ -1339,65 +1345,65 @@ class Scale(FieldClass):
         """
 
 
-class AxisProperties(FieldClass):
+class AxisProperties(GrammarClass):
     """Definitions for the rendering of axes
 
     Like Marks, axis properties can be broken into various subcomponents,
     but instead of events, the axes are divided into major ticks, minor
     ticks, labels, and the axis itself.
     """
-    @field_property(field_type=PropertySet, field_name='majorTicks')
+    @grammar(grammar_type=PropertySet, grammar_name='majorTicks')
     def major_ticks(value):
         """PropertySet : Definition of major tick marks"""
 
-    @field_property(field_type=PropertySet, field_name='minorTicks')
+    @grammar(grammar_type=PropertySet, grammar_name='minorTicks')
     def minor_ticks(value):
         """PropertySet : Definition of minor tick marks"""
 
-    @field_property(PropertySet)
+    @grammar(PropertySet)
     def label(value):
         """PropertySet : Definition of marks for axis labels"""
 
-    @field_property(PropertySet)
+    @grammar(PropertySet)
     def axis(value):
         """PropertySet : Definition of axis line style"""
 
 
-class Axis(FieldClass):
+class Axis(GrammarClass):
     """Definitions for axes
 
     Axes are visual cues that the viewer uses to interpret the marks
     representing the data itself.
     """
-    @field_property(str)
+    @grammar(str)
     def type(value):
         """string : Type of axis - ``'x'`` or ``'y'``"""
         if value not in ('x', 'y'):
             raise ValueError('Axis.type must be "x" or "y"')
 
-    @field_property(str)
+    @grammar(str)
     def scale(value):
         """string : Name of scale used for axis"""
 
-    @field_property(str)
+    @grammar(str)
     def orient(value):
         """string : Orientation of the axis
 
         Should be one of ``'top'``, ``'bottom'``, ``'left'``, or ``'right'``.
         """
 
-    @field_property(str)
+    @grammar(str)
     def format(value):
         """string : Formatting to use for axis labels
 
         See d3's formatting documentation for format pattern.
         """
 
-    @field_property(int)
+    @grammar(int)
     def ticks(value):
         """int : Number of ticks to use"""
 
-    @field_property(list)
+    @grammar(list)
     def values(value):
         """list of objects in scale's domain : Explicit definitions for
         values
@@ -1406,40 +1412,40 @@ class Axis(FieldClass):
         be used by setting ``properties``.
         """
 
-    @field_property((int, float))
+    @grammar((int, float))
     def subdivide(value):
         """int or float : Number of minor ticks in between major ticks
 
         Only valid for quantitative scales.
         """
 
-    @field_property(field_type=int, field_name='tickPadding')
+    @grammar(grammar_type=int, grammar_name='tickPadding')
     def tick_padding(value):
         """int : Pixels between ticks and text labels"""
 
-    @field_property(field_type=int, field_name='tickSize')
+    @grammar(grammar_type=int, grammar_name='tickSize')
     def tick_size(value):
         """int : Size in pixels of all ticks"""
 
-    @field_property(field_type=int, field_name='tickSizeMajor')
+    @grammar(grammar_type=int, grammar_name='tickSizeMajor')
     def tick_size_major(value):
         """int : Size in pixels of major ticks"""
 
-    @field_property(field_type=int, field_name='tickSizeMinor')
+    @grammar(grammar_type=int, grammar_name='tickSizeMinor')
     def tick_size_minor(value):
         """int : Size in pixels of minor ticks"""
 
-    @field_property(field_type=int, field_name='tickSizeEnd')
+    @grammar(grammar_type=int, grammar_name='tickSizeEnd')
     def tick_size_end(value):
         """int : Size in pixels of end ticks"""
 
-    @field_property(int)
+    @grammar(int)
     def offset(value):
         """int : Offset in pixels to displace the edge of the axis from the
         referenced area
         """
 
-    @field_property(AxisProperties)
+    @grammar(AxisProperties)
     def properties(value):
         """AxisProperties : Custom styling for ticks and tick labels
         """
