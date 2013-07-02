@@ -41,7 +41,7 @@ def data_type(data, iter_pairs):
 class Bar(Visualization):
     """Vega Bar chart"""
 
-    def __init__(self, data, iter_pairs=False, width=960, height=500, *args, **kwargs):
+    def __init__(self, data=None, iter_pairs=False, width=960, height=500, *args, **kwargs):
         """Create a Vega Bar Chart
 
         Parameters:
@@ -68,20 +68,24 @@ class Bar(Visualization):
         """
 
         super(Bar, self).__init__(*args, **kwargs)
+        if not data:
+            raise ValueError('Please initialize the chart with data.')
         self.width, self.height = width, height
         self.padding = {'top': 10, 'left': 30, 'bottom': 20, 'right': 10}
         self.data.append(data_type(data, iter_pairs))
-        self.scales['x'] = Scale(name='x', type='ordinal', range='width')
-        self.scales['x'].domain = DataRef(data='table', field='data.x')
-        self.scales.append(Scale(name='y', range='height', nice=True,
-                                 domain=DataRef(data='table', field='data.y')))
+        self.scales['x'] = Scale(name='x', type='ordinal', range='width',
+                                 domain=DataRef(data='table', field='data.x'))
+        self.scales['y'] = Scale(name='y', range='height', nice=True,
+                                 domain=DataRef(data='table', field='data.y'))
         self.axes.extend([Axis(type='x', scale='x'),
                           Axis(type='y', scale='y')])
 
-        self.mark = Mark(type='rect', from_=MarkRef(data='table'),
-                         properties=MarkProperties(enter=PropertySet(
-                         x=ValueRef(scale='x', field='data.x'),
-                         y=ValueRef(scale='y', field='data.y'),
-                         width=ValueRef(scale='x', band=True, offset=-1),
-                         y2=ValueRef(scale='y', value=0)),
-                         update=PropertySet(fill=ValueRef(value='steelblue'))))
+        property_set = PropertySet(x=ValueRef(scale='x', field='data.x'),
+                                   y=ValueRef(scale='y', field='data.y'),
+                                   width=ValueRef(scale='x', band=True, offset=-1),
+                                   y2=ValueRef(scale='y', value=0))
+
+        mark = Mark(type='rect', from_=MarkRef(data='table'),
+                    properties=MarkProperties(enter=property_set))
+
+        self.marks.extend(mark)

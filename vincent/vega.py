@@ -43,6 +43,57 @@ def _assert_is_type(name, value, value_type):
                              .format(name, value_type.__name__))
 
 
+class ValidationError(Exception):
+    """Exception raised with validation fails
+
+    This exception is raised only when the ``validate`` functions of classes
+    that inherit from ``FieldClass`` are called. It implies that the classes
+    do not contain valid Vega JSON."""
+    pass
+
+
+class KeyedList(list):
+    """A list that can optionally be indexed by the ``name`` attribute of
+    its elements"""
+    def __init__(self, attr_name='name', *args, **kwargs):
+        self.attr_name = attr_name
+        list.__init__(self, *args, **kwargs)
+
+    def __get_keys(self):
+        keys = [getattr(x, self.attr_name) for x in self]
+        if len(keys) != len(set(keys)):
+            raise ValidationError('duplicate keys found')
+        return keys
+
+    def __getitem__(self, key):
+        if isinstance(key, str):
+            keys = self.__get_keys()
+            if key not in keys:
+                raise KeyError('invalid key %s' % key)
+            else:
+                return self[keys.index(key)]
+        else:
+            return list.__getitem__(self, key)
+
+    def __setitem__(self, key, value):
+        if isinstance(key, str):
+            if not hasattr(value, self.attr_name):
+                raise ValidationError(
+                    'object must have ' + self.attr_name + ' attribute')
+            elif getattr(value, self.attr_name) != key:
+                raise ValidationError(
+                    "key must be equal to '" + self.attr_name +
+                    "'attribute")
+
+            keys = self.__get_keys()
+            if key not in keys:
+                self.append(value)
+            else:
+                list.__setitem__(self, keys.index(key), value)
+        else:
+            list.__setitem__(self, key, value)
+
+
 def grammar(grammar_type=None, grammar_name=None):
     """Decorator to define properties that map to the ``grammar``
     dict. This dict is the canonical representation of the Vega grammar
@@ -115,15 +166,6 @@ def grammar(grammar_type=None, grammar_name=None):
         # Otherwise we assume that grammar_type is actually the function being
         # decorated.
         return grammar_creator(grammar_type, grammar_type.__name__)
-
-
-class ValidationError(Exception):
-    """Exception raised with validation fails
-
-    This exception is raised only when the ``validate`` functions of classes
-    that inherit from ``FieldClass`` are called. It implies that the classes
-    do not contain valid Vega JSON."""
-    pass
 
 
 class GrammarClass(object):
@@ -207,48 +249,6 @@ class GrammarClass(object):
         Not yet implemented.
         """
         raise NotImplementedError()
-
-
-class KeyedList(list):
-    """A list that can optionally be indexed by the ``name`` attribute of
-    its elements"""
-    def __init__(self, attr_name='name', *args, **kwargs):
-        self.attr_name = attr_name
-        list.__init__(self, *args, **kwargs)
-
-    def __get_keys(self):
-        keys = [getattr(x, self.attr_name) for x in self]
-        if len(keys) != len(set(keys)):
-            raise ValidationError('duplicate keys found')
-        return keys
-
-    def __getitem__(self, key):
-        if isinstance(key, str):
-            keys = self.__get_keys()
-            if key not in keys:
-                raise KeyError('invalid key %s' % key)
-            else:
-                return self[keys.index(key)]
-        else:
-            return list.__getitem__(self, key)
-
-    def __setitem__(self, key, value):
-        if isinstance(key, str):
-            if not hasattr(value, self.attr_name):
-                raise ValidationError(
-                    'object must have ' + self.attr_name + ' attribute')
-            elif getattr(value, self.attr_name) != key:
-                raise ValidationError(
-                    "key must be equal to '" + self.attr_name +
-                    "'attribute")
-
-            keys = self.__get_keys()
-            if key not in keys:
-                self.append(value)
-            else:
-                list.__setitem__(self, keys.index(key), value)
-        else:
-            list.__setitem__(self, key, value)
 
 
 class Visualization(GrammarClass):
