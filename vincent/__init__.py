@@ -4,4 +4,4 @@ from vega import (
     Data, Visualization, Scale, Mark, DataRef, Axis, MarkRef,
     MarkProperties, PropertySet, ValueRef, AxisProperties)
 from factories import (BarFactory)
-from charts import (Bar)
+import charts
