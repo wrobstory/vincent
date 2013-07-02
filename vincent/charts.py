@@ -68,11 +68,15 @@ class Bar(Visualization):
         """
 
         super(Bar, self).__init__(*args, **kwargs)
-        if not data:
-            raise ValueError('Please initialize the chart with data.')
         self.width, self.height = width, height
         self.padding = {'top': 10, 'left': 30, 'bottom': 20, 'right': 10}
+
+        #Data
+        if data is None:
+            raise ValueError('Please initialize the chart with data.')
         self.data.append(data_type(data, iter_pairs))
+
+        #Scales
         self.scales['x'] = Scale(name='x', type='ordinal', range='width',
                                  domain=DataRef(data='table', field='data.x'))
         self.scales['y'] = Scale(name='y', range='height', nice=True,
@@ -80,12 +84,16 @@ class Bar(Visualization):
         self.axes.extend([Axis(type='x', scale='x'),
                           Axis(type='y', scale='y')])
 
-        property_set = PropertySet(x=ValueRef(scale='x', field='data.x'),
-                                   y=ValueRef(scale='y', field='data.y'),
-                                   width=ValueRef(scale='x', band=True, offset=-1),
-                                   y2=ValueRef(scale='y', value=0))
+        #Marks
+        enter_props = PropertySet(x=ValueRef(scale='x', field='data.x'),
+                                  y=ValueRef(scale='y', field='data.y'),
+                                  width=ValueRef(scale='x', band=True, offset=-1),
+                                  y2=ValueRef(scale='y', value=0))
+
+        update_props = PropertySet(fill=ValueRef(value='steelblue'))
 
         mark = Mark(type='rect', from_=MarkRef(data='table'),
-                    properties=MarkProperties(enter=property_set))
+                    properties=MarkProperties(enter=enter_props,
+                                              update=update_props))
 
-        self.marks.extend(mark)
+        self.marks.append(mark)
