@@ -139,6 +139,12 @@ class TestVincent(object):
         assert self.testvin.data[0]['values'][-2:] == [{'x': 'C', 'y': 30},
                                                        {'x': 'D', 'y': 40}]
 
+        #Series with DateTimeIndex.
+        s = pd.Series([10, 20, 10, 40, 30],
+                      index=pd.date_range('2007-07-11', periods=5),
+                      name='Serie')
+        self.testvin.tabular_data(s, columns=['Serie'], use_index=True)
+
         #Dataframes
         df = pd.DataFrame({'Column 1': [10, 20, 30, 40, 50],
                            'Column 2': [60, 70, 80, 90, 100]})
