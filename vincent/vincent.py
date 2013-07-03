@@ -277,6 +277,11 @@ class Vega(object):
             else:
                 param[key].pop(value)
 
+        if not getattr(self, parameter):
+            par = getattr(self, parameter)
+            par.append({})
+            setattr(self, parameter, par)
+
         parameter = getattr(self, parameter)[index]
         if not args:
             args = [value]
