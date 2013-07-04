@@ -7,6 +7,8 @@ conversion with the Ogre web tool: http://ogre.adc4gis.com/
 
 import vincent
 
+path = r'vega.json'
+
 #Add Oceans
 vis = vincent.Map(width=1200, height=800)
 vis.geo_data(scale=200, spatial_convert=True, ocean=r'data/ne_110m_ocean.zip')
