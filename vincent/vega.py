@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+
+Vega: The core functionality for Vincent. Vega grammar is mapped 1:1
+in ORM.
+
+"""
+from __future__ import (print_function, division)
 import json
 import time
 import random
@@ -13,23 +20,22 @@ try:
 except ImportError:
     np = None
 
+#TODO: Keep local?
+d3_js_url = 'http://trifacta.github.com/vega/d3.v3.min.js'
+vega_js_url = 'http://trifacta.github.com/vega/vega.js'
+
 
 def initialize_notebook():
     """Initialize the iPython notebook display elements"""
-    # Note - order is important here apparently.
+    try:
+        from IPython.core.display import display, HTML, Javascript
+    except ImportError:
+        print('iPython Notebook could not be loaded.')
+
     display(HTML('<script src="%s"></script>' % d3_js_url))
     display(HTML('<script src="%s"></script>' % vega_js_url))
 
-
-# TODO: keep local copies?
-d3_js_url = 'http://trifacta.github.com/vega/d3.v3.min.js'
-vega_js_url = 'http://trifacta.github.com/vega/vega.js'
-try:
-    from IPython.core.display import display, HTML, Javascript
-    has_ipython = True
-    initialize_notebook()
-except ImportError:
-    has_ipython = False
+    return display, HTML, Javascript
 
 
 def _assert_is_type(name, value, value_type):
@@ -417,8 +423,9 @@ class Visualization(GrammarClass):
 
     def display(self):
         """Display visualization inline in IPython notebook"""
-        if not has_ipython:
-            raise LoadError('IPython notebook could not be loaded')
+
+        display, HTML, Javascript = initialize_notebook()
+
         # Copied from vincent.ipynb:
         # HACK: use a randomly chosen unique div id
         id = random.randint(0, 2 ** 16)
