@@ -144,6 +144,12 @@ class TestVincent(object):
                       index=pd.date_range('2007-07-11', periods=5),
                       name='Serie')
         self.testvin.tabular_data(s, columns=['Serie'], use_index=True)
+        assert self.testvin.data[0]['name'] == 'table'
+        assert self.testvin.data[0]['values'] == [{'y': 10, 'x': 1184104800000.0},
+                                                  {'y': 20, 'x': 1184191200000.0},
+                                                  {'y': 10, 'x': 1184277600000.0},
+                                                  {'y': 40, 'x': 1184364000000.0},
+                                                  {'y': 30, 'x': 1184450400000.0}]
 
         #Dataframes
         df = pd.DataFrame({'Column 1': [10, 20, 30, 40, 50],
