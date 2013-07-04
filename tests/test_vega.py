@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from itertools import product
 import json
 
-from vincent.vega import grammar, Data, ValueRef, Mark, PropertySet
+from vincent.vega import KeyedList, grammar, Data, ValueRef, Mark, PropertySet
 import nose.tools as nt
 
 import pandas as pd
@@ -19,6 +19,17 @@ sequences = {
     'Timestamp': lambda l: pd.date_range('1/2/2000', periods=l),
     'numpy float': lambda l: map(np.float32, range(l)),
     'numpy int': lambda l: map(np.int32, range(l))}
+
+
+def test_keyed_list():
+    """Test keyed list implementation"""
+
+    pass
+
+    class TestKey(object):
+        """Test object for Keyed List"""
+        def __init__(self, name=None):
+            setattr(self, name, 'test')
 
 
 def test_grammar():
