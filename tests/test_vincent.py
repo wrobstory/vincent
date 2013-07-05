@@ -139,6 +139,18 @@ class TestVincent(object):
         assert self.testvin.data[0]['values'][-2:] == [{'x': 'C', 'y': 30},
                                                        {'x': 'D', 'y': 40}]
 
+        #Series with DateTimeIndex.
+        s = pd.Series([10, 20, 10, 40, 30],
+                      index=pd.date_range('2007-07-11', periods=5),
+                      name='Serie')
+        self.testvin.tabular_data(s, columns=['Serie'], use_index=True)
+        assert self.testvin.data[0]['name'] == 'table'
+        # Need to convert in local time.
+        timevalues = [time.mktime(t.timetuple()) * 1000 for t in s.index]
+        for idx in xrange(s.size):
+            assert self.testvin.data[0]['values'][idx]['y'] == s[idx]
+            assert self.testvin.data[0]['values'][idx]['x'] == timevalues[idx]
+
         #Dataframes
         df = pd.DataFrame({'Column 1': [10, 20, 30, 40, 50],
                            'Column 2': [60, 70, 80, 90, 100]})
