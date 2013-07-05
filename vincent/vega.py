@@ -75,7 +75,7 @@ class KeyedList(list):
         if isinstance(key, str):
             keys = self.__get_keys()
             if key not in keys:
-                raise KeyError('invalid key %s' % key)
+                raise KeyError(' "{0}" is an invalid key'.format(key))
             else:
                 return self[keys.index(key)]
         else:
