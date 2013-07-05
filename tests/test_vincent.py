@@ -145,11 +145,11 @@ class TestVincent(object):
                       name='Serie')
         self.testvin.tabular_data(s, columns=['Serie'], use_index=True)
         assert self.testvin.data[0]['name'] == 'table'
-        assert self.testvin.data[0]['values'] == [{'y': 10, 'x': 1184104800000.0},
-                                                  {'y': 20, 'x': 1184191200000.0},
-                                                  {'y': 10, 'x': 1184277600000.0},
-                                                  {'y': 40, 'x': 1184364000000.0},
-                                                  {'y': 30, 'x': 1184450400000.0}]
+        # Need to convert in local time.
+        timevalues = [time.mktime(t.timetuple()) * 1000 for t in s.index]
+        for idx in xrange(s.size):
+            assert self.testvin.data[0]['values'][idx]['y'] == s[idx]
+            assert self.testvin.data[0]['values'][idx]['x'] == timevalues[idx]
 
         #Dataframes
         df = pd.DataFrame({'Column 1': [10, 20, 30, 40, 50],
