@@ -174,6 +174,31 @@ def grammar(grammar_type=None, grammar_name=None):
         return grammar_creator(grammar_type, grammar_type.__name__)
 
 
+class GrammarDict(dict):
+    """The Vega Grammar. When called, obj.grammar returns a Python data
+    structure for the Vega Grammar. When printed, obj.grammar returns a
+    string representation."""
+
+    def __init__(self, *args, **kwargs):
+        """Standard Dict init"""
+        dict.__init__(self, *args, **kwargs)
+
+    def encoder(self, obj):
+        """Encode grammar objects for each level of hierarchy"""
+        if hasattr(obj, 'grammar'):
+            return obj.grammar
+
+    def __call__(self):
+        """When called, return the Vega grammar as a Python data structure."""
+
+        return json.loads(json.dumps(self, default=self.encoder))
+
+    def __str__(self):
+        """String representation of Vega Grammar"""
+
+        return json.dumps(self, default=self.encoder)
+
+
 class GrammarClass(object):
     """Base class for objects that rely on an internal ``grammar`` dict. This
     dict contains the complete Vega grammar.
@@ -190,7 +215,7 @@ class GrammarClass(object):
         attribute does not already exist as a property, then a
         ``ValueError`` is raised.
         """
-        self.grammar = {}
+        self.grammar = GrammarDict()
 
         for attr, value in kwargs.iteritems():
             if hasattr(self, attr):

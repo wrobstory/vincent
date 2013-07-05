@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from itertools import product
 import json
 
-from vincent.vega import KeyedList, grammar, Data, ValueRef, Mark, PropertySet
+from vincent.vega import (KeyedList, GrammarDict, grammar, Visualization,
+                          Data, ValueRef, Mark, PropertySet)
 import nose.tools as nt
 
 import pandas as pd
@@ -96,6 +97,17 @@ def test_grammar():
     validator_fail = True
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
                             'test_grammar_with_name', 'testing')
+
+
+def test_grammar_dict():
+    """Test Vincent Grammar Dict"""
+
+    test = Visualization()
+    test_dict = {'axes': [], 'data': [], 'marks': [], 'scales': []}
+    test_str = '{"marks": [], "axes": [], "data": [], "scales": []}'
+
+    nt.assert_equal(test.grammar(), test_dict)
+    nt.assert_equal(str(test.grammar), test_str)
 
 
 def assert_field_typechecking(field_types, test_obj):
