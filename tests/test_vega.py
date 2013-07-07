@@ -56,6 +56,10 @@ def test_keyed_list():
     key_list['test_2'] = test_key_2
     nt.assert_equal(key_list['test_2'], test_key_2)
 
+    mirror_key_2 = TestKey(name='test_2')
+    key_list['test_2'] = mirror_key_2
+    nt.assert_equal(key_list['test_2'], mirror_key_2)
+
     #Keysetting errors
     test_key_3 = TestKey(name='test_3')
     with nt.assert_raises(ValidationError) as err:
