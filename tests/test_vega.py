@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 from itertools import product
 import json
 
-from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar, Visualization,
-                          Data, ValueRef, Mark, PropertySet)
+from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
+                          GrammarClass, Visualization, Data, ValueRef, Mark,
+                          PropertySet)
 import nose.tools as nt
 
 import pandas as pd
@@ -153,6 +154,21 @@ def test_grammar():
     validator_fail = True
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
                             'test_grammar_with_name', 'testing')
+
+
+def test_grammar_class():
+    """Test GrammarClass's built-in methods that aren't tested elsewhere"""
+
+    #Test bad init
+    nt.assert_raises(ValueError, GrammarClass, width=50)
+
+    #Test validation
+    test = Visualization()
+    test.axes.append({'bad axes': 'ShouldRaiseError'})
+    with nt.assert_raises(ValidationError) as err:
+        test.validate()
+    nt.assert_equal(err.exception.message,
+                    'invalid contents: axes[0] must be Axis')
 
 
 def assert_grammar_typechecking(grammar_types, test_obj):
