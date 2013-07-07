@@ -77,19 +77,6 @@ def test_keyed_list():
     nt.assert_equal(err.exception.message, 'object must have type attribute')
 
 
-def test_grammar_dict():
-    """Test Vincent Grammar Dict"""
-
-    g_dict = GrammarDict()
-    test = Visualization()
-    test_dict = {'axes': [], 'data': [], 'marks': [], 'scales': []}
-    test_str = '{"marks": [], "axes": [], "data": [], "scales": []}'
-
-    nt.assert_equal(test.grammar(), test_dict)
-    nt.assert_equal(str(test.grammar), test_str)
-    nt.assert_equal(g_dict.encoder(test), test.grammar)
-
-
 def test_grammar():
     """Grammar decorator behaves correctly."""
     validator_fail = False
@@ -156,19 +143,17 @@ def test_grammar():
                             'test_grammar_with_name', 'testing')
 
 
-def test_grammar_class():
-    """Test GrammarClass's built-in methods that aren't tested elsewhere"""
+def test_grammar_dict():
+    """Test Vincent Grammar Dict"""
 
-    #Test bad init
-    nt.assert_raises(ValueError, GrammarClass, width=50)
-
-    #Test validation
+    g_dict = GrammarDict()
     test = Visualization()
-    test.axes.append({'bad axes': 'ShouldRaiseError'})
-    with nt.assert_raises(ValidationError) as err:
-        test.validate()
-    nt.assert_equal(err.exception.message,
-                    'invalid contents: axes[0] must be Axis')
+    test_dict = {'axes': [], 'data': [], 'marks': [], 'scales': []}
+    test_str = '{"marks": [], "axes": [], "data": [], "scales": []}'
+
+    nt.assert_equal(test.grammar(), test_dict)
+    nt.assert_equal(str(test.grammar), test_str)
+    nt.assert_equal(g_dict.encoder(test), test.grammar)
 
 
 def assert_grammar_typechecking(grammar_types, test_obj):
@@ -188,6 +173,23 @@ def assert_grammar_typechecking(grammar_types, test_obj):
         nt.assert_raises_regexp(ValueError, name + '.*' + obj.__name__,
                                 setattr, test_obj, name, bad_obj)
         nt.assert_equal(getattr(test_obj, name), tmp_obj)
+
+
+class TestGrammarClass(object):
+    """Test GrammarClass's built-in methods that aren't tested elsewhere"""
+
+    def test_bad_init(self):
+        """Test bad initialization"""
+        nt.assert_raises(ValueError, GrammarClass, width=50)
+
+    def test_validation(self):
+        """Test validation of grammar"""
+        test = Visualization()
+        test.axes.append({'bad axes': 'ShouldRaiseError'})
+        with nt.assert_raises(ValidationError) as err:
+            test.validate()
+        nt.assert_equal(err.exception.message,
+                        'invalid contents: axes[0] must be Axis')
 
 
 class TestData(object):
