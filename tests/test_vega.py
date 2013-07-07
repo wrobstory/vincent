@@ -98,7 +98,7 @@ def test_grammar():
 
     class TestGrammarClass(object):
         def __init__(self):
-            self.grammar = {}
+            self.grammar = GrammarDict()
 
         @grammar
         def test_grammar(value):
@@ -155,16 +155,16 @@ def test_grammar():
                             'test_grammar_with_name', 'testing')
 
 
-def assert_field_typechecking(field_types, test_obj):
-    """Assert that the fields of a test object are correctly type-checked.
+def assert_grammar_typechecking(grammar_types, test_obj):
+    """Assert that the grammar fields of a test object are correctly type-checked.
 
-    `field_types` should be a list of (name, type) pairs, and `test_obj`
+    `grammar_types` should be a list of (name, type) pairs, and `test_obj`
     should be an instance of the object to test.
     """
     class BadType(object):
         pass
 
-    for name, obj in field_types:
+    for name, obj in grammar_types:
         tmp_obj = obj()
         setattr(test_obj, name, tmp_obj)
         nt.assert_equal(getattr(test_obj, name), tmp_obj)
@@ -175,16 +175,16 @@ def assert_field_typechecking(field_types, test_obj):
 
 
 class TestData(object):
-    def test_field_typechecking(self):
+    def test_grammar_typechecking(self):
         """Data fields are correctly type-checked"""
-        field_types = [
+        grammar_types = [
             ('name', str),
             ('url', str),
             ('values', list),
             ('source', str),
             ('transform', list)]
 
-        assert_field_typechecking(field_types, Data('name'))
+        assert_grammar_typechecking(grammar_types, Data('name'))
 
     def test_serialize(self):
         """Objects are serialized to JSON-compatible objects"""
@@ -304,9 +304,9 @@ class TestData(object):
 
 
 class TestValueRef(object):
-    def test_field_typechecking(self):
+    def test_grammar_typechecking(self):
         """ValueRef fields are correctly type-checked"""
-        field_types = [
+        grammar_types = [
             ('value', str),
             ('value', int),
             ('value', float),
@@ -317,7 +317,7 @@ class TestValueRef(object):
             ('offset', int),
             ('offset', float),
             ('band', bool)]
-        assert_field_typechecking(field_types, ValueRef())
+        assert_grammar_typechecking(grammar_types, ValueRef())
 
     def test_json_serialization(self):
         """ValueRef JSON is correctly serialized"""
@@ -342,7 +342,7 @@ class TestValueRef(object):
 
 
 class TestPropertySet(object):
-    def test_field_typechecking(self):
+    def test_grammar_typechecking(self):
         """PropertySet fields are correctly type-checked"""
         # All fields must be ValueRef for Mark properties
         fields = [
@@ -352,5 +352,5 @@ class TestPropertySet(object):
             'start_angle', 'end_angle', 'interpolate', 'tension', 'url',
             'align', 'baseline', 'text', 'dx', 'dy', 'angle', 'font',
             'font_size', 'font_weight', 'font_style']
-        field_types = [(f, ValueRef) for f in fields]
-        assert_field_typechecking(field_types, PropertySet())
+        grammar_types = [(f, ValueRef) for f in fields]
+        assert_grammar_typechecking(grammar_types, PropertySet())
