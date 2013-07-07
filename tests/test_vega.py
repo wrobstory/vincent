@@ -76,6 +76,19 @@ def test_keyed_list():
     nt.assert_equal(err.exception.message, 'object must have type attribute')
 
 
+def test_grammar_dict():
+    """Test Vincent Grammar Dict"""
+
+    g_dict = GrammarDict()
+    test = Visualization()
+    test_dict = {'axes': [], 'data': [], 'marks': [], 'scales': []}
+    test_str = '{"marks": [], "axes": [], "data": [], "scales": []}'
+
+    nt.assert_equal(test.grammar(), test_dict)
+    nt.assert_equal(str(test.grammar), test_str)
+    nt.assert_equal(g_dict.encoder(test), test.grammar)
+
+
 def test_grammar():
     """Grammar decorator behaves correctly."""
     validator_fail = False
@@ -140,17 +153,6 @@ def test_grammar():
     validator_fail = True
     nt.assert_raises_regexp(ValueError, 'validator failed', setattr, test,
                             'test_grammar_with_name', 'testing')
-
-
-def test_grammar_dict():
-    """Test Vincent Grammar Dict"""
-
-    test = Visualization()
-    test_dict = {'axes': [], 'data': [], 'marks': [], 'scales': []}
-    test_str = '{"marks": [], "axes": [], "data": [], "scales": []}'
-
-    nt.assert_equal(test.grammar(), test_dict)
-    nt.assert_equal(str(test.grammar), test_str)
 
 
 def assert_field_typechecking(field_types, test_obj):
