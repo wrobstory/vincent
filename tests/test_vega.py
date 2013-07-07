@@ -37,6 +37,11 @@ def test_keyed_list():
     key_list.append(test_key)
     nt.assert_equal(test_key, key_list['test'])
 
+    #Bad key
+    with nt.assert_raises(KeyError) as err:
+        key_list['test_1']
+    nt.assert_equal(err.exception.message, ' "test_1" is an invalid key')
+
     #Repeated keys
     test_key_1 = TestKey(name='test')
     key_list.append(test_key_1)
