@@ -89,7 +89,7 @@ class KeyedList(list):
             elif getattr(value, self.attr_name) != key:
                 raise ValidationError(
                     "key must be equal to '" + self.attr_name +
-                    "'attribute")
+                    "' attribute")
 
             keys = self.__get_keys()
             if key not in keys:

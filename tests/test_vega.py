@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from itertools import product
 import json
 
-from vincent.vega import (KeyedList, GrammarDict, grammar, Visualization,
+from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar, Visualization,
                           Data, ValueRef, Mark, PropertySet)
 import nose.tools as nt
 
@@ -25,12 +25,46 @@ sequences = {
 def test_keyed_list():
     """Test keyed list implementation"""
 
-    pass
-
     class TestKey(object):
         """Test object for Keyed List"""
         def __init__(self, name=None):
-            setattr(self, name, 'test')
+            self.name = name
+
+    key_list = KeyedList(attr_name='name')
+
+    #Basic usage
+    test_key = TestKey(name='test')
+    key_list.append(test_key)
+    nt.assert_equal(test_key, key_list['test'])
+
+    #Repeated keys
+    test_key_1 = TestKey(name='test')
+    key_list.append(test_key_1)
+    with nt.assert_raises(ValidationError) as err:
+        key_list['test']
+    nt.assert_equal(err.expected, ValidationError)
+    nt.assert_equal(err.exception.message, 'duplicate keys found')
+
+    #Setting keys
+    key_list.pop(-1)
+    test_key_2 = TestKey(name='test_2')
+    key_list['test_2'] = test_key_2
+    nt.assert_equal(key_list['test_2'], test_key_2)
+
+    #Keysetting errors
+    test_key_3 = TestKey(name='test_3')
+    with nt.assert_raises(ValidationError) as err:
+        key_list['test_4'] = test_key_3
+    nt.assert_equal(err.expected, ValidationError)
+    nt.assert_equal(err.exception.message,
+                    "key must be equal to 'name' attribute")
+
+    key_list = KeyedList(attr_name='type')
+    test_key_4 = TestKey(name='test_key_4')
+    with nt.assert_raises(ValidationError) as err:
+        key_list['test_key_4'] = test_key_4
+    nt.assert_equal(err.expected, ValidationError)
+    nt.assert_equal(err.exception.message, 'object must have type attribute')
 
 
 def test_grammar():
