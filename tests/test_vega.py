@@ -165,14 +165,15 @@ def assert_grammar_typechecking(grammar_types, test_obj):
     class BadType(object):
         pass
 
-    for name, obj in grammar_types:
-        tmp_obj = obj()
-        setattr(test_obj, name, tmp_obj)
-        nt.assert_equal(getattr(test_obj, name), tmp_obj)
-        bad_obj = BadType()
-        nt.assert_raises_regexp(ValueError, name + '.*' + obj.__name__,
-                                setattr, test_obj, name, bad_obj)
-        nt.assert_equal(getattr(test_obj, name), tmp_obj)
+    for name, objects in grammar_types:
+        for obj in objects:
+            tmp_obj = obj()
+            setattr(test_obj, name, tmp_obj)
+            nt.assert_equal(getattr(test_obj, name), tmp_obj)
+            bad_obj = BadType()
+            nt.assert_raises_regexp(ValueError, name + '.*' + obj.__name__,
+                                    setattr, test_obj, name, bad_obj)
+            nt.assert_equal(getattr(test_obj, name), tmp_obj)
 
 
 class TestGrammarClass(object):
@@ -192,15 +193,32 @@ class TestGrammarClass(object):
                         'invalid contents: axes[0] must be Axis')
 
 
+class TestVisualization(object):
+    """Test the Visualization Class"""
+
+    def test_grammar_typechecking(self):
+        """Visualization fields are correctly type checked"""
+
+        grammar_types = [('name', [str]),
+                         ('width', [str]),
+                         ('height', [int]),
+                         ('viewport', [list]),
+                         ('padding', [int, dict]),
+                         ('data', [list, KeyedList]),
+                         ('scales', [list, KeyedList]),
+                         ('axes', [list, KeyedList]),
+                         ('marks', [list, KeyedList])]
+
+
 class TestData(object):
     def test_grammar_typechecking(self):
         """Data fields are correctly type-checked"""
         grammar_types = [
-            ('name', str),
-            ('url', str),
-            ('values', list),
-            ('source', str),
-            ('transform', list)]
+            ('name', [str]),
+            ('url', [str]),
+            ('values', [list]),
+            ('source', [str]),
+            ('transform', [list])]
 
         assert_grammar_typechecking(grammar_types, Data('name'))
 
@@ -325,16 +343,16 @@ class TestValueRef(object):
     def test_grammar_typechecking(self):
         """ValueRef fields are correctly type-checked"""
         grammar_types = [
-            ('value', str),
-            ('value', int),
-            ('value', float),
-            ('field', str),
-            ('scale', str),
-            ('mult', int),
-            ('mult', float),
-            ('offset', int),
-            ('offset', float),
-            ('band', bool)]
+            ('value', [str]),
+            ('value', [int]),
+            ('value', [float]),
+            ('field', [str]),
+            ('scale', [str]),
+            ('mult', [int]),
+            ('mult', [float]),
+            ('offset', [int]),
+            ('offset', [float]),
+            ('band', [bool])]
         assert_grammar_typechecking(grammar_types, ValueRef())
 
     def test_json_serialization(self):
@@ -370,5 +388,5 @@ class TestPropertySet(object):
             'start_angle', 'end_angle', 'interpolate', 'tension', 'url',
             'align', 'baseline', 'text', 'dx', 'dy', 'angle', 'font',
             'font_size', 'font_weight', 'font_style']
-        grammar_types = [(f, ValueRef) for f in fields]
+        grammar_types = [(f, [ValueRef]) for f in fields]
         assert_grammar_typechecking(grammar_types, PropertySet())
