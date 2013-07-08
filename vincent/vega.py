@@ -365,7 +365,7 @@ class Visualization(GrammarClass):
             required_keys = ['top', 'left', 'right', 'bottom']
             for key in required_keys:
                 if key not in value:
-                    error = ('Padding must have keys "{0}.'
+                    error = ('Padding must have keys "{0}".'
                              .format('", "'.join(required_keys)))
                     raise ValueError(error)
                 _assert_is_type('padding: {0}'.format(key), value[key], int)

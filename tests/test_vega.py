@@ -5,7 +5,7 @@ import json
 
 from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
                           GrammarClass, Visualization, Data, ValueRef, Mark,
-                          PropertySet)
+                          PropertySet, Scale, Axis)
 import nose.tools as nt
 
 import pandas as pd
@@ -176,6 +176,27 @@ def assert_grammar_typechecking(grammar_types, test_obj):
             nt.assert_equal(getattr(test_obj, name), tmp_obj)
 
 
+def assert_manual_typechecking(bad_grammar, test_obj):
+    """Some attrs use the _assert_is_type func for typechecking"""
+
+    for attr, value, datatype in bad_grammar:
+        with nt.assert_raises(ValueError) as err:
+            setattr(test_obj, attr, value)
+
+        nt.assert_equal(err.exception.message,
+                        '{0}[0] must be {1}'.format(attr, datatype.__name__))
+
+
+def assert_grammar_validation(grammar_errors, test_obj):
+    """Check grammar methods for validation errors"""
+
+    for attr, value, error, message in grammar_errors:
+        with nt.assert_raises(error) as err:
+            setattr(test_obj, attr, value)
+
+        nt.assert_equal(err.exception.message, message)
+
+
 class TestGrammarClass(object):
     """Test GrammarClass's built-in methods that aren't tested elsewhere"""
 
@@ -200,14 +221,59 @@ class TestVisualization(object):
         """Visualization fields are correctly type checked"""
 
         grammar_types = [('name', [str]),
-                         ('width', [str]),
+                         ('width', [int]),
                          ('height', [int]),
-                         ('viewport', [list]),
-                         ('padding', [int, dict]),
                          ('data', [list, KeyedList]),
                          ('scales', [list, KeyedList]),
                          ('axes', [list, KeyedList]),
                          ('marks', [list, KeyedList])]
+
+        assert_grammar_typechecking(grammar_types, Visualization())
+
+    def test_validation_checking(self):
+        """Visualization fields are grammar-checked"""
+
+        grammar_errors = [('width', -1, ValueError,
+                           'width cannot be negative'),
+                          ('height', -1, ValueError,
+                           'height cannot be negative'),
+                          ('viewport', [1], ValueError,
+                           'viewport must have 2 dimensions'),
+                          ('viewport', [-1, -1], ValueError,
+                           'viewport dimensions cannot be negative'),
+                          ('padding', {'top': 2}, ValueError,
+                           ('Padding must have keys "top", "left", "right",'
+                            ' "bottom".')),
+                          ('padding',
+                           {'top': 1, 'left': 1, 'right': 1, 'bottom': -1},
+                           ValueError, 'Padding cannot be negative.'),
+                          ('padding', -1, ValueError,
+                           'Padding cannot be negative.')]
+
+        assert_grammar_validation(grammar_errors, Visualization())
+
+    def test_manual_typecheck(self):
+        """Test manual typechecking for elements like marks"""
+
+        test_attr = [('data', [1], Data), ('scales', [1], Scale),
+                     ('axes', [1], Axis), ('marks', [1], Mark)]
+
+        assert_manual_typechecking(test_attr, Visualization())
+
+    def test_validation(self):
+        """Test Visualization validation"""
+
+        test_obj = Visualization()
+        with nt.assert_raises(ValidationError) as err:
+            test_obj.validate()
+        nt.assert_equal(err.exception.message,
+                        'data must be defined for valid visualization')
+
+        test_obj.data = [Data(name='test'), Data(name='test')]
+        with nt.assert_raises(ValidationError) as err:
+            test_obj.validate()
+        nt.assert_equal(err.exception.message,
+                        'data has duplicate names')
 
 
 class TestData(object):
