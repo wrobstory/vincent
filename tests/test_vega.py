@@ -276,6 +276,20 @@ class TestVisualization(object):
         nt.assert_equal(err.exception.message,
                         'data has duplicate names')
 
+    def test_to_json(self):
+        """Test JSON to string"""
+
+        pretty = '''{
+          "marks": [],
+          "axes": [],
+          "data": [],
+          "scales": []
+        }'''
+
+        test = Visualization()
+        actual, tested = json.loads(pretty), json.loads(test.to_json())
+        nt.assert_dict_equal(actual, tested)
+
 
 class TestData(object):
     def test_grammar_typechecking(self):
