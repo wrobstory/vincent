@@ -288,6 +288,12 @@ class TestData(object):
 
         assert_grammar_typechecking(grammar_types, Data('name'))
 
+    def test_validate(self):
+        """Test Data name validation"""
+        test_obj = Data()
+        del test_obj.name
+        nt.assert_raises(ValidationError, test_obj.validate)
+
     def test_serialize(self):
         """Objects are serialized to JSON-compatible objects"""
         pass
