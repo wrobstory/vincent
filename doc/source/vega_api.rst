@@ -1,4 +1,4 @@
-.. currentmodule:: vincent.core
+.. currentmodule:: vincent.vega
 
 Vega API Reference
 ==================
@@ -12,27 +12,27 @@ Visualization
 
 Field properties for :class:`Visualization`:
 
-.. autofield:: core.Visualization.name
-.. autofield:: core.Visualization.width
-.. autofield:: core.Visualization.height
-.. autofield:: core.Visualization.viewport
-.. autofield:: core.Visualization.padding
-.. autofield:: core.Visualization.data
-.. autofield:: core.Visualization.scales
-.. autofield:: core.Visualization.axes
-.. autofield:: core.Visualization.marks
+.. autofield:: vega.Visualization.name
+.. autofield:: vega.Visualization.width
+.. autofield:: vega.Visualization.height
+.. autofield:: vega.Visualization.viewport
+.. autofield:: vega.Visualization.padding
+.. autofield:: vega.Visualization.data
+.. autofield:: vega.Visualization.scales
+.. autofield:: vega.Visualization.axes
+.. autofield:: vega.Visualization.marks
 
 Data
 ++++
 
 Field properties for :class:`Data`:
 
-.. autofield:: core.Data.name
-.. autofield:: core.Data.url
-.. autofield:: core.Data.values
-.. autofield:: core.Data.source
-.. autofield:: core.Data.transform
-.. autofield:: core.Data.format
+.. autofield:: vega.Data.name
+.. autofield:: vega.Data.url
+.. autofield:: vega.Data.values
+.. autofield:: vega.Data.source
+.. autofield:: vega.Data.transform
+.. autofield:: vega.Data.format
 
 
 Scale
@@ -40,21 +40,21 @@ Scale
 
 Field properties for :class:`Scale`:
 
-.. autofield:: core.Scale.name
-.. autofield:: core.Scale.type
-.. autofield:: core.Scale.domain
-.. autofield:: core.Scale.domain_min
-.. autofield:: core.Scale.domain_max
-.. autofield:: core.Scale.range
-.. autofield:: core.Scale.range_min
-.. autofield:: core.Scale.range_max
-.. autofield:: core.Scale.reverse
-.. autofield:: core.Scale.round
-.. autofield:: core.Scale.points
-.. autofield:: core.Scale.clamp
-.. autofield:: core.Scale.nice
-.. autofield:: core.Scale.exponent
-.. autofield:: core.Scale.zero
+.. autofield:: vega.Scale.name
+.. autofield:: vega.Scale.type
+.. autofield:: vega.Scale.domain
+.. autofield:: vega.Scale.domain_min
+.. autofield:: vega.Scale.domain_max
+.. autofield:: vega.Scale.range
+.. autofield:: vega.Scale.range_min
+.. autofield:: vega.Scale.range_max
+.. autofield:: vega.Scale.reverse
+.. autofield:: vega.Scale.round
+.. autofield:: vega.Scale.points
+.. autofield:: vega.Scale.clamp
+.. autofield:: vega.Scale.nice
+.. autofield:: vega.Scale.exponent
+.. autofield:: vega.Scale.zero
 
 
 DataRef
@@ -62,8 +62,8 @@ DataRef
 
 Field properties for :class:`DataRef`:
 
-.. autofield:: core.DataRef.data
-.. autofield:: core.DataRef.field
+.. autofield:: vega.DataRef.data
+.. autofield:: vega.DataRef.field
 
 
 ValueRef
@@ -71,12 +71,12 @@ ValueRef
 
 Field properties for :class:`ValueRef`:
 
-.. autofield:: core.ValueRef.value
-.. autofield:: core.ValueRef.field
-.. autofield:: core.ValueRef.scale
-.. autofield:: core.ValueRef.mult
-.. autofield:: core.ValueRef.offset
-.. autofield:: core.ValueRef.band
+.. autofield:: vega.ValueRef.value
+.. autofield:: vega.ValueRef.field
+.. autofield:: vega.ValueRef.scale
+.. autofield:: vega.ValueRef.mult
+.. autofield:: vega.ValueRef.offset
+.. autofield:: vega.ValueRef.band
 
 
 Mark
@@ -84,14 +84,14 @@ Mark
 
 Field properties for :class:`Mark`:
 
-.. autofield:: core.Mark.name
-.. autofield:: core.Mark.description
-.. autofield:: core.Mark.type
-.. autofield:: core.Mark.from_
-.. autofield:: core.Mark.properties
-.. autofield:: core.Mark.key
-.. autofield:: core.Mark.delay
-.. autofield:: core.Mark.ease
+.. autofield:: vega.Mark.name
+.. autofield:: vega.Mark.description
+.. autofield:: vega.Mark.type
+.. autofield:: vega.Mark.from_
+.. autofield:: vega.Mark.properties
+.. autofield:: vega.Mark.key
+.. autofield:: vega.Mark.delay
+.. autofield:: vega.Mark.ease
 
 
 Properties
@@ -99,10 +99,10 @@ Properties
 
 Field properties for :class:`Properties`:
 
-.. autofield:: core.Properties.enter
-.. autofield:: core.Properties.exit
-.. autofield:: core.Properties.update
-.. autofield:: core.Properties.hover
+.. autofield:: vega.Properties.enter
+.. autofield:: vega.Properties.exit
+.. autofield:: vega.Properties.update
+.. autofield:: vega.Properties.hover
 
 
 PropertySet
@@ -110,35 +110,35 @@ PropertySet
 
 Field properties for :class:`PropertySet`:
 
-.. autofield:: core.PropertySet.x
-.. autofield:: core.PropertySet.x2
-.. autofield:: core.PropertySet.width
-.. autofield:: core.PropertySet.y
-.. autofield:: core.PropertySet.y2
-.. autofield:: core.PropertySet.height
-.. autofield:: core.PropertySet.opacity
-.. autofield:: core.PropertySet.fill
-.. autofield:: core.PropertySet.fill_opacity
-.. autofield:: core.PropertySet.stroke
-.. autofield:: core.PropertySet.stroke_width
-.. autofield:: core.PropertySet.stroke_opacity
-.. autofield:: core.PropertySet.size
-.. autofield:: core.PropertySet.shape
-.. autofield:: core.PropertySet.path
-.. autofield:: core.PropertySet.inner_radius
-.. autofield:: core.PropertySet.outer_radius
-.. autofield:: core.PropertySet.start_angle
-.. autofield:: core.PropertySet.end_angle
-.. autofield:: core.PropertySet.interpolate
-.. autofield:: core.PropertySet.tension
-.. autofield:: core.PropertySet.url
-.. autofield:: core.PropertySet.align
-.. autofield:: core.PropertySet.baseline
-.. autofield:: core.PropertySet.text
-.. autofield:: core.PropertySet.dx
-.. autofield:: core.PropertySet.dy
-.. autofield:: core.PropertySet.font
-.. autofield:: core.PropertySet.font_size
-.. autofield:: core.PropertySet.font_weight
-.. autofield:: core.PropertySet.font_style
+.. autofield:: vega.PropertySet.x
+.. autofield:: vega.PropertySet.x2
+.. autofield:: vega.PropertySet.width
+.. autofield:: vega.PropertySet.y
+.. autofield:: vega.PropertySet.y2
+.. autofield:: vega.PropertySet.height
+.. autofield:: vega.PropertySet.opacity
+.. autofield:: vega.PropertySet.fill
+.. autofield:: vega.PropertySet.fill_opacity
+.. autofield:: vega.PropertySet.stroke
+.. autofield:: vega.PropertySet.stroke_width
+.. autofield:: vega.PropertySet.stroke_opacity
+.. autofield:: vega.PropertySet.size
+.. autofield:: vega.PropertySet.shape
+.. autofield:: vega.PropertySet.path
+.. autofield:: vega.PropertySet.inner_radius
+.. autofield:: vega.PropertySet.outer_radius
+.. autofield:: vega.PropertySet.start_angle
+.. autofield:: vega.PropertySet.end_angle
+.. autofield:: vega.PropertySet.interpolate
+.. autofield:: vega.PropertySet.tension
+.. autofield:: vega.PropertySet.url
+.. autofield:: vega.PropertySet.align
+.. autofield:: vega.PropertySet.baseline
+.. autofield:: vega.PropertySet.text
+.. autofield:: vega.PropertySet.dx
+.. autofield:: vega.PropertySet.dy
+.. autofield:: vega.PropertySet.font
+.. autofield:: vega.PropertySet.font_size
+.. autofield:: vega.PropertySet.font_weight
+.. autofield:: vega.PropertySet.font_style
 
