@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from itertools import product
+import time
 import json
 
 from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
@@ -296,7 +297,24 @@ class TestData(object):
 
     def test_serialize(self):
         """Objects are serialized to JSON-compatible objects"""
-        pass
+
+        def epoch(obj):
+            """Convert to JS Epoch time"""
+            return int(time.mktime(obj.timetuple())) * 1000
+
+        types = [('test', str, 'test'),
+                 (pd.Timestamp('2013-06-08'), int,
+                  epoch(pd.Timestamp('2013-06-08'))),
+                 (datetime.utcnow(), int, epoch(datetime.utcnow())),
+                 (1, int, 1),
+                 (1.0, float, 1.0),
+                 (np.float32(1), float, 1.0),
+                 (np.int32(1), int, 1),
+                 (np.float64(1), float, 1.0),
+                 (np.int64(1), int, 1)]
+
+        for puts, pytype, gets in types:
+            nt.assert_equal(Data.serialize(puts), gets)
 
     def test_pandas_series_loading(self):
         """Pandas Series objects are correctly loaded"""
