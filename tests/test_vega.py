@@ -5,8 +5,8 @@ import time
 import json
 
 from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
-                          GrammarClass, Visualization, Data, ValueRef, Mark,
-                          PropertySet, Scale, Axis)
+                          GrammarClass, Visualization, Data, LoadError,
+                          ValueRef, Mark, PropertySet, Scale, Axis)
 import nose.tools as nt
 
 import pandas as pd
@@ -329,6 +329,15 @@ class TestData(object):
 
         for puts, pytype, gets in types:
             nt.assert_equal(Data.serialize(puts), gets)
+
+        class BadType(object):
+            """Bad object for type warning"""
+
+        test_obj = BadType()
+        with nt.assert_raises(LoadError) as err:
+            Data.serialize(test_obj)
+        nt.assert_equals(err.exception.message,
+                         'cannot serialize index of type BadType')
 
     def test_pandas_series_loading(self):
         """Pandas Series objects are correctly loaded"""
