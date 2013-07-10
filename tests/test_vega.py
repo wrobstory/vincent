@@ -418,6 +418,9 @@ class TestData(object):
         data = Data.from_pandas(dataframe)
         nt.assert_equal(data.name, 'table')
 
+        #Bad obj
+        nt.assert_raises(ValueError, Data.from_pandas, {})
+
     def test_numpy_loading(self):
         """Numpy ndarray objects are correctly loaded"""
         test_data = np.random.randn(6, 3)
@@ -447,6 +450,16 @@ class TestData(object):
             {ikey: i, 'a': row[0], 'b': row[1], 'c': row[2]}
             for i, row in zip(index, test_data.tolist())]
         nt.assert_list_equal(expected_values, data.values)
+
+        #Bad loads
+        with nt.assert_raises(LoadError) as err:
+            Data.from_numpy(test_data, 'test', columns, index=xrange(4))
+        nt.assert_equal(err.expected, LoadError)
+
+        columns = ['a', 'b']
+        with nt.assert_raises(LoadError) as err:
+            Data.from_numpy(test_data, 'test', columns, index)
+        nt.assert_equal(err.expected, LoadError)
 
     def test_iter_loading(self):
         pass
