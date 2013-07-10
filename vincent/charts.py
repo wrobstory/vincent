@@ -21,13 +21,10 @@ except ImportError:
 def data_type(data, iter_pairs):
     '''Data type check for automatic import'''
     if iter_pairs:
-        return Data.from_iters(**data)
+        return Data.from_mult_iters(**data)
     if pd:
         if isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
             return Data.from_pandas(data)
-    if np:
-        if isinstance(data, np.ndarray):
-            return Data.from_numpy(data)
     if isinstance(data, (list, tuple)):
         if type(data[0]) in (list, tuple):
             return Data.from_iter_pairs(data)
