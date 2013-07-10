@@ -71,10 +71,10 @@ class Chart(Visualization):
         self.padding = {'top': 10, 'left': 30, 'bottom': 20, 'right': 10}
 
         #Data
-        if not data:
-            raise ValueError('The data structure is empty.')
         if data is None:
             raise ValueError('Please initialize the chart with data.')
+        if not data:
+            raise ValueError('The data structure is empty.')
         self.data.append(data_type(data, iter_pairs))
 
 
