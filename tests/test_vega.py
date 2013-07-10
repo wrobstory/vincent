@@ -548,3 +548,35 @@ class TestPropertySet(object):
             'font_size', 'font_weight', 'font_style']
         grammar_types = [(f, [ValueRef]) for f in fields]
         assert_grammar_typechecking(grammar_types, PropertySet())
+
+    def test_validation_checking(self):
+        """ValueRef fields are grammar-checked"""
+
+        grammar_errors = [('fill_opacity', ValueRef(value=-1), ValueError,
+                           'fill_opacity must be between 0 and 1'),
+                          ('fill_opacity', ValueRef(value=2), ValueError,
+                           'fill_opacity must be between 0 and 1'),
+                          ('stroke_width', ValueRef(value=-1), ValueError,
+                           'stroke width cannot be negative'),
+                          ('stroke_opacity', ValueRef(value=-1), ValueError,
+                           'stroke_opacity must be between 0 and 1'),
+                          ('stroke_opacity', ValueRef(value=2), ValueError,
+                           'stroke_opacity must be between 0 and 1'),
+                          ('size', ValueRef(value=-1), ValueError,
+                           'size cannot be negative')]
+
+        assert_grammar_validation(grammar_errors, PropertySet())
+
+        bad_shape = ValueRef(value="BadShape")
+        nt.assert_raises(ValueError, PropertySet, shape=bad_shape)
+
+
+
+
+
+
+
+
+
+
+

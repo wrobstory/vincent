@@ -954,7 +954,7 @@ class PropertySet(GrammarClass):
                             (float, int))
             if value.value < 0 or value.value > 1:
                 raise ValueError(
-                    'fill_opacity.value must be between 0 and 1')
+                    'fill_opacity must be between 0 and 1')
 
     @grammar(ValueRef)
     def stroke(value):
@@ -985,7 +985,7 @@ class PropertySet(GrammarClass):
                             (float, int))
             if value.value < 0 or value.value > 1:
                 raise ValueError(
-                    'stroke_opacity.value must be between 0 and 1')
+                    'stroke_opacity must be between 0 and 1')
 
     @grammar(ValueRef)
     def size(value):
@@ -1000,9 +1000,8 @@ class PropertySet(GrammarClass):
             if value.value < 0:
                 raise ValueError('size cannot be negative')
 
-    _valid_shapes = (
-        'circle', 'square', 'cross', 'diamond', 'triangle-up',
-        'triangle-down')
+    _valid_shapes = ('circle', 'square', 'cross', 'diamond', 'triangle-up',
+                     'triangle-down')
 
     @grammar(ValueRef)
     def shape(value):
