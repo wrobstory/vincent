@@ -7,7 +7,8 @@ import json
 from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
                           GrammarClass, Visualization, Data, LoadError,
                           ValueRef, Mark, PropertySet, Scale, Axis,
-                          MarkProperties, MarkRef)
+                          MarkProperties, MarkRef, DataRef, Scale,
+                          AxisProperties, Axis)
 import nose.tools as nt
 
 import pandas as pd
@@ -630,3 +631,69 @@ class TestMark(object):
         """Mark fields are grammar checked"""
 
         nt.assert_raises(ValueError, Mark, type='panda')
+
+
+class TestDataRef(object):
+    """Test DataRef class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of DataRef"""
+
+        grammar_types = [('data', [str]), ('field', [str])]
+        assert_grammar_typechecking(grammar_types, DataRef())
+
+
+class TestScale(object):
+    """Test Scale class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of Scale"""
+
+        grammar_types = [('name', [str]), ('type', [str]),
+                         ('domain', [list, DataRef]),
+                         ('domain_min', [float, int, DataRef]),
+                         ('domain_max', [float, int, DataRef]),
+                         ('range', [list, str]),
+                         ('range_min', [float, int, DataRef]),
+                         ('range_max', [float, int, DataRef]),
+                         ('reverse', [bool]), ('round', [bool]),
+                         ('points', [bool]), ('clamp', [bool]),
+                         ('nice', [bool, str]),
+                         ('exponent', [float, int]),
+                         ('zero', [bool])]
+
+        assert_grammar_typechecking(grammar_types, Scale())
+
+
+class TestAxisProperties(object):
+    """Test AxisProperties Class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of AxisProperties"""
+
+        grammar_types = [('major_ticks', [PropertySet]),
+                         ('minor_ticks', [PropertySet]),
+                         ('label', [PropertySet]),
+                         ('axis', [PropertySet])]
+
+        assert_grammar_typechecking(grammar_types, AxisProperties())
+
+
+class TestAxis(object):
+    """Test Axis Class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of Axis"""
+
+        grammar_types = [('scale', [str]),
+                         ('orient', [str]), ('format', [str]),
+                         ('ticks', [int]), ('values', [list]),
+                         ('subdivide', [int, float]),
+                         ('tick_padding', [int]), ('tick_size', [int]),
+                         ('tick_size_major', [int]),
+                         ('tick_size_minor', [int]),
+                         ('tick_size_end', [int]),
+                         ('offset', [int]),
+                         ('properties', [AxisProperties])]
+
+        assert_grammar_typechecking(grammar_types, Axis())

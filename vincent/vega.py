@@ -1509,23 +1509,23 @@ class Axis(GrammarClass):
         Only valid for quantitative scales.
         """
 
-    @grammar(grammar_type=int, grammar_name='tickPadding')
+    @grammar(grammar_type=(int), grammar_name='tickPadding')
     def tick_padding(value):
         """int : Pixels between ticks and text labels"""
 
-    @grammar(grammar_type=int, grammar_name='tickSize')
+    @grammar(grammar_type=(int), grammar_name='tickSize')
     def tick_size(value):
         """int : Size in pixels of all ticks"""
 
-    @grammar(grammar_type=int, grammar_name='tickSizeMajor')
+    @grammar(grammar_type=(int), grammar_name='tickSizeMajor')
     def tick_size_major(value):
         """int : Size in pixels of major ticks"""
 
-    @grammar(grammar_type=int, grammar_name='tickSizeMinor')
+    @grammar(grammar_type=(int), grammar_name='tickSizeMinor')
     def tick_size_minor(value):
         """int : Size in pixels of minor ticks"""
 
-    @grammar(grammar_type=int, grammar_name='tickSizeEnd')
+    @grammar(grammar_type=(int), grammar_name='tickSizeEnd')
     def tick_size_end(value):
         """int : Size in pixels of end ticks"""
 
