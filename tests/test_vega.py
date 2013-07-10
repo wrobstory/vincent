@@ -1,4 +1,9 @@
-# -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
+'''
+Test Vincent.vega
+-----------------
+
+'''
 from datetime import datetime, timedelta
 from itertools import product
 import time
@@ -465,10 +470,10 @@ class TestData(object):
             Data.from_numpy(test_data, 'test', columns, index)
         nt.assert_equal(err.expected, LoadError)
 
-    def test_from_iter(self):
+    def test_from_mult_iters(self):
         """Test set of iterables"""
-        test1 = Data.from_iters(x=[0, 1, 2], y=[3, 4, 5])
-        test2 = Data.from_iters(apple=['one', 'two'], pear=[3, 4])
+        test1 = Data.from_mult_iters(x=[0, 1, 2], y=[3, 4, 5])
+        test2 = Data.from_mult_iters(apple=['one', 'two'], pear=[3, 4])
         values1 = [{'x': 0, 'y': 3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 5}]
         values2 = [{'apple': 'one', 'pear': 3}, {'apple': 'two', 'pear': 4}]
 
@@ -476,19 +481,26 @@ class TestData(object):
         nt.assert_list_equal(test2.values, values2)
 
         #Iter errors
-        nt.assert_raises(ValueError, Data.from_iters, x=[0], y=[1, 2])
+        nt.assert_raises(ValueError, Data.from_mult_iters, x=[0], y=[1, 2])
 
-    def test_from_list(self):
-        """Test data from simple list"""
-        test = Data.from_list([10, 20, 30])
+    def test_from_iter(self):
+        """Test data from single iter"""
+        test = Data.from_iter([10, 20, 30])
+        test1 = Data.from_iter((10, 20, 30))
         values = [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 2, 'y': 30}]
         nt.assert_list_equal(test.values, values)
+        nt.assert_list_equal(test1.values, values)
 
-    def test_from_tuple(self):
+    def test_from_pair_iter(self):
         """Test data from tuple of tuples"""
-        test = Data.from_tuple(((1, 10), (2, 20)))
+        test = Data.from_pair_iter(((1, 10), (2, 20)))
+        test1 = Data.from_pair_iter([(1, 10), (2, 20)])
+        test2 = Data.from_pair_iter([[1, 10], [2, 20]])
         values = [{'x': 1, 'y': 10}, {'x': 2, 'y': 20}]
+
         nt.assert_list_equal(test.values, values)
+        nt.assert_list_equal(test1.values, values)
+        nt.assert_list_equal(test1.values, values)
 
     def test_from_dict(self):
         """Test data from dict"""

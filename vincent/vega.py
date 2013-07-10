@@ -703,8 +703,8 @@ class Data(GrammarClass):
         return data
 
     @classmethod
-    def from_iters(cls, name=None, **kwargs):
-        """Load values from lists
+    def from_mult_iters(cls, name=None, **kwargs):
+        """Load values from multiple iters
 
         Parameters
         ----------
@@ -737,7 +737,7 @@ class Data(GrammarClass):
         return cls(name, values=values)
 
     @classmethod
-    def from_list(cls, data, name=None):
+    def from_iter(cls, data, name=None):
         """Convenience method for loading data from a single list. Defaults
         to numerical indexing for x-axis.
 
@@ -755,9 +755,9 @@ class Data(GrammarClass):
         return cls(name, values=values)
 
     @classmethod
-    def from_tuple(cls, data, name=None):
-        """Convenience method for loading data from a tuple of tuples. Defaults
-        to numerical indexing for x-axis.
+    def from_pair_iter(cls, data, name=None):
+        """Convenience method for loading data from a tuple of tuples or list of lists.
+        Defaults to numerical indexing for x-axis.
 
         Parameters
         ----------

@@ -28,12 +28,13 @@ def data_type(data, iter_pairs):
     if np:
         if isinstance(data, np.ndarray):
             return Data.from_numpy(data)
-    if isinstance(data, list):
-        return Data.from_list(data)
+    if isinstance(data, (list, tuple)):
+        if type(data[0]) in (list, tuple):
+            return Data.from_pair_iter(data)
+        else:
+            return Data.from_iter(data)
     elif isinstance(data, dict):
         return Data.from_dict(data)
-    elif isinstance(data, tuple):
-        return Data.from_tuple(data)
     else:
         raise ValueError('This data type is not supported by Vincent.')
 
