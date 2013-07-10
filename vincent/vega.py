@@ -676,6 +676,7 @@ class Data(GrammarClass):
         """
         if not np:
             raise LoadError('numpy could not be imported')
+
         _assert_is_type('numpy object', np_obj, np.ndarray)
 
         # Integer index if none is provided
