@@ -6,7 +6,8 @@ import json
 
 from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
                           GrammarClass, Visualization, Data, LoadError,
-                          ValueRef, Mark, PropertySet, Scale, Axis)
+                          ValueRef, Mark, PropertySet, Scale, Axis,
+                          MarkProperties, MarkRef)
 import nose.tools as nt
 
 import pandas as pd
@@ -180,12 +181,11 @@ def assert_grammar_typechecking(grammar_types, test_obj):
 def assert_manual_typechecking(bad_grammar, test_obj):
     """Some attrs use the _assert_is_type func for typechecking"""
 
-    for attr, value, datatype in bad_grammar:
+    for attr, value in bad_grammar:
         with nt.assert_raises(ValueError) as err:
             setattr(test_obj, attr, value)
 
-        nt.assert_equal(err.exception.message,
-                        '{0}[0] must be {1}'.format(attr, datatype.__name__))
+        nt.assert_equal(err.expected, ValueError)
 
 
 def assert_grammar_validation(grammar_errors, test_obj):
@@ -256,8 +256,8 @@ class TestVisualization(object):
     def test_manual_typecheck(self):
         """Test manual typechecking for elements like marks"""
 
-        test_attr = [('data', [1], Data), ('scales', [1], Scale),
-                     ('axes', [1], Axis), ('marks', [1], Mark)]
+        test_attr = [('data', [1]), ('scales', [1]),
+                     ('axes', [1]), ('marks', [1])]
 
         assert_manual_typechecking(test_attr, Visualization())
 
@@ -292,6 +292,7 @@ class TestVisualization(object):
 
 
 class TestData(object):
+
     def test_grammar_typechecking(self):
         """Data fields are correctly type-checked"""
         grammar_types = [
@@ -498,6 +499,7 @@ class TestData(object):
 
 
 class TestValueRef(object):
+
     def test_grammar_typechecking(self):
         """ValueRef fields are correctly type-checked"""
         grammar_types = [
@@ -536,6 +538,7 @@ class TestValueRef(object):
 
 
 class TestPropertySet(object):
+
     def test_grammar_typechecking(self):
         """PropertySet fields are correctly type-checked"""
         # All fields must be ValueRef for Mark properties
@@ -570,6 +573,29 @@ class TestPropertySet(object):
         bad_shape = ValueRef(value="BadShape")
         nt.assert_raises(ValueError, PropertySet, shape=bad_shape)
 
+    def test_manual_typecheck(self):
+        """Test manual typechecking for elements like marks"""
+
+        test_attr = [('fill', ValueRef(value=1)),
+                     ('fill_opacity', ValueRef(value='str')),
+                     ('stroke', ValueRef(value=1)),
+                     ('stroke_width', ValueRef(value='str')),
+                     ('stroke_opacity', ValueRef(value='str')),
+                     ('size', ValueRef(value='str')),
+                     ('shape', ValueRef(value=1)),
+                     ('path', ValueRef(value=1))]
+
+        assert_manual_typechecking(test_attr, PropertySet())
+
+
+class TestMarkProperties(object):
+
+    def test_grammar_typechecking(self):
+        """Test grammar of MarkProperty fields"""
+
+        fields = ['enter', 'exit', 'update', 'hover']
+        grammar_types = [(f, [PropertySet]) for f in fields]
+        assert_grammar_typechecking(grammar_types, MarkProperties())
 
 
 
