@@ -755,7 +755,7 @@ class Data(GrammarClass):
         return cls(name, values=values)
 
     @classmethod
-    def from_pair_iter(cls, data, name=None):
+    def from_iter_pairs(cls, data, name=None):
         """Convenience method for loading data from a tuple of tuples or list of lists.
         Defaults to numerical indexing for x-axis.
 

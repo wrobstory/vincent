@@ -30,7 +30,7 @@ def data_type(data, iter_pairs):
             return Data.from_numpy(data)
     if isinstance(data, (list, tuple)):
         if type(data[0]) in (list, tuple):
-            return Data.from_pair_iter(data)
+            return Data.from_iter_pairs(data)
         else:
             return Data.from_iter(data)
     elif isinstance(data, dict):
@@ -39,11 +39,11 @@ def data_type(data, iter_pairs):
         raise ValueError('This data type is not supported by Vincent.')
 
 
-class Bar(Visualization):
-    """Vega Bar chart"""
+class Chart(Visualization):
+    """Abstract Base Class for all Chart types"""
 
     def __init__(self, data=None, iter_pairs=False, width=960, height=500, *args, **kwargs):
-        """Create a Vega Bar Chart
+        """Create a Vega Chart
 
         Parameters:
         -----------
@@ -60,22 +60,34 @@ class Bar(Visualization):
 
         Output:
         -------
-        Vega Bar Chart
+        Vega Chart
 
         Example:
         -------
-        >>>vis = vincent.Bar([10, 20, 30, 40, 50], width=200, height=100)
+        >>>vis = vincent.Chart([10, 20, 30, 40, 50], width=200, height=100)
 
         """
 
-        super(Bar, self).__init__(*args, **kwargs)
+        super(Chart, self).__init__(*args, **kwargs)
+
         self.width, self.height = width, height
         self.padding = {'top': 10, 'left': 30, 'bottom': 20, 'right': 10}
 
         #Data
+        if not data:
+            raise ValueError('The data structure is empty.')
         if data is None:
             raise ValueError('Please initialize the chart with data.')
         self.data.append(data_type(data, iter_pairs))
+
+
+class Bar(Chart):
+    """Vega Bar chart"""
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Bar Chart"""
+
+        super(Bar, self).__init__(*args, **kwargs)
 
         #Scales
         self.scales['x'] = Scale(name='x', type='ordinal', range='width',

@@ -491,11 +491,11 @@ class TestData(object):
         nt.assert_list_equal(test.values, values)
         nt.assert_list_equal(test1.values, values)
 
-    def test_from_pair_iter(self):
+    def test_from_iter_pairs(self):
         """Test data from tuple of tuples"""
-        test = Data.from_pair_iter(((1, 10), (2, 20)))
-        test1 = Data.from_pair_iter([(1, 10), (2, 20)])
-        test2 = Data.from_pair_iter([[1, 10], [2, 20]])
+        test = Data.from_iter_pairs(((1, 10), (2, 20)))
+        test1 = Data.from_iter_pairs([(1, 10), (2, 20)])
+        test2 = Data.from_iter_pairs([[1, 10], [2, 20]])
         values = [{'x': 1, 'y': 10}, {'x': 2, 'y': 20}]
 
         nt.assert_list_equal(test.values, values)
