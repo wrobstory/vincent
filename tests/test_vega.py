@@ -81,6 +81,7 @@ def test_keyed_list():
 
 def test_grammar():
     """Grammar decorator behaves correctly."""
+
     validator_fail = False
 
     class DummyType(object):
@@ -292,6 +293,7 @@ class TestVisualization(object):
 
 
 class TestData(object):
+    """Test the Data class"""
 
     def test_grammar_typechecking(self):
         """Data fields are correctly type-checked"""
@@ -499,6 +501,7 @@ class TestData(object):
 
 
 class TestValueRef(object):
+    """Test the ValueRef class"""
 
     def test_grammar_typechecking(self):
         """ValueRef fields are correctly type-checked"""
@@ -538,6 +541,7 @@ class TestValueRef(object):
 
 
 class TestPropertySet(object):
+    """Test the PropertySet Class"""
 
     def test_grammar_typechecking(self):
         """PropertySet fields are correctly type-checked"""
@@ -589,20 +593,40 @@ class TestPropertySet(object):
 
 
 class TestMarkProperties(object):
+    """Test the MarkProperty Class"""
 
     def test_grammar_typechecking(self):
-        """Test grammar of MarkProperty fields"""
+        """Test grammar of MarkProperty"""
 
         fields = ['enter', 'exit', 'update', 'hover']
         grammar_types = [(f, [PropertySet]) for f in fields]
         assert_grammar_typechecking(grammar_types, MarkProperties())
 
 
+class TestMarkRef(object):
+    """Test the MarkRef Class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of MarkRef"""
+
+        grammar_types = [('data', [str]), ('transform', [list])]
+        assert_grammar_typechecking(grammar_types, MarkRef())
 
 
+class TestMark(object):
+    """Test Mark Class"""
 
+    def test_grammar_typechecking(self):
+        """Test grammar of Mark"""
 
+        grammar_types = [('name', [str]), ('description', [str]),
+                         ('from_', [MarkRef]),
+                         ('properties', [MarkProperties]), ('key', [str]),
+                         ('key', [str]), ('delay', [ValueRef]),
+                         ('ease', [str])]
+        assert_grammar_typechecking(grammar_types, Mark())
 
+    def test_validation_checking(self):
+        """Mark fields are grammar checked"""
 
-
-
+        nt.assert_raises(ValueError, Mark, type='panda')
