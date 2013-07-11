@@ -169,7 +169,8 @@ pandas
 
 requests (for shapefiles only)
 
-Status
+Status/Development
 ---------------
-Note: Vincent is still in beta, but we are moving quickly towards a V1.0 release. Expect API/syntax to stay mostly fixed,
-with major changes incorporated before V1.0. 
+Major Vincent development is currently happening in the [ORM branch](https://github.com/wrobstory/vincent/tree/ORM). The Vincent API is going to change on the 0.2 release, 
+with backwards compatibility broken in a number of places. So, I wouldn't recommend putting Vincent into production until 0.2, which is on track
+for an August release. 
