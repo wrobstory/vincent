@@ -5,7 +5,6 @@ Test Vincent.charts
 
 '''
 
-import numpy as np
 import pandas as pd
 import nose.tools as nt
 from vincent.charts import (data_type, Chart, Bar)
@@ -67,11 +66,12 @@ class TestChart(object):
         nt.assert_raises(ValueError, Chart)
         nt.assert_raises(ValueError, Chart, [])
 
+
 class TestBar(object):
     """Test Bar Chart"""
 
     def test_init(self):
-        bar = Bar([1,2,3])
+        bar = Bar([1, 2, 3])
 
         scales = [{u'domain': {u'data': u'table', u'field': u'data.x'},
                    u'name': u'x',
@@ -97,3 +97,5 @@ class TestBar(object):
         for i, axis in enumerate(axes):
             nt.assert_dict_equal(bar.axes[i].grammar(), axis)
 
+        for i, axis in enumerate(marks):
+            nt.assert_dict_equal(bar.marks[i].grammar(), axis)
