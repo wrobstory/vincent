@@ -107,3 +107,27 @@ class Bar(Chart):
                                               update=update_props))
 
         self.marks.append(mark)
+
+
+class Scatter(Bar):
+    """Vega Scatter chart"""
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Scatter Chart"""
+
+        super(Scatter, self).__init__(*args, **kwargs)
+
+        #Scatter updates
+        del self.scales[0].type
+        self.scales['x'].nice = True
+
+        del self.marks[0].properties.enter.width
+        del self.marks[0].properties.enter.y2
+        self.marks[0].properties.enter.stroke = ValueRef(value='#2a3140')
+        self.marks[0].properties.enter.fill_opacity = ValueRef(value=0.9)
+        self.marks[0].type = 'symbol'
+
+
+
+
+

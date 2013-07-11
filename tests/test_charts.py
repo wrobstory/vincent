@@ -7,7 +7,7 @@ Test Vincent.charts
 
 import pandas as pd
 import nose.tools as nt
-from vincent.charts import (data_type, Chart, Bar)
+from vincent.charts import (data_type, Chart, Bar, Scatter)
 
 
 def test_data_type():
@@ -76,7 +76,11 @@ class TestBar(object):
         scales = [{u'domain': {u'data': u'table', u'field': u'data.x'},
                    u'name': u'x',
                    u'range': u'width',
-                   u'type': u'ordinal'}]
+                   u'type': u'ordinal'},
+                  {u'domain': {u'data': u'table', u'field': u'data.y'},
+                   u'name': u'y',
+                   u'nice': True,
+                   u'range': u'height'}]
 
         axes = [{u'scale': u'x', u'type': u'x'},
                 {u'scale': u'y', u'type': u'y'}]
@@ -99,3 +103,40 @@ class TestBar(object):
 
         for i, axis in enumerate(marks):
             nt.assert_dict_equal(bar.marks[i].grammar(), axis)
+
+
+class TestScatter(object):
+    """Test Scatter Chart"""
+
+    def test_init(self):
+
+        scatter = Scatter([1, 2, 3])
+
+        scales = [{u'domain': {u'data': u'table', u'field': u'data.x'},
+                   u'name': u'x',
+                   u'nice': True,
+                   u'range': u'width'},
+                  {u'domain': {u'data': u'table', u'field': u'data.y'},
+                   u'name': u'y',
+                   u'range': u'height',
+                   u'nice': True}]
+
+        axes = [{u'scale': u'x', u'type': u'x'},
+                {u'scale': u'y', u'type': u'y'}]
+
+        marks = [{u'from': {u'data': u'table'},
+                  u'properties': {u'enter': {u'fillOpacity': {u'value': 0.9},
+                  u'stroke': {u'value': u'#2a3140'},
+                  u'x': {u'field': u'data.x', u'scale': u'x'},
+                  u'y': {u'field': u'data.y', u'scale': u'y'}},
+                  u'update': {u'fill': {u'value': u'steelblue'}}},
+                  u'type': u'symbol'}]
+
+        for i, scale in enumerate(scales):
+            nt.assert_dict_equal(scatter.scales[i].grammar(), scale)
+
+        for i, axis in enumerate(axes):
+            nt.assert_dict_equal(scatter.axes[i].grammar(), axis)
+
+        for i, axis in enumerate(marks):
+            nt.assert_dict_equal(scatter.marks[i].grammar(), axis)
