@@ -7,7 +7,7 @@ Test Vincent.charts
 
 import pandas as pd
 import nose.tools as nt
-from vincent.charts import (data_type, Chart, Bar, Scatter)
+from vincent.charts import (data_type, Chart, Bar, Scatter, Line)
 
 
 def test_data_type():
@@ -140,3 +140,40 @@ class TestScatter(object):
 
         for i, axis in enumerate(marks):
             nt.assert_dict_equal(scatter.marks[i].grammar(), axis)
+
+
+class TestLine(object):
+    """Test Line Chart"""
+
+    def test_init(self):
+        line = Line([1, 2, 3])
+
+        scales = [{u'domain': {u'data': u'table', u'field': u'data.x'},
+                   u'name': u'x',
+                   u'range': u'width',
+                   u'type': u'linear'},
+                  {u'domain': {u'data': u'table', u'field': u'data.y'},
+                   u'name': u'y',
+                   u'nice': True,
+                   u'range': u'height'}]
+
+        axes = [{u'scale': u'x', u'type': u'x'},
+                {u'scale': u'y', u'type': u'y'}]
+
+        marks = [{u'from': {u'data': u'table'},
+                 u'properties': {u'enter': {u'stroke': {u'value': u'#2a3140'},
+                 u'strokeWidth': {u'value': 2},
+                 u'x': {u'field': u'data.x', u'scale': u'x'},
+                 u'y': {u'field': u'data.y', u'scale': u'y'}}},
+                 u'type': u'line'}]
+
+        for i, scale in enumerate(scales):
+            nt.assert_dict_equal(line.scales[i].grammar(), scale)
+
+        for i, axis in enumerate(axes):
+            nt.assert_dict_equal(line.axes[i].grammar(), axis)
+
+        for i, axis in enumerate(marks):
+            nt.assert_dict_equal(line.marks[i].grammar(), axis)
+
+

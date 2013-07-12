@@ -128,6 +128,26 @@ class Scatter(Bar):
         self.marks[0].type = 'symbol'
 
 
+class Line(Bar):
+    """Vega Line chart"""
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Line Chart"""
+
+        super(Line, self).__init__(*args, **kwargs)
+
+        #Line Updates
+        self.scales['x'].type = 'linear'
+
+        del self.marks[0].properties.update
+        del self.marks[0].properties.enter.width
+        del self.marks[0].properties.enter.y2
+
+        self.marks[0].type = 'line'
+        self.marks[0].properties.enter.stroke = ValueRef(value='#2a3140')
+        self.marks[0].properties.enter.stroke_width = ValueRef(value=2)
+
+
 
 
 
