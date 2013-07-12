@@ -7,7 +7,20 @@ Test Vincent.charts
 
 import pandas as pd
 import nose.tools as nt
-from vincent.charts import (data_type, Chart, Bar, Scatter, Line)
+from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area)
+
+
+def chart_runner(chart, scales, axes, marks):
+    """Iterate through each chart element for check for contents"""
+
+    for i, scale in enumerate(scales):
+        nt.assert_dict_equal(chart.scales[i].grammar(), scale)
+
+    for i, axis in enumerate(axes):
+        nt.assert_dict_equal(chart.axes[i].grammar(), axis)
+
+    for i, axis in enumerate(marks):
+        nt.assert_dict_equal(chart.marks[i].grammar(), axis)
 
 
 def test_data_type():
@@ -95,14 +108,7 @@ class TestBar(object):
                   u'update': {u'fill': {u'value': u'steelblue'}}},
                   u'type': u'rect'}]
 
-        for i, scale in enumerate(scales):
-            nt.assert_dict_equal(bar.scales[i].grammar(), scale)
-
-        for i, axis in enumerate(axes):
-            nt.assert_dict_equal(bar.axes[i].grammar(), axis)
-
-        for i, axis in enumerate(marks):
-            nt.assert_dict_equal(bar.marks[i].grammar(), axis)
+        chart_runner(bar, scales, axes, marks)
 
 
 class TestScatter(object):
@@ -132,14 +138,7 @@ class TestScatter(object):
                   u'update': {u'fill': {u'value': u'steelblue'}}},
                   u'type': u'symbol'}]
 
-        for i, scale in enumerate(scales):
-            nt.assert_dict_equal(scatter.scales[i].grammar(), scale)
-
-        for i, axis in enumerate(axes):
-            nt.assert_dict_equal(scatter.axes[i].grammar(), axis)
-
-        for i, axis in enumerate(marks):
-            nt.assert_dict_equal(scatter.marks[i].grammar(), axis)
+        chart_runner(scatter, scales, axes, marks)
 
 
 class TestLine(object):
@@ -167,13 +166,37 @@ class TestLine(object):
                  u'y': {u'field': u'data.y', u'scale': u'y'}}},
                  u'type': u'line'}]
 
-        for i, scale in enumerate(scales):
-            nt.assert_dict_equal(line.scales[i].grammar(), scale)
+        chart_runner(line, scales, axes, marks)
 
-        for i, axis in enumerate(axes):
-            nt.assert_dict_equal(line.axes[i].grammar(), axis)
 
-        for i, axis in enumerate(marks):
-            nt.assert_dict_equal(line.marks[i].grammar(), axis)
+class TestArea(object):
+    """Test Area Chart"""
 
+    def test_init(self):
+        area = Area([1, 2, 3])
+
+        scales = [{u'domain': {u'data': u'table', u'field': u'data.x'},
+                   u'name': u'x',
+                   u'range': u'width',
+                   u'type': u'linear'},
+                  {u'domain': {u'data': u'table', u'field': u'data.y'},
+                   u'name': u'y',
+                   u'nice': True,
+                   u'range': u'height'}]
+
+        axes = [{u'scale': u'x', u'type': u'x'},
+                {u'scale': u'y', u'type': u'y'}]
+
+        marks = [{u'from': {u'data': u'table'},
+                  u'properties': {u'enter': {u'fill': {u'value': u'#2a3140'},
+                  u'interpolate': {u'value': u'monotone'},
+                  u'stroke': {u'value': u'#2a3140'},
+                  u'strokeWidth': {u'value': 2},
+                  u'x': {u'field': u'data.x', u'scale': u'x'},
+                  u'y': {u'field': u'data.y', u'scale': u'y'},
+                  u'y2': {u'scale': u'y', u'value': 0}},
+                  u'update': {u'fillOpacity': {u'value': 1}}},
+                  u'type': u'area'}]
+
+        chart_runner(area, scales, axes, marks)
 

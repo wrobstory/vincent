@@ -148,6 +148,25 @@ class Line(Bar):
         self.marks[0].properties.enter.stroke_width = ValueRef(value=2)
 
 
+class Area(Line):
+    """Vega Area Chart"""
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Area Chart"""
+
+        super(Area, self).__init__(*args, **kwargs)
+
+        self.marks[0].type = "area"
+        self.marks[0].properties.enter.interpolate = ValueRef(value="monotone")
+        self.marks[0].properties.enter.y2 = ValueRef(value=0, scale="y")
+        self.marks[0].properties.enter.fill = ValueRef(value='#2a3140')
+        fill_opac = PropertySet(fill_opacity=ValueRef(value=1))
+        self.marks[0].properties.update = fill_opac
+
+
+
+
+
 
 
 
