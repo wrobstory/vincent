@@ -703,7 +703,7 @@ class Data(GrammarClass):
         return data
 
     @classmethod
-    def from_mult_iters(cls, name=None, **kwargs):
+    def from_mult_iters(cls, name=None, stacked=False, **kwargs):
         """Load values from multiple iters
 
         Parameters
@@ -711,6 +711,9 @@ class Data(GrammarClass):
         name : string, default None
             Name of the data set. If None (default), the name will be set to
             ``'table'``.
+        stacked: bool, default False
+            Pass true to stack all passed iters on the common axis of the
+            first iter.
         **kwargs : dict of iterables
             The ``values`` field will contain dictionaries with keys for
             each of the iterables provided. For example,
@@ -725,12 +728,18 @@ class Data(GrammarClass):
             raised.
         """
         lengths = [len(v) for v in kwargs.values()]
+        if stacked:
+            lengths = [x * 2 for x in lengths]
+
         if len(set(lengths)) != 1:
             raise ValueError('iterables must all be same length')
         else:
             values = [{} for i in xrange(lengths[0])]
 
         for k, v in kwargs.iteritems():
+            # if stacked:
+            #     for i, x in enumerate(range(len(values))):
+            #         values[i][k]
             for i, x in enumerate(v):
                 values[i][k] = x
 
