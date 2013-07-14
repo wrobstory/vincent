@@ -9,6 +9,7 @@ from __future__ import (print_function, division)
 import json
 import time
 import random
+import copy
 
 try:
     import pandas as pd
@@ -473,7 +474,7 @@ class Data(GrammarClass):
     containing the data and formatting instructions. Additionally, new data
     can be created from old data via the transform fields.
     """
-    _default_index_key = '_index'
+    _default_index_key = 'idx'
 
     def __init__(self, name=None, **kwargs):
         """Initialize a Data object
@@ -602,13 +603,13 @@ class Data(GrammarClass):
         index_key : string, default None
             In each :class:`dict` entry of the ``values`` attribute, the
             index of the pandas object will have this key. If ``None``
-            (default), then ``_index`` is used.
+            (default), then ``idx`` is used.
         data_key : string, default None
             Applies only to ``Series``. If ``None`` (default), then the data is
             indexed by the ``name`` attribute of the generated class.
             Otherwise, the data will be indexed by this key. For example, if
             ``data_key`` is ``'x'``, then the entries of the ``values`` list
-            will be ``{'_index': ..., 'x': ...}``.
+            will be ``{'idx': ..., 'x': ...}``.
         **kwargs : dict
             Additional arguments passed to the :class:`Data` constructor.
         """
@@ -664,7 +665,7 @@ class Data(GrammarClass):
             then the indices are integers starting at 0. Must have same
             length as the number of rows of ``np_obj``.
         index_key : string, default None
-            Key to use for the index. If ``None`` (default), ``_index`` is
+            Key to use for the index. If ``None`` (default), ``idx`` is
             used.
         **kwargs : dict
             Additional arguments passed to the :class:`Data` constructor
@@ -727,6 +728,9 @@ class Data(GrammarClass):
             If the iterables are not the same length, then ValueError is
             raised.
         """
+        if not name:
+            name = 'table'
+
         lengths = [len(v) for v in kwargs.values()]
         if stacked:
             lengths = [x * 2 for x in lengths]
@@ -746,6 +750,82 @@ class Data(GrammarClass):
         return cls(name, values=values)
 
     @classmethod
+    def stacked(cls, data=None, name=None, stack_on=None, on_index=True, **kwargs):
+        """"Load values from a Pandas DataFrame, a dict of iters, or multiple
+        iters into stacked values for stacked area/bar charts
+
+        Parameters
+        ----------
+        data: Pandas DataFrame or dict of iters, default None
+            Pandas DataFrame or dict of iterables
+        name: string, default None
+            Name of the dataset. If None, the name will be set to ``'table'``.
+        stack_on: string, default None
+            Key to identify x-axis on which to stack other values. Can pass
+            dict key or Pandas DataFrame column name.
+        on_index: boolean, default True
+            Pass True to stack Pandas DataFrames on index as common x-axis
+        kwargs: dict of iterables
+            The ``values`` field will contain dictionaries with keys for
+            each of the iterables provided. For example,
+
+                d = Data.from_iters(x=[0, 1, 5], y=(10, 20, 30))
+
+            would result in ``d`` having a ``values`` field with
+
+                [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 5, 'y': 30}]
+
+            If the iterables are not the same length, then ValueError is
+            raised.
+
+        Example
+        -------
+        >>>data = Data.stacked({'x': [0, 1, 2], 'y': [3, 4, 5],
+                               'y2': [7, 8, 9]}, stack_on='x')
+        >>>data = Data.stacked(df, stack_on='Column1')
+        >>>data = Data.stacked(stack_on='x', x=[1,2,3], y=[4,5,6], y2=[7,8,9])
+
+        """
+
+        if hasattr(data, 'name'):
+            name = data
+
+        if kwargs:
+            if len(set([len(v) for v in kwargs.values()])) != 1:
+                raise ValueError('iterables must all be same length')
+            data = kwargs
+
+        values = []
+
+        if data is not None:
+            if isinstance(data, pd.DataFrame):
+                if stack_on and on_index:
+                    raise ValueError('Cannot stack on both column and index')
+                if hasattr(data, 'name'):
+                    name = data.name
+                for i, row in data.iterrows():
+                    if on_index:
+                        key = i
+                        stack_on = data.index.name or cls._default_index_key
+                    else:
+                        key = row[stack_on]
+                        row = row.drop(stack_on)
+                    for cnt, (idx, val) in enumerate(row.iteritems()):
+                        values.append({stack_on: key, idx: val, 'c': cnt})
+
+            elif isinstance(data, dict):
+                copydat = copy.copy(data)
+                if not stack_on:
+                    raise ValueError('Data passed as a dict must include a key'
+                                     ' for `stack_on` on which to stack')
+                key = copydat.pop(stack_on)
+                for cnt, (k, v) in enumerate(copydat.iteritems()):
+                    for idx, val in zip(key, v):
+                        values.append({stack_on: idx, k: val, 'c': cnt})
+
+        return cls(name, values=values)
+
+    @classmethod
     def from_iter(cls, data, name=None):
         """Convenience method for loading data from a single list. Defaults
         to numerical indexing for x-axis.
@@ -759,6 +839,8 @@ class Data(GrammarClass):
             ``'table'``.
 
         """
+        if not name:
+            name = 'table'
         values = [{"x": x, "y": y}
                   for x, y in zip(range(len(data)), data)]
         return cls(name, values=values)
@@ -780,6 +862,8 @@ class Data(GrammarClass):
         >>>data = Data.from_tuples([(1,2), (3,4), (5,6)])
 
         """
+        if not name:
+            name = 'table'
         values = [{"x": x[0], "y": x[1]} for x in data]
         return cls(name, values=values)
 
@@ -800,6 +884,8 @@ class Data(GrammarClass):
         >>>data = Data.from_dict({'apples': 10, 'oranges': 2, 'pears': 3})
 
         """
+        if not name:
+            name = 'table'
         values = [{"x": x, "y": y} for x, y in data.iteritems()]
         return cls(name, values=values)
 
