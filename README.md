@@ -14,6 +14,10 @@ The data capabilities of Python. The visualization capabilities of JavaScript.
 
 Vincent takes Python data structures (tuples, lists, dicts, and Pandas DataFrames) and translates them into [Vega](https://github.com/trifacta/vega) visualization grammar. It allows for quick iteration of visualization designs via simple addition and subtraction of grammar elements, and outputs the final visualization to JSON.
 
+Status/Development
+---------------
+A new style of Vincent syntax is coming on the next major release, 0.2. This can be previewed in the [Vincent Bar Tutorial ipynb](http://nbviewer.ipython.org/urls/raw.github.com/wrobstory/vincent/master/examples/Vega%2520Bar%2520Tutorial.ipynb). We're shooting for the release by 8/1/13. If you prefer the old-style Vincent syntax as detailed below and in the current examples, [release 0.1.7](https://github.com/wrobstory/vincent/releases) is available. 
+
 Getting Started
 ---------------
 
@@ -169,8 +173,3 @@ pandas
 
 requests (for shapefiles only)
 
-Status/Development
----------------
-Major Vincent development is currently happening in the [ORM branch](https://github.com/wrobstory/vincent/tree/ORM). The Vincent API is going to change on the 0.2 release, 
-with backwards compatibility broken in a number of places. So, I wouldn't recommend putting Vincent into production until 0.2, which is on track
-for an August release. 
