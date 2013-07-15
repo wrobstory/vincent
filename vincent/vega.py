@@ -805,13 +805,13 @@ class Data(GrammarClass):
                     name = data.name
                 for i, row in data.iterrows():
                     if on_index:
-                        key = i
+                        key = cls.serialize(i)
                         stack_on = data.index.name or cls._default_index_key
                     else:
-                        key = row[stack_on]
+                        key = cls.serialize(row[stack_on])
                         row = row.drop(stack_on)
                     for cnt, (idx, val) in enumerate(row.iteritems()):
-                        values.append({stack_on: key, idx: val, 'c': cnt})
+                        values.append({stack_on: key, idx: cls.serialize(val), 'c': cnt})
 
             elif isinstance(data, dict):
                 copydat = copy.copy(data)
@@ -823,7 +823,7 @@ class Data(GrammarClass):
                     for idx, val in zip(key, v):
                         values.append({stack_on: idx, k: val, 'c': cnt})
 
-        return cls(name, values=values)
+        return cls(name, values=sorted(values, key=lambda x: x['c']))
 
     @classmethod
     def from_iter(cls, data, name=None):

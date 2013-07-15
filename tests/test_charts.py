@@ -49,8 +49,8 @@ def test_data_type():
     #Pandas
     df = pd.DataFrame({'test': [1, 2, 3]})
     series = pd.Series([1, 2, 3], name='test')
-    gets = [{'_index': 0, 'test': 1}, {'_index': 1, 'test': 2},
-            {'_index': 2, 'test': 3}]
+    gets = [{'idx': 0, 'test': 1}, {'idx': 1, 'test': 2},
+            {'idx': 2, 'test': 3}]
     test_df = data_type(df, False)
     test_series = data_type(series, False)
     nt.assert_list_equal(test_df.values, gets)

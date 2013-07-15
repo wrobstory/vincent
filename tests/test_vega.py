@@ -483,6 +483,77 @@ class TestData(object):
         #Iter errors
         nt.assert_raises(ValueError, Data.from_mult_iters, x=[0], y=[1, 2])
 
+    def test_stacked(self):
+        """Testing stacked data import"""
+        data1 = {'x': [1, 2, 3], 'y': [4, 5, 6], 'y2': [7, 8, 9]}
+        data2 = {'x': ['one', 'two', 'three'], 'y': [1.0, 2.0, 3.0],
+                 'y2': [4.0, 5.0, 6.0], 'y3': [7, 8, 9]}
+        df1 = pd.DataFrame(data1)
+        df2 = pd.DataFrame(data2)
+        df3 = pd.DataFrame(data1, index=sequences['Timestamp'](3))
+
+        #Input errors
+        nt.assert_raises(ValueError, Data.stacked, data=data1)
+        nt.assert_raises(ValueError, Data.stacked, x=[0, 1], y=[1])
+        nt.assert_raises(ValueError, Data.stacked, data=df1, stack_on='x')
+
+        truthy = {'data1_out':  [{'c': 0, 'x': 1, 'y': 4},
+                                 {'c': 0, 'x': 2, 'y': 5},
+                                 {'c': 0, 'x': 3, 'y': 6},
+                                 {'c': 1, 'x': 1, 'y2': 7},
+                                 {'c': 1, 'x': 2, 'y2': 8},
+                                 {'c': 1, 'x': 3, 'y2': 9}],
+                  'data2_out':  [{'c': 0, 'x': 'one', 'y': 1.0},
+                                 {'c': 0, 'x': 'two', 'y': 2.0},
+                                 {'c': 0, 'x': 'three', 'y': 3.0},
+                                 {'c': 1, 'x': 'one', 'y3': 7},
+                                 {'c': 1, 'x': 'two', 'y3': 8},
+                                 {'c': 1, 'x': 'three', 'y3': 9},
+                                 {'c': 2, 'x': 'one', 'y2': 4.0},
+                                 {'c': 2, 'x': 'two', 'y2': 5.0},
+                                 {'c': 2, 'x': 'three', 'y2': 6.0}],
+                  'data2_out_2':  [{'c': 0, 'y': 1.0, 'y3': 7},
+                                   {'c': 0, 'y': 2.0, 'y3': 8},
+                                   {'c': 0, 'y': 3.0, 'y3': 9},
+                                   {'c': 1, 'x': 'one', 'y3': 7},
+                                   {'c': 1, 'x': 'two', 'y3': 8},
+                                   {'c': 1, 'x': 'three', 'y3': 9},
+                                   {'c': 2, 'y2': 4.0, 'y3': 7},
+                                   {'c': 2, 'y2': 5.0, 'y3': 8},
+                                   {'c': 2, 'y2': 6.0, 'y3': 9}],
+                  'df3_out':  [{'c': 0, 'idx': 946800000000, 'x': 1},
+                               {'c': 0, 'idx': 946886400000, 'x': 2},
+                               {'c': 0, 'idx': 946972800000, 'x': 3},
+                               {'c': 1, 'idx': 946800000000, 'y': 4},
+                               {'c': 1, 'idx': 946886400000, 'y': 5},
+                               {'c': 1, 'idx': 946972800000, 'y': 6},
+                               {'c': 2, 'idx': 946800000000, 'y2': 7},
+                               {'c': 2, 'idx': 946886400000, 'y2': 8},
+                               {'c': 2, 'idx': 946972800000, 'y2': 9}]}
+
+        stack_mat = [{'ref': 'data1_out', 'dat': {'data': data1,
+                      'stack_on': 'x'}},
+                     {'ref': 'data2_out', 'dat': {'data': data2,
+                      'stack_on': 'x'}},
+                     {'ref': 'data2_out_2', 'dat': {'data': data2,
+                      'stack_on': 'y3'}},
+                     {'ref': 'data1_out', 'dat': {'data': df1, 'stack_on': 'x',
+                      'on_index': False}},
+                     {'ref': 'df3_out', 'dat': {'data': df3}},
+                     {'ref': 'data1_out', 'dat': {'x': [1, 2, 3], 'y': [4, 5, 6],
+                      'y2': [7, 8, 9], 'stack_on': 'x'}}]
+
+        for stacker in stack_mat:
+            kwargs = stacker['dat']
+            stack = Data.stacked(**kwargs)
+            nt.assert_list_equal(truthy[stacker['ref']], stack.values)
+
+
+
+
+
+
+
     def test_from_iter(self):
         """Test data from single iter"""
         test = Data.from_iter([10, 20, 30])
