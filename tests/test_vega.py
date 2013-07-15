@@ -492,6 +492,10 @@ class TestData(object):
         df2 = pd.DataFrame(data2)
         df3 = pd.DataFrame(data1, index=sequences['Timestamp'](3))
 
+        stamps = []
+        for stamp in sequences['Timestamp'](3):
+            stamps.append(Data.serialize(stamp))
+
         #Input errors
         nt.assert_raises(ValueError, Data.stacked, data=data1)
         nt.assert_raises(ValueError, Data.stacked, x=[0, 1], y=[1])
@@ -521,15 +525,15 @@ class TestData(object):
                                    {'c': 2, 'y2': 4.0, 'y3': 7},
                                    {'c': 2, 'y2': 5.0, 'y3': 8},
                                    {'c': 2, 'y2': 6.0, 'y3': 9}],
-                  'df3_out':  [{'c': 0, 'idx': 946800000000, 'x': 1},
-                               {'c': 0, 'idx': 946886400000, 'x': 2},
-                               {'c': 0, 'idx': 946972800000, 'x': 3},
-                               {'c': 1, 'idx': 946800000000, 'y': 4},
-                               {'c': 1, 'idx': 946886400000, 'y': 5},
-                               {'c': 1, 'idx': 946972800000, 'y': 6},
-                               {'c': 2, 'idx': 946800000000, 'y2': 7},
-                               {'c': 2, 'idx': 946886400000, 'y2': 8},
-                               {'c': 2, 'idx': 946972800000, 'y2': 9}]}
+                  'df3_out':  [{'c': 0, 'idx': stamps[0], 'x': 1},
+                               {'c': 0, 'idx': stamps[1], 'x': 2},
+                               {'c': 0, 'idx': stamps[2], 'x': 3},
+                               {'c': 1, 'idx': stamps[0], 'y': 4},
+                               {'c': 1, 'idx': stamps[1], 'y': 5},
+                               {'c': 1, 'idx': stamps[2], 'y': 6},
+                               {'c': 2, 'idx': stamps[0], 'y2': 7},
+                               {'c': 2, 'idx': stamps[1], 'y2': 8},
+                               {'c': 2, 'idx': stamps[2], 'y2': 9}]}
 
         stack_mat = [{'ref': 'data1_out', 'dat': {'data': data1,
                       'stack_on': 'x'}},
@@ -547,12 +551,6 @@ class TestData(object):
             kwargs = stacker['dat']
             stack = Data.stacked(**kwargs)
             nt.assert_list_equal(truthy[stacker['ref']], stack.values)
-
-
-
-
-
-
 
     def test_from_iter(self):
         """Test data from single iter"""
