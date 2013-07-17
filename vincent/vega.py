@@ -908,6 +908,51 @@ class Data(GrammarClass):
         return super(self.__class__, self).to_json(validate, pretty_print)
 
 
+class Transform(GrammarClass):
+    """Container to Transforma metrics
+
+    As detailed in the Vega wiki:
+
+    "A data transform performs operations on a data set prior to visualization.
+    Common examples include filtering and grouping (e.g., group data points
+    with the same stock ticker for plotting as separate lines).
+
+    All transform definitions must include a "type" parameter,
+    which specifies the transform to apply.
+    Each transform then has a set of transform-specific parameters."
+
+    """
+
+    @grammar(str)
+    def type(value):
+        """string: property name in which to store the computed transform value
+
+        """
+
+    @grammar(list)
+    def fields(value):
+        """list: Can take data references or object references
+
+        """
+
+    @grammar(grammar_type=str, grammar_name='from')
+    def from_(value):
+        """str: The name of the object to copy values from
+
+        Only used if ``type`` is ``copy``
+
+        """
+
+    @grammar(grammar_type=list, grammar_name='as')
+    def as_(value):
+        """list: The field names to copy the values to.
+
+        Only used if ``type`` is ``copy``, and must be the same
+        length as ``fields``
+
+        """
+
+
 class ValueRef(GrammarClass):
     """Container for the value-referencing properties of marks
 
