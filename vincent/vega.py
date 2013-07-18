@@ -925,13 +925,28 @@ class Transform(GrammarClass):
 
     @grammar(str)
     def type(value):
-        """string: property name in which to store the computed transform value
+        """string: property name in which to store the computed transform value.
+
+        The valid transform types are as follows:
+        array, copy, facet, filter, flatten, formula, sort, stats, unique, zip,
+        force, geo, geopath, link, pie, stack, treemap, wordcloud
 
         """
+
+        valid_transforms = ['array', 'copy', 'facet', 'filter', 'flatten',
+                            'formula', 'sort', 'stats', 'unique', 'zip',
+                            'force', 'geo', 'geopath', 'link', 'pie', 'stack',
+                            'treemap', 'wordcloud']
+
+        if value not in valid_transforms:
+            raise ValueError('Transform type must be'
+                             ' one of {0}'.format(str(valid_transforms)))
 
     @grammar(list)
     def fields(value):
         """list: Can take data references or object references
+
+        Only used if ``type`` is ``array`` or ``copy``
 
         """
 
@@ -947,9 +962,95 @@ class Transform(GrammarClass):
     def as_(value):
         """list: The field names to copy the values to.
 
-        Only used if ``type`` is ``copy``, and must be the same
-        length as ``fields``
+        Can be used with the following ``type``:
+        ``copy``
+        ``unique``
+        ``zip``
 
+        """
+
+    @grammar(list)
+    def keys(value):
+        """list: Each key value corresponds to a single facet in the output.
+
+        Only used if ``type`` is ``facet``
+        """
+
+    @grammar(str)
+    def sort(value):
+        """string: Optional for sorting facet values
+
+        Only used if ``type`` is ``facet``
+        """
+
+    @grammar(str)
+    def test(value):
+        """string: A string containing a javascript filtering expression.
+
+        Ex: d.data.y >= 3
+
+        Only used if ``type`` is ``filter``
+        """
+
+    @grammar(str)
+    def field(value):
+        """string: Property name to store computed formula value.
+
+        Only used if ``type`` is ``formula`` or ``unique``
+
+        See: https://github.com/trifacta/vega/wiki/Data-Transforms#-formula
+        """
+
+    @grammar(str)
+    def expr(value):
+        """string: Javascript expression of a formula, referencing the data as d.
+
+        Only used if ``type`` is formula
+
+        See: https://github.com/trifacta/vega/wiki/Data-Transforms#-formula
+        """
+
+    @grammar((str, list))
+    def by(value):
+        """str, list: a field or list of fields to sort. Can prepend with - to
+        sort descending.
+
+        Only used if ``type`` is ``sort``
+        """
+
+    @grammar(str)
+    def value(value):
+        """str: Field for which to compute statistics.
+
+        Only used if ``type`` is ``stats``
+        """
+
+    @grammar(bool)
+    def median(value):
+        """boolean: If true, median statistic will also be computed.
+
+        Only used if ``type`` is stats``
+        """
+
+    @grammar(grammar_type=str, grammar_name='with')
+    def with_(value):
+        """string: Name of dataset to zip to current dataset
+
+        Only used if ``type`` is ``zip``
+        """
+
+    @grammar(str)
+    def key(value):
+        """string: Primary dataset field to match to secondary data
+
+        Only used if ``type`` is ``zip``
+        """
+
+    @grammar(str)
+    def withKey(value):
+        """string: Field in secondary dataset to match to primary
+
+        Only used if ``type`` is ``zip``
         """
 
 
