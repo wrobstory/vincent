@@ -553,8 +553,8 @@ class TestData(object):
             nt.assert_list_equal(truthy[stacker['ref']], stack.values)
 
     def test_from_iter(self):
-        """Test data from single iter"""
-        test = Data.from_iter([10, 20, 30])
+        """Test data from single iterable"""
+        test = Data.from_iter(iter([10, 20, 30]))
         test1 = Data.from_iter((10, 20, 30))
         values = [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 2, 'y': 30}]
         nt.assert_list_equal(test.values, values)
