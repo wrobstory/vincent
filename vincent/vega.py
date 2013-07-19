@@ -827,13 +827,14 @@ class Data(GrammarClass):
 
     @classmethod
     def from_iter(cls, data, name=None):
-        """Convenience method for loading data from a single list. Defaults
-        to numerical indexing for x-axis.
+        """Convenience method for loading data from an iterable.
+
+        Defaults to numerical indexing for x-axis.
 
         Parameters
         ----------
-        data: list
-            List of data
+        data: iterable
+            An iterable of data
         name: string, default None
             Name of the data set. If None (default), the name will be set to
             ``'table'``.
@@ -841,8 +842,7 @@ class Data(GrammarClass):
         """
         if not name:
             name = 'table'
-        values = [{"x": x, "y": y}
-                  for x, y in zip(range(len(data)), data)]
+        values = [{"x": x, "y": y} for x, y in enumerate(data)]
         return cls(name, values=values)
 
     @classmethod
