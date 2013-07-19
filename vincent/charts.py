@@ -4,8 +4,9 @@
 Charts: Constructors for different chart types in Vega grammar.
 
 """
+import copy
 from .vega import (Data, Visualization, Scale, DataRef, Mark, MarkRef,
-                   MarkProperties, PropertySet, ValueRef, Axis)
+                   MarkProperties, PropertySet, ValueRef, Axis, Transform)
 
 try:
     import pandas as pd
@@ -18,8 +19,10 @@ except ImportError:
     np = None
 
 
-def data_type(data, iter_pairs):
+def data_type(data, iter_pairs, stacked):
     '''Data type check for automatic import'''
+    if stacked:
+        return Data.stacked(data)
     if iter_pairs:
         return Data.from_mult_iters(**data)
     if pd:
@@ -39,7 +42,7 @@ def data_type(data, iter_pairs):
 class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
-    def __init__(self, data=None, iter_pairs=False, width=960, height=500, *args, **kwargs):
+    def __init__(self, data=None, iter_pairs=False, width=960, height=500, stacked=False, *args, **kwargs):
         """Create a Vega Chart
 
         Parameters:
@@ -54,6 +57,8 @@ class Chart(Visualization):
             Chart width
         height: int, default 500
             Chart height
+        stacked: boolean, default False
+            If true, data will be imported using Data.stacked
 
         Output:
         -------
@@ -75,7 +80,7 @@ class Chart(Visualization):
             raise ValueError('Please initialize the chart with data.')
         if not data:
             raise ValueError('The data structure is empty.')
-        self.data.append(data_type(data, iter_pairs))
+        self.data.append(data_type(data, iter_pairs, stacked))
 
 
 class Bar(Chart):
@@ -107,6 +112,42 @@ class Bar(Chart):
                                               update=update_props))
 
         self.marks.append(mark)
+
+
+class StackedBar(Bar):
+    """Vega Stacked Bar chart"""
+
+    def __init__(self, data_stack=None, *args, **kwargs):
+        """Create a Vega Stacked Bar Chart
+
+        data_stack: string, default None
+            Data reference to stack. Defaults to ``table``
+
+
+
+        """
+
+        super(StackedBar, self).__init__(*args, **kwargs)
+
+        stack = data_stack or 'table'
+        self.data.append(Data(name='stats', source='table',
+                              transform=[Transform(type='facet',
+                                                   keys=['data.x']),
+                                         Transform(type='stats',
+                                                   value='data.y')]))
+        self.scales['y'].domain = DataRef(data='stats', field='sum')
+        self.scales.append(Scale(name='color', type='ordinal', range='category20'))
+
+        old_mark = copy.copy(self.marks[0])
+        del old_mark.from_
+        mark_ref = MarkRef(data=stack, transform=[Transform(type='facet',
+                                                            keys=['data.c']),
+                                                  Transform(type='stack',
+                                                            point='data.x',
+                                                            height='data.y')])
+        self.marks[0] = Mark(type='group', from_=mark_ref)
+
+
 
 
 class Scatter(Bar):

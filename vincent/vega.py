@@ -1616,6 +1616,11 @@ class Mark(GrammarClass):
         See the documentation for the d3 ease function for more details.
         """
 
+    @grammar(list)
+    def marks(value):
+        """list: For grouped marks, you can define a "marks" with a mark
+        """
+
 
 class DataRef(GrammarClass):
     """Definitions for how data is referenced by scales
