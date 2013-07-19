@@ -732,8 +732,6 @@ class Data(GrammarClass):
             name = 'table'
 
         lengths = [len(v) for v in kwargs.values()]
-        if stacked:
-            lengths = [x * 2 for x in lengths]
 
         if len(set(lengths)) != 1:
             raise ValueError('iterables must all be same length')
@@ -741,9 +739,6 @@ class Data(GrammarClass):
             values = [{} for i in xrange(lengths[0])]
 
         for k, v in kwargs.iteritems():
-            # if stacked:
-            #     for i, x in enumerate(range(len(values))):
-            #         values[i][k]
             for i, x in enumerate(v):
                 values[i][k] = x
 
@@ -1046,12 +1041,121 @@ class Transform(GrammarClass):
         Only used if ``type`` is ``zip``
         """
 
-    @grammar(str)
-    def withKey(value):
+    @grammar(grammar_type=str, grammar_name='withKey')
+    def with_key(value):
         """string: Field in secondary dataset to match to primary
 
         Only used if ``type`` is ``zip``
         """
+
+    @grammar(str)
+    def links(value):
+        """string: Name of link (edge) data set.
+
+        To be used with ``force`` types
+        """
+
+    @grammar(list)
+    def size(value):
+        """list: Dimensions of force layout
+
+        To be used with ``force`` types
+        """
+
+    @grammar(int)
+    def iterations(value):
+        """int: Number of iterations to run force directed layout.
+
+        To be used with ``force`` types
+        """
+
+    @grammar((int, str))
+    def charge(value):
+        """int or string: Strength of the charge each node exerts.
+
+        To be used with ``force`` types
+        """
+
+    @grammar(grammar_type=(int, str), grammar_name='linkDistance')
+    def link_distance(value):
+        """int or string: Determines lenght of the edges, in pixels.
+
+        To be used with ``force`` types
+        """
+
+    @grammar(grammar_type=(int, str), grammar_name='linkStrength')
+    def link_strength(value):
+        """int or string: Determines the tension of the edges.
+
+        To be used with ``force`` types
+        """
+
+    @grammar((int, float))
+    def friction(value):
+        """int or float: Strength of friction force to stabilize layout
+
+        To be used with ``force`` types
+        """
+
+    @grammar((int, float))
+    def theta(value):
+        """int or float: theta parameter for the Barnes-Hut algorithm.
+
+        To be used with ``force`` types
+        """
+
+    @grammar((int, float))
+    def gravity(value):
+        """int or float: Strength of pseudo-gravity force
+
+        To be used with ``force`` types
+        """
+
+    @grammar((int, float))
+    def alpha(value):
+        """int or float: "temperature" parameter to determine node position adjustment
+
+        To be used with ``force`` types
+        """
+
+    @grammar(str)
+    def point(value):
+        """string: Data field determining the points at which to stack. When stacked
+        vertically, these are the x-coords.
+
+        To be used with ``stack`` types
+        """
+
+    @grammar(str)
+    def height(value):
+        """string: Data field determining thickness, or height of stacks.
+
+        To be used with ``stack`` types
+        """
+
+    @grammar(str)
+    def offset(value):
+        """string: Baseline offset style. Must be one of the following:
+
+        ``zero``, ``silhouette``, ``wiggle``, ``expand``
+
+         To be used with ``stack`` types
+         """
+        offsets = ['zero', 'silhouette', 'wiggle', 'expand']
+        if value not in offsets:
+            raise ValueError('offset must be one of {0}'.format(offsets))
+
+    @grammar(str)
+    def order(value):
+        """str: The sort order for stack layers. Must be one of the following:
+
+        ``default``, ``reverse``, ``inside-out``
+
+        To be used with ``stack`` types
+        """
+        orders = ['default', 'reverse', 'inside-out']
+        if value not in orders:
+            raise ValueError('order must be one of {0}'.format(orders))
 
 
 class ValueRef(GrammarClass):

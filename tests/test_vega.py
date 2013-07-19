@@ -13,7 +13,7 @@ from vincent.vega import (KeyedList, ValidationError, GrammarDict, grammar,
                           GrammarClass, Visualization, Data, LoadError,
                           ValueRef, Mark, PropertySet, Scale, Axis,
                           MarkProperties, MarkRef, DataRef, Scale,
-                          AxisProperties, Axis)
+                          AxisProperties, Axis, Transform)
 import nose.tools as nt
 
 import pandas as pd
@@ -580,6 +580,26 @@ class TestData(object):
 
         nt.assert_list_equal(test1.values, values1)
         nt.assert_list_equal(test2.values, values2)
+
+
+class TestTransform(object):
+    """Test the Transform class"""
+
+    def test_grammar_typechecking(self):
+        """Transform field typechecking"""
+        grammar_types = [('fields', [list]), ('from_', [str]),
+                         ('as_', [list]), ('keys', [list]), ('sort', [str]),
+                         ('test', [str]), ('field', [str]), ('expr', [str]),
+                         ('by', [str, list]), ('value', [str]), ('median', [bool]),
+                         ('with_', [str]), ('key', [str]), ('with_key', [str]),
+                         ('links', [str]), ('size', [list]), ('iterations', [int]),
+                         ('charge', [int, str]), ('link_distance', [int, str]),
+                         ('link_strength', [int, str]), ('friction', [int, float]),
+                         ('theta', [int, float]), ('gravity', [int, float]),
+                         ('alpha', [int, float]), ('point', [str]),
+                         ('height', [str])]
+
+        assert_grammar_typechecking(grammar_types, Transform())
 
 
 class TestValueRef(object):
