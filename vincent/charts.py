@@ -48,7 +48,8 @@ def data_type(data, iter_pairs, stacked):
 class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
-    def __init__(self, data=None, iter_pairs=False, width=960, height=500, stacked=False, *args, **kwargs):
+    def __init__(self, data=None, iter_pairs=False, width=500, height=300,
+                 stacked=False, *args, **kwargs):
         """Create a Vega Chart
 
         Parameters:
@@ -79,7 +80,7 @@ class Chart(Visualization):
         super(Chart, self).__init__(*args, **kwargs)
 
         self.width, self.height = width, height
-        self.padding = {'top': 10, 'left': 30, 'bottom': 20, 'right': 10}
+        self.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 10}
 
         #Data
         if data is None:

@@ -62,7 +62,7 @@ class KeyedList(list):
         self.attr_name = attr_name
         list.__init__(self, *args, **kwargs)
 
-    def __get_keys(self):
+    def get_keys(self):
         keys = [getattr(x, self.attr_name) for x in self]
         if len(keys) != len(set(keys)):
             raise ValidationError('duplicate keys found')
@@ -70,7 +70,7 @@ class KeyedList(list):
 
     def __getitem__(self, key):
         if isinstance(key, str):
-            keys = self.__get_keys()
+            keys = self.get_keys()
             if key not in keys:
                 raise KeyError(' "{0}" is an invalid key'.format(key))
             else:
@@ -88,7 +88,7 @@ class KeyedList(list):
                     "key must be equal to '" + self.attr_name +
                     "' attribute")
 
-            keys = self.__get_keys()
+            keys = self.get_keys()
             if key not in keys:
                 self.append(value)
             else:

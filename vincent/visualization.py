@@ -149,6 +149,35 @@ class Visualization(GrammarClass):
         for i, entry in enumerate(value):
             _assert_is_type('marks[{0}]'.format(i), entry, Mark)
 
+    def axis_titles(self, x_axis=None, y_axis=None):
+        """Apply axis titles to the figure.
+
+        This is a convenience method for manually modifying the "Axes" mark.
+
+        Parameters
+        ----------
+        x_axis: string, default 'null'
+            X-axis title
+        y_axis: string, default 'null'
+            Y-axis title
+
+        Example
+        -------
+        >>>vis.axis_titles(y_axis="Data 1", x_axis="Data 2")
+
+        """
+        keys = self.axes.get_keys()
+
+        if keys:
+            for key in keys:
+                if key == 'x':
+                    self.axes[key].title = x_axis
+                elif key == 'y':
+                    self.axes[key].title = y_axis
+        else:
+            self.axes.extend([Axis(type='x', title=x_axis), Axis(type='y', title=y_axis)])
+
+
     def validate(self, require_all=True):
         """Validate the visualization contents.
 

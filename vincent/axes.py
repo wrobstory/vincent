@@ -45,6 +45,18 @@ class Axis(GrammarClass):
             raise ValueError('Axis.type must be "x" or "y"')
 
     @grammar(str)
+    def title(value):
+        """string: Axis title"""
+
+    @grammar(grammar_type=int, grammar_name='titleOffset')
+    def title_offset(value):
+        """int: Offset in pixels from the axis on which to place the title"""
+
+    @grammar(bool)
+    def grid(value):
+        """bool: If True, gridlines are created"""
+
+    @grammar(str)
     def scale(value):
         """string : Name of scale used for axis"""
 

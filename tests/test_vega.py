@@ -289,6 +289,23 @@ class TestVisualization(object):
         nt.assert_equal(err.exception.message,
                         'data has duplicate names')
 
+    def test_axis_labeling(self):
+        """Test convenience method for axis label setting"""
+
+        #With Axes already in place
+        test_obj = Visualization()
+        test_obj.axes.extend([Axis(type='x'), Axis(type='y')])
+        test_obj.axis_titles(x_axis="test1", y_axis="test2")
+        nt.assert_equals(test_obj.axes['x'].title, 'test1')
+        nt.assert_equals(test_obj.axes['y'].title, 'test2')
+
+        #With no Axes already defined
+        del test_obj.axes[0]
+        del test_obj.axes[0]
+        test_obj.axis_titles(x_axis="test1", y_axis="test2")
+        nt.assert_equals(test_obj.axes['x'].title, 'test1')
+        nt.assert_equals(test_obj.axes['y'].title, 'test2')
+
     def test_to_json(self):
         """Test JSON to string"""
 
@@ -792,7 +809,10 @@ class TestAxis(object):
     def test_grammar_typechecking(self):
         """Test grammar of Axis"""
 
-        grammar_types = [('scale', [str]),
+        grammar_types = [('title', [str]),
+                         ('title_offset', [int]),
+                         ('grid', [bool]),
+                         ('scale', [str]),
                          ('orient', [str]), ('format', [str]),
                          ('ticks', [int]), ('values', [list]),
                          ('subdivide', [int, float]),
