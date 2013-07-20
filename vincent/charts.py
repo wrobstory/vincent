@@ -148,8 +148,6 @@ class StackedBar(Bar):
         self.marks[0] = Mark(type='group', from_=mark_ref)
 
 
-
-
 class Scatter(Bar):
     """Vega Scatter chart"""
 
