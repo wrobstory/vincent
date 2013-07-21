@@ -3,11 +3,14 @@
 Test Vincent.charts
 -------------------
 
+Tests for Vincent chart types, which also serve as reference grammar.
+
 '''
 
 import pandas as pd
 import nose.tools as nt
-from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area)
+from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
+                            StackedArea, StackedBar)
 
 
 def chart_runner(chart, scales, axes, marks):
@@ -237,3 +240,127 @@ class TestArea(object):
                  u'type': u'group'}]
 
         chart_runner(area, scales, axes, marks)
+
+
+class TestStackedArea(object):
+    """Test Stacked Area Chart"""
+
+    def test_init(self):
+
+        stack = StackedArea({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
+                            iter_idx='x')
+
+        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
+                   u'name': u'x',
+                   u'range': u'width',
+                   u'type': u'linear',
+                   u'zero': False},
+                  {u'domain': {u'data': u'stats', u'field': u'sum'},
+                   u'name': u'y',
+                   u'nice': True,
+                   u'range': u'height',
+                   u'type': u'linear'},
+                  {u'domain': {u'data': u'table', u'field': u'data.col'},
+                   u'name': u'color',
+                   u'range': u'category20',
+                   u'type': u'ordinal'}]
+
+        axes = [{u'scale': u'x', u'type': u'x'},
+                {u'scale': u'y', u'type': u'y'}]
+
+        datas = [{u'name': u'table',
+                 u'values': [{u'col': u'y', u'idx': 1, u'val': 4},
+                  {u'col': u'y', u'idx': 2, u'val': 5},
+                  {u'col': u'y', u'idx': 3, u'val': 6},
+                  {u'col': u'z', u'idx': 1, u'val': 7},
+                  {u'col': u'z', u'idx': 2, u'val': 8},
+                  {u'col': u'z', u'idx': 3, u'val': 9}]},
+                {u'name': u'stats',
+                 u'source': u'table',
+                 u'transform': [{u'keys': [u'data.idx'], u'type': u'facet'},
+                  {u'type': u'stats', u'value': u'data.val'}]}]
+
+        marks = [{u'from': {u'data': u'table',
+                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'},
+                 {u'height': u'data.val', u'point': u'data.idx', u'type': u'stack'}]},
+                 u'marks':
+                 [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
+                   u'scale': u'color'},
+                   u'interpolate': {u'value': u'monotone'},
+                   u'x': {u'field': u'data.idx', u'scale': u'x'},
+                   u'y': {u'field': u'y', u'scale': u'y'},
+                   u'y2': {u'field': u'y2', u'scale': u'y'}}},
+                   u'type': u'area'}],
+                   u'type': u'group'}]
+
+        chart_runner(stack, scales, axes, marks)
+
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(stack.data[i].grammar(), data)
+
+class TestStackedBar(object):
+    """Test Stacked Bar Chart"""
+
+    def test_init(self):
+
+        stack = StackedBar({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
+                           iter_idx='x')
+
+        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
+                   u'name': u'x',
+                   u'range': u'width',
+                   u'type': u'ordinal'},
+                  {u'domain': {u'data': u'stats', u'field': u'sum'},
+                   u'name': u'y',
+                   u'nice': True,
+                   u'range': u'height',
+                   u'type': u'linear'},
+                  {u'domain': {u'data': u'table', u'field': u'data.col'},
+                   u'name': u'color',
+                   u'range': u'category20',
+                   u'type': u'ordinal'}]
+
+        axes = [{u'scale': u'x', u'type': u'x'},
+                {u'scale': u'y', u'type': u'y'}]
+
+        datas = [{u'name': u'table',
+                 u'values': [{u'col': u'y', u'idx': 1, u'val': 4},
+                  {u'col': u'y', u'idx': 2, u'val': 5},
+                  {u'col': u'y', u'idx': 3, u'val': 6},
+                  {u'col': u'z', u'idx': 1, u'val': 7},
+                  {u'col': u'z', u'idx': 2, u'val': 8},
+                  {u'col': u'z', u'idx': 3, u'val': 9}]},
+                {u'name': u'stats',
+                 u'source': u'table',
+                 u'transform': [{u'keys': [u'data.idx'], u'type': u'facet'},
+                {u'type': u'stats', u'value': u'data.val'}]}]
+
+        marks = [{u'from': {u'data': u'table',
+                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'},
+                 {u'height': u'data.val', u'point': u'data.idx', u'type': u'stack'}]},
+                 u'marks':
+                 [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
+                   u'scale': u'color'},
+                   u'width': {u'band': True, u'offset': -1, u'scale': u'x'},
+                   u'x': {u'field': u'data.idx', u'scale': u'x'},
+                   u'y': {u'field': u'y', u'scale': u'y'},
+                   u'y2': {u'field': u'y2', u'scale': u'y'}}},
+                   u'type': u'rect'}],
+                   u'type': u'group'}]
+
+        chart_runner(stack, scales, axes, marks)
+
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(stack.data[i].grammar(), data)
+
+
+
+
+
+
+
+
+
+
+
+
