@@ -192,20 +192,27 @@ class Data(GrammarClass):
             pd_obj.index = data[key_on]
 
         index_key = index_key or pd_obj.index.name or cls._default_index_key
+        vega_data.values = []
 
         if isinstance(pd_obj, pd.Series):
             data_key = series_key or data.name
-            vega_data.values = [
-                dict([(index_key, cls.serialize(i))] +
-                     [(data_key, cls.serialize(v))])
-                for i, v in pd_obj.iterkv()]
+            for i, v in pd_obj.iterkv():
+                value = {}
+                value['idx'] = cls.serialize(i)
+                value['col'] = data_key
+                value['val'] = cls.serialize(v)
+                vega_data.values.append(value)
+
         elif isinstance(pd_obj, pd.DataFrame):
             # We have to explicitly convert the column names to strings
             # because the json serializer doesn't allow for integer keys.
-            vega_data.values = [
-                dict([(index_key, cls.serialize(i))] +
-                     [(str(k), cls.serialize(v)) for k, v in row.iterkv()])
-                for i, row in pd_obj.iterrows()]
+            for i, row in pd_obj.iterrows():
+                for k, v in row.iterkv():
+                    value = {}
+                    value['idx'] = cls.serialize(i)
+                    value['col'] = cls.serialize(k)
+                    value['val'] = cls.serialize(v)
+                    vega_data.values.append(value)
         else:
             raise ValueError('cannot load from data type '
                              + type(pd_obj).__name__)
@@ -269,7 +276,7 @@ class Data(GrammarClass):
         return data
 
     @classmethod
-    def from_mult_iters(cls, name=None, stacked=False, **kwargs):
+    def from_mult_iters(cls, name=None, idx=None, **kwargs):
         """Load values from multiple iters
 
         Parameters
@@ -277,18 +284,18 @@ class Data(GrammarClass):
         name : string, default None
             Name of the data set. If None (default), the name will be set to
             ``'table'``.
-        stacked: bool, default False
-            Pass true to stack all passed iters on the common axis of the
-            first iter.
+        idx: string, default None
+            Iterable to use for the data index
         **kwargs : dict of iterables
             The ``values`` field will contain dictionaries with keys for
             each of the iterables provided. For example,
 
-                d = Data.from_iters(x=[0, 1, 5], y=(10, 20, 30))
+                d = Data.from_iters(idx='x', x=[0, 1, 5], y=(10, 20, 30))
 
             would result in ``d`` having a ``values`` field with
 
-                [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 5, 'y': 30}]
+                [{'idx': 0, 'col': 'y', 'val': 10},
+                 {'idx': 1, 'col': 'y', 'val': 20}
 
             If the iterables are not the same length, then ValueError is
             raised.
@@ -299,91 +306,22 @@ class Data(GrammarClass):
         lengths = [len(v) for v in kwargs.values()]
 
         if len(set(lengths)) != 1:
-            raise ValueError('iterables must all be same length')
-        else:
-            values = [{} for i in xrange(lengths[0])]
+            raise ValueError('Iterables must all be same length')
 
+        if not idx:
+            raise ValueError('Must provide iter name index reference')
+
+        index = kwargs.pop(idx)
+        vega_vals = []
         for k, v in kwargs.iteritems():
-            for i, x in enumerate(v):
-                values[i][k] = x
+            for idx, val in zip(index, v):
+                value = {}
+                value['idx'] = idx
+                value['col'] = k
+                value['val'] = val
+                vega_vals.append(value)
 
-        return cls(name, values=values)
-
-    @classmethod
-    def stacked(cls, data=None, name=None, stack_on=None, on_index=True, **kwargs):
-        """"Load values from a Pandas DataFrame, a dict of iters, or multiple
-        iters into stacked values for stacked area/bar charts
-
-        Parameters
-        ----------
-        data: Pandas DataFrame or dict of iters, default None
-            Pandas DataFrame or dict of iterables
-        name: string, default None
-            Name of the dataset. If None, the name will be set to ``'table'``.
-        stack_on: string, default None
-            Key to identify x-axis on which to stack other values. Can pass
-            dict key or Pandas DataFrame column name.
-        on_index: boolean, default True
-            Pass True to stack Pandas DataFrames on index as common x-axis
-        kwargs: dict of iterables
-            The ``values`` field will contain dictionaries with keys for
-            each of the iterables provided. For example,
-
-                d = Data.from_iters(x=[0, 1, 5], y=(10, 20, 30))
-
-            would result in ``d`` having a ``values`` field with
-
-                [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 5, 'y': 30}]
-
-            If the iterables are not the same length, then ValueError is
-            raised.
-
-        Example
-        -------
-        >>>data = Data.stacked({'x': [0, 1, 2], 'y': [3, 4, 5],
-                               'y2': [7, 8, 9]}, stack_on='x')
-        >>>data = Data.stacked(df, stack_on='Column1')
-        >>>data = Data.stacked(stack_on='x', x=[1,2,3], y=[4,5,6], y2=[7,8,9])
-
-        """
-
-        if hasattr(data, 'name'):
-            name = data
-
-        if kwargs:
-            if len(set([len(v) for v in kwargs.values()])) != 1:
-                raise ValueError('iterables must all be same length')
-            data = kwargs
-
-        values = []
-
-        if data is not None:
-            if isinstance(data, pd.DataFrame):
-                if stack_on and on_index:
-                    raise ValueError('Cannot stack on both column and index')
-                if hasattr(data, 'name'):
-                    name = data.name
-                for i, row in data.iterrows():
-                    if on_index:
-                        key = cls.serialize(i)
-                        stack_on = data.index.name or cls._default_index_key
-                    else:
-                        key = cls.serialize(row[stack_on])
-                        row = row.drop(stack_on)
-                    for cnt, (idx, val) in enumerate(row.iteritems()):
-                        values.append({stack_on: key, idx: cls.serialize(val), 'c': cnt})
-
-            elif isinstance(data, dict):
-                copydat = copy.copy(data)
-                if not stack_on:
-                    raise ValueError('Data passed as a dict must include a key'
-                                     ' for `stack_on` on which to stack')
-                key = copydat.pop(stack_on)
-                for cnt, (k, v) in enumerate(copydat.iteritems()):
-                    for idx, val in zip(key, v):
-                        values.append({stack_on: idx, k: val, 'c': cnt})
-
-        return cls(name, values=sorted(values, key=lambda x: x['c']))
+        return cls(name, values=vega_vals)
 
     @classmethod
     def from_iter(cls, data, name=None):
@@ -394,59 +332,22 @@ class Data(GrammarClass):
         Parameters
         ----------
         data: iterable
-            An iterable of data
+            An iterable of data (list, tuple, dict of key/val pairs)
         name: string, default None
             Name of the data set. If None (default), the name will be set to
             ``'table'``.
 
         """
+        def iter_it(iterable):
+            return [{'idx': x, 'col': 'y', 'val': y}
+                    for x, y in enumerate(data)]
+
         if not name:
             name = 'table'
-        values = [{"x": x, "y": y} for x, y in enumerate(data)]
-        return cls(name, values=values)
+        if isinstance(data, (list, tuple)):
+            data = {x: y for x, y in enumerate(data)}
 
-    @classmethod
-    def from_iter_pairs(cls, data, name=None):
-        """Convenience method for loading data from a tuple of tuples or list of lists.
-        Defaults to numerical indexing for x-axis.
-
-        Parameters
-        ----------
-        data: tuple
-            Tuple of paired tuples
-        name: string, default None
-            Name of the data set. If None (default), the name will be set to
-            ``'table'``.
-
-        Example:
-        >>>data = Data.from_tuples([(1,2), (3,4), (5,6)])
-
-        """
-        if not name:
-            name = 'table'
-        values = [{"x": x[0], "y": x[1]} for x in data]
-        return cls(name, values=values)
-
-    @classmethod
-    def from_dict(cls, data, name=None):
-        """Convenience method for loading data from dict
-
-        Parameters
-        ----------
-        data: dict
-            Dict of data
-        name: string, default None
-            Name of the data set. If None (default), the name will be set to
-            ``'table'``.
-
-        Example
-        -------
-        >>>data = Data.from_dict({'apples': 10, 'oranges': 2, 'pears': 3})
-
-        """
-        if not name:
-            name = 'table'
-        values = [{"x": x, "y": y} for x, y in data.iteritems()]
+        values = [{'idx': k, 'col': 'data', 'val': v} for k, v in data.iteritems()]
         return cls(name, values=values)
 
     def to_json(self, validate=False, pretty_print=True, data_path=None):

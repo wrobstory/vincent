@@ -25,22 +25,15 @@ except ImportError:
     np = None
 
 
-def data_type(data, columns=None, key_on='idx', iter_pairs=False, stacked=False):
+def data_type(data, columns=None, key_on='idx', mult_iters=False):
     '''Data type check for automatic import'''
-    if stacked:
-        return Data.stacked(data)
-    if iter_pairs:
+    if mult_iters:
         return Data.from_mult_iters(**data)
     if pd:
-        if isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
+        if isinstance(data, (pd.Series, pd.DataFrame)):
             return Data.from_pandas(data, columns=columns, key_on=key_on)
-    if isinstance(data, (list, tuple)):
-        if type(data[0]) in (list, tuple):
-            return Data.from_iter_pairs(data)
-        else:
+    if isinstance(data, (list, tuple, dict)):
             return Data.from_iter(data)
-    elif isinstance(data, dict):
-        return Data.from_dict(data)
     else:
         raise ValueError('This data type is not supported by Vincent.')
 
@@ -48,7 +41,7 @@ def data_type(data, columns=None, key_on='idx', iter_pairs=False, stacked=False)
 class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
-    def __init__(self, data=None, columns=None, key_on='idx', iter_pairs=False, stacked=False,
+    def __init__(self, data=None, columns=None, key_on='idx', mult_iters=False, stacked=False,
                  width=500, height=300, *args, **kwargs):
         """Create a Vega Chart
 
@@ -61,8 +54,8 @@ class Chart(Visualization):
             Pandas DataFrame columns to plot.
         key_on: string, default 'idx'
             Pandas DataFrame column to key on, if not index
-        iter_pairs: boolean, default False
-            Pass true if data is a dict of two iterables. Ex:
+        mult_iters: boolean, default False
+            Pass true if data is a dict of multiple iterables. Ex:
             {'x': [0, 1, 2, 3, 4, 5], 'y': [6, 7, 8, 9, 10]}
         width: int, default 960
             Chart width
@@ -84,26 +77,23 @@ class Chart(Visualization):
         super(Chart, self).__init__(*args, **kwargs)
 
         self.width, self.height = width, height
-        self.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 10}
+        self.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 100}
         self.columns = columns
-        if isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
-            self.key_x = ['data.' + (key_on or 'idx')]
-            if columns:
-                self.key_y = ['data.' + str(col) for col in columns]
-            else:
-                self.key_y = ['data.' + str(col) for col in data.columns.tolist()]
-        else:
-            self.key_x = ['data.x']
-            self.key_y = ['data.y']
+        self._is_datetime = False
 
         #Data
         if data is None:
             raise ValueError('Please initialize the chart with data.')
+
         if isinstance(data, (list, tuple, dict)):
             if not data:
                 raise ValueError('The data structure is empty.')
+        if isinstance(data, (pd.Series, pd.DataFrame)):
+            if isinstance(data.index, pd.DatetimeIndex):
+                self._is_datetime = True
+
         self.data.append(data_type(data, columns=columns, key_on=key_on,
-                                   iter_pairs=iter_pairs, stacked=stacked))
+                                   mult_iters=mult_iters))
 
 
 class Bar(Chart):
@@ -116,15 +106,15 @@ class Bar(Chart):
 
         #Scales
         self.scales['x'] = Scale(name='x', type='ordinal', range='width',
-                                 domain=DataRef(data='table', field=self.key_x[0]))
+                                 domain=DataRef(data='table', field="data.idx"))
         self.scales['y'] = Scale(name='y', range='height', nice=True,
-                                 domain=DataRef(data='table', field=self.key_y[0]))
+                                 domain=DataRef(data='table', field="data.val"))
         self.axes.extend([Axis(type='x', scale='x'),
                           Axis(type='y', scale='y')])
 
         #Marks
-        enter_props = PropertySet(x=ValueRef(scale='x', field=self.key_x[0]),
-                                  y=ValueRef(scale='y', field=self.key_y[0]),
+        enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
+                                  y=ValueRef(scale='y', field="data.val"),
                                   width=ValueRef(scale='x', band=True, offset=-1),
                                   y2=ValueRef(scale='y', value=0))
 
@@ -171,25 +161,6 @@ class StackedBar(Bar):
         self.marks[0] = Mark(type='group', from_=mark_ref)
 
 
-class Scatter(Bar):
-    """Vega Scatter chart"""
-
-    def __init__(self, *args, **kwargs):
-        """Create a Vega Scatter Chart"""
-
-        super(Scatter, self).__init__(*args, **kwargs)
-
-        #Scatter updates
-        del self.scales[0].type
-        self.scales['x'].nice = True
-
-        del self.marks[0].properties.enter.width
-        del self.marks[0].properties.enter.y2
-        self.marks[0].properties.enter.stroke = ValueRef(value='#2a3140')
-        self.marks[0].properties.enter.fill_opacity = ValueRef(value=0.9)
-        self.marks[0].type = 'symbol'
-
-
 class Line(Bar):
     """Vega Line chart"""
 
@@ -200,14 +171,40 @@ class Line(Bar):
 
         #Line Updates
         self.scales['x'].type = 'linear'
+        if self._is_datetime:
+            self.scales['x'].type = 'time'
 
-        del self.marks[0].properties.update
-        del self.marks[0].properties.enter.width
-        del self.marks[0].properties.enter.y2
+        self.scales['color'] = Scale(name='color', type='ordinal',
+                                     domain=DataRef(data='table', field='data.col'),
+                                     range='category20')
 
-        self.marks[0].type = 'line'
-        self.marks[0].properties.enter.stroke = ValueRef(value='#2a3140')
-        self.marks[0].properties.enter.stroke_width = ValueRef(value=2)
+        del self.marks[0]
+        transform = MarkRef(data='table',
+                            transform=[Transform(type='facet', keys=['data.col'])])
+        enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
+                                  y=ValueRef(scale='y', field="data.val"),
+                                  stroke=ValueRef(scale="color", field='data.col'),
+                                  stroke_width=ValueRef(value=2))
+        new_mark = Mark(type='group', from_=transform,
+                        marks=[Mark(type='line', properties=MarkProperties(enter=enter_props))])
+        self.marks.append(new_mark)
+
+
+class Scatter(Line):
+    """Vega Scatter chart"""
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Scatter Chart"""
+
+        super(Scatter, self).__init__(*args, **kwargs)
+
+        #Scatter updates
+
+        self.marks[0].marks[0].type = 'symbol'
+        del self.marks[0].marks[0].properties.enter.stroke
+        del self.marks[0].marks[0].properties.enter.stroke_width
+        self.marks[0].marks[0].properties.enter.fill = ValueRef(scale='color', field='data.col')
+        self.marks[0].marks[0].properties.enter.size = ValueRef(value=10)
 
 
 class Area(Line):
