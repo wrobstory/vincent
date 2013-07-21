@@ -25,10 +25,10 @@ except ImportError:
     np = None
 
 
-def data_type(data, columns=None, key_on='idx', mult_iters=False):
+def data_type(data, columns=None, key_on='idx', iter_idx=None):
     '''Data type check for automatic import'''
-    if mult_iters:
-        return Data.from_mult_iters(**data)
+    if iter_idx:
+        return Data.from_mult_iters(idx=iter_idx, **data)
     if pd:
         if isinstance(data, (pd.Series, pd.DataFrame)):
             return Data.from_pandas(data, columns=columns, key_on=key_on)
@@ -41,7 +41,7 @@ def data_type(data, columns=None, key_on='idx', mult_iters=False):
 class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
-    def __init__(self, data=None, columns=None, key_on='idx', mult_iters=False, stacked=False,
+    def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None, stacked=False,
                  width=500, height=300, *args, **kwargs):
         """Create a Vega Chart
 
@@ -54,8 +54,8 @@ class Chart(Visualization):
             Pandas DataFrame columns to plot.
         key_on: string, default 'idx'
             Pandas DataFrame column to key on, if not index
-        mult_iters: boolean, default False
-            Pass true if data is a dict of multiple iterables. Ex:
+        iter_index: string, default None
+            Pass an index key if data is a dict of multiple iterables. Ex:
             {'x': [0, 1, 2, 3, 4, 5], 'y': [6, 7, 8, 9, 10]}
         width: int, default 960
             Chart width
@@ -93,7 +93,7 @@ class Chart(Visualization):
                 self._is_datetime = True
 
         self.data.append(data_type(data, columns=columns, key_on=key_on,
-                                   mult_iters=mult_iters))
+                                   iter_idx=iter_idx))
 
 
 class Bar(Chart):
