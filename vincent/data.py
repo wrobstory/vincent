@@ -141,27 +141,31 @@ class Data(GrammarClass):
                             + type(obj).__name__)
 
     @classmethod
-    def from_pandas(cls, pd_obj, name=None, index_key=None, data_key=None,
-                    **kwargs):
+    def from_pandas(cls, data, columns=None, key_on='idx', name=None,
+                    index_key=None, series_key=None, **kwargs):
         """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters
         ----------
-        pd_obj : pandas ``Series`` or ``DataFrame``
+        data : pandas ``Series`` or ``DataFrame``
             Pandas object to import data from.
+        columns: list, default None
+            DataFrame columns to convert to Data. Keys default to col names.
+            If columns are given and on_index is False, x-axis data will
+            default to the first column.
+        key_on: string, default 'index'
+            Value to key on for x-axis data. Defaults to index.
         name : string, default None
             Applies to the ``name`` attribute of the generated class. If
             ``None`` (default), then the ``name`` attribute of ``pd_obj`` is
             used if it exists, or ``'table'`` if it doesn't.
         index_key : string, default None
-            In each :class:`dict` entry of the ``values`` attribute, the
-            index of the pandas object will have this key. If ``None``
-            (default), then ``idx`` is used.
-        data_key : string, default None
-            Applies only to ``Series``. If ``None`` (default), then the data is
-            indexed by the ``name`` attribute of the generated class.
-            Otherwise, the data will be indexed by this key. For example, if
-            ``data_key`` is ``'x'``, then the entries of the ``values`` list
+            If keying by index, custom key name for the index. Defaults to
+            index.name, then finally 'idx'
+        series_key : string, default None
+            Applies only to ``Series``. If ``None`` (default), then defaults to
+            'y'. Otherwise, the data will be indexed by this key. For example, if
+            ``series_key`` is ``'x'``, then the entries of the ``values`` list
             will be ``{'idx': ..., 'x': ...}``.
         **kwargs : dict
             Additional arguments passed to the :class:`Data` constructor.
@@ -171,33 +175,41 @@ class Data(GrammarClass):
         # function should be revisited if it ever does.
         if not pd:
             raise LoadError('pandas could not be imported')
+        if not hasattr(data, 'index'):
+            raise ValueError('Please load a Pandas object.')
 
         if name:
-            data = cls(name=name, **kwargs)
-        elif hasattr(pd_obj, 'name') and pd_obj.name:
-            data = cls(name=pd_obj.name, **kwargs)
+            vega_data = cls(name=name, **kwargs)
+        elif hasattr(data, 'name') and data.name:
+            vega_data = cls(name=data.name, **kwargs)
         else:
-            data = cls(name='table', **kwargs)
+            vega_data = cls(name='table', **kwargs)
 
-        index_key = index_key or cls._default_index_key
+        pd_obj = data.copy()
+        if columns:
+            pd_obj = data[columns]
+        if key_on != 'idx':
+            pd_obj.index = data[key_on]
+
+        index_key = index_key or pd_obj.index.name or cls._default_index_key
 
         if isinstance(pd_obj, pd.Series):
-            data_key = data_key or data.name
-            data.values = [
+            data_key = series_key or data.name
+            vega_data.values = [
                 dict([(index_key, cls.serialize(i))] +
                      [(data_key, cls.serialize(v))])
                 for i, v in pd_obj.iterkv()]
         elif isinstance(pd_obj, pd.DataFrame):
             # We have to explicitly convert the column names to strings
             # because the json serializer doesn't allow for integer keys.
-            data.values = [
+            vega_data.values = [
                 dict([(index_key, cls.serialize(i))] +
                      [(str(k), cls.serialize(v)) for k, v in row.iterkv()])
                 for i, row in pd_obj.iterrows()]
         else:
             raise ValueError('cannot load from data type '
                              + type(pd_obj).__name__)
-        return data
+        return vega_data
 
     @classmethod
     def from_numpy(cls, np_obj, name, columns, index=None, index_key=None,

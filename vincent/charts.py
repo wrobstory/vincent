@@ -25,7 +25,7 @@ except ImportError:
     np = None
 
 
-def data_type(data, iter_pairs, stacked):
+def data_type(data, columns=None, key_on='idx', iter_pairs=False, stacked=False):
     '''Data type check for automatic import'''
     if stacked:
         return Data.stacked(data)
@@ -33,7 +33,7 @@ def data_type(data, iter_pairs, stacked):
         return Data.from_mult_iters(**data)
     if pd:
         if isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
-            return Data.from_pandas(data)
+            return Data.from_pandas(data, columns=columns, key_on=key_on)
     if isinstance(data, (list, tuple)):
         if type(data[0]) in (list, tuple):
             return Data.from_iter_pairs(data)
@@ -48,8 +48,8 @@ def data_type(data, iter_pairs, stacked):
 class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
-    def __init__(self, data=None, iter_pairs=False, width=500, height=300,
-                 stacked=False, *args, **kwargs):
+    def __init__(self, data=None, columns=None, key_on='idx', iter_pairs=False, stacked=False,
+                 width=500, height=300, *args, **kwargs):
         """Create a Vega Chart
 
         Parameters:
@@ -57,6 +57,10 @@ class Chart(Visualization):
         data: Tuples, List, Dict, Pandas Series, Pandas DataFrame, or Numpy ndarray
             Input data. Tuple of paired tuples, List of single values,
             dict of key/value pairs, Pandas Series/DataFrame, Numpy ndarray
+        columns: list, default None
+            Pandas DataFrame columns to plot.
+        key_on: string, default 'idx'
+            Pandas DataFrame column to key on, if not index
         iter_pairs: boolean, default False
             Pass true if data is a dict of two iterables. Ex:
             {'x': [0, 1, 2, 3, 4, 5], 'y': [6, 7, 8, 9, 10]}
@@ -81,13 +85,25 @@ class Chart(Visualization):
 
         self.width, self.height = width, height
         self.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 10}
+        self.columns = columns
+        if isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
+            self.key_x = ['data.' + (key_on or 'idx')]
+            if columns:
+                self.key_y = ['data.' + str(col) for col in columns]
+            else:
+                self.key_y = ['data.' + str(col) for col in data.columns.tolist()]
+        else:
+            self.key_x = ['data.x']
+            self.key_y = ['data.y']
 
         #Data
         if data is None:
             raise ValueError('Please initialize the chart with data.')
-        if not data:
-            raise ValueError('The data structure is empty.')
-        self.data.append(data_type(data, iter_pairs, stacked))
+        if isinstance(data, (list, tuple, dict)):
+            if not data:
+                raise ValueError('The data structure is empty.')
+        self.data.append(data_type(data, columns=columns, key_on=key_on,
+                                   iter_pairs=iter_pairs, stacked=stacked))
 
 
 class Bar(Chart):
@@ -100,15 +116,15 @@ class Bar(Chart):
 
         #Scales
         self.scales['x'] = Scale(name='x', type='ordinal', range='width',
-                                 domain=DataRef(data='table', field='data.x'))
+                                 domain=DataRef(data='table', field=self.key_x[0]))
         self.scales['y'] = Scale(name='y', range='height', nice=True,
-                                 domain=DataRef(data='table', field='data.y'))
+                                 domain=DataRef(data='table', field=self.key_y[0]))
         self.axes.extend([Axis(type='x', scale='x'),
                           Axis(type='y', scale='y')])
 
         #Marks
-        enter_props = PropertySet(x=ValueRef(scale='x', field='data.x'),
-                                  y=ValueRef(scale='y', field='data.y'),
+        enter_props = PropertySet(x=ValueRef(scale='x', field=self.key_x[0]),
+                                  y=ValueRef(scale='y', field=self.key_y[0]),
                                   width=ValueRef(scale='x', band=True, offset=-1),
                                   y2=ValueRef(scale='y', value=0))
 

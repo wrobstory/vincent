@@ -35,7 +35,7 @@ def test_data_type():
             common, [{'x': 1, 'y': 2}], common]
 
     for ins, outs in zip(puts, gets):
-        test = data_type(ins, False, False)
+        test = data_type(ins)
         nt.assert_list_equal(test.values, outs)
 
     #From Iters
@@ -43,7 +43,7 @@ def test_data_type():
     gets = [{'x': 1, 'y': 2}, {'x': 3, 'y': 4}]
 
     for ins in puts:
-        test = data_type(ins, True, False)
+        test = data_type(ins, iter_pairs=True)
         nt.assert_list_equal(test.values, gets)
 
     #Pandas
@@ -51,8 +51,8 @@ def test_data_type():
     series = pd.Series([1, 2, 3], name='test')
     gets = [{'idx': 0, 'test': 1}, {'idx': 1, 'test': 2},
             {'idx': 2, 'test': 3}]
-    test_df = data_type(df, False, False)
-    test_series = data_type(series, False, False)
+    test_df = data_type(df)
+    test_series = data_type(series)
     nt.assert_list_equal(test_df.values, gets)
     nt.assert_list_equal(test_series.values, gets)
 
@@ -62,7 +62,7 @@ def test_data_type():
         pass
 
     test = BadType()
-    nt.assert_raises(ValueError, data_type, test, False, False)
+    nt.assert_raises(ValueError, data_type, test)
 
 
 class TestChart(object):

@@ -396,7 +396,7 @@ class TestData(object):
                 for i, v in zip(index, series)]
 
             data = Data.from_pandas(series, name=n, index_key=ikey,
-                                    data_key=vkey)
+                                    series_key=vkey)
             nt.assert_list_equal(expected, data.values)
             nt.assert_equal(n, data.name)
             data.to_json()
@@ -444,6 +444,27 @@ class TestData(object):
             nt.assert_list_equal(expected, data.values)
             nt.assert_equal(n, data.name)
             data.to_json()
+
+        #Simple columns/key_on tests
+        df = pd.DataFrame({'one': [1,2,3], 'two': [6,7,8],
+                           'three': [11, 12, 13], 'four': [17, 18, 19]})
+        get1 = [{'idx': 0, 'one': 1}, {'idx': 1, 'one': 2}, {'idx': 2, 'one': 3}]
+        get2 = [{'idx': 0, 'one': 1, 'two': 6},
+                {'idx': 1, 'one': 2, 'two': 7},
+                {'idx': 2, 'one': 3, 'two': 8}]
+        getkey2 = [{'one': 1, 'two': 6}, {'one': 2, 'two': 7}, {'one': 3, 'two': 8}]
+        getkey3 = [{'one': 1, 'three': 11, 'two': 6},
+                   {'one': 2, 'three': 12, 'two': 7},
+                   {'one': 3, 'three': 13, 'two': 8}]
+        val1 = Data.from_pandas(df, columns=['one'])
+        val2 = Data.from_pandas(df, columns=['one', 'two'])
+        key2 = Data.from_pandas(df, columns=['one'], key_on='two')
+        key3 = Data.from_pandas(df, columns=['one', 'two'], key_on='three')
+
+        nt.assert_list_equal(val1.values, get1)
+        nt.assert_list_equal(val2.values, get2)
+        nt.assert_list_equal(key2.values, getkey2)
+        nt.assert_list_equal(key3.values, getkey3)
 
         # Missing a name
         dataframe = pd.DataFrame(np.random.randn(10, 3))
