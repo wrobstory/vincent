@@ -295,14 +295,14 @@ class TestVisualization(object):
         #With Axes already in place
         test_obj = Visualization()
         test_obj.axes.extend([Axis(type='x'), Axis(type='y')])
-        test_obj.axis_titles(x_axis="test1", y_axis="test2")
+        test_obj.axis_titles(x="test1", y="test2")
         nt.assert_equals(test_obj.axes['x'].title, 'test1')
         nt.assert_equals(test_obj.axes['y'].title, 'test2')
 
         #With no Axes already defined
         del test_obj.axes[0]
         del test_obj.axes[0]
-        test_obj.axis_titles(x_axis="test1", y_axis="test2")
+        test_obj.axis_titles(x="test1", y="test2")
         nt.assert_equals(test_obj.axes['x'].title, 'test1')
         nt.assert_equals(test_obj.axes['y'].title, 'test2')
 
@@ -379,24 +379,22 @@ class TestData(object):
         index_key = [None, 'ix', 1]
         index_types = ['int', 'char', 'datetime', 'Timestamp']
         value_key = [None, 'x', 1]
-        value_types = [
-            'int', 'char', 'datetime', 'Timestamp', 'float',
-            'numpy float', 'numpy int']
+        value_types = ['int', 'char', 'datetime', 'Timestamp', 'float',
+                       'numpy float', 'numpy int']
 
-        series_info = product(
-            name, length, index_key, index_types, value_key, value_types)
+        series_info = product(name, length, index_key, index_types,
+                              value_key, value_types)
+
         for n, l, ikey, itype, vkey, vtype in series_info:
             index = sequences[itype](l)
             series = pd.Series(sequences[vtype](l), index=index, name=n,)
 
-            ikey = ikey or Data._default_index_key
             vkey = vkey or series.name
-            expected = [
-                {ikey: Data.serialize(i), vkey: Data.serialize(v)}
-                for i, v in zip(index, series)]
+            expected = [{'idx': Data.serialize(i), 'col': vkey,
+                         'val': Data.serialize(v)}
+                        for i, v in zip(index, series)]
 
-            data = Data.from_pandas(series, name=n, index_key=ikey,
-                                    series_key=vkey)
+            data = Data.from_pandas(series, name=n, series_key=vkey)
             nt.assert_list_equal(expected, data.values)
             nt.assert_equal(n, data.name)
             data.to_json()
@@ -408,59 +406,83 @@ class TestData(object):
 
     def test_pandas_dataframe_loading(self):
         """Pandas DataFrame objects are correctly loaded"""
-        name = ['_x']
-        length = [0, 1, 2]
-        index_key = [None, 'ix', 1]
-        index_types = ['int', 'char', 'datetime', 'Timestamp']
-        column_types = ['int', 'char', 'datetime', 'Timestamp']
+        # name = ['_x']
+        # length = [0, 1, 2]
+        # index_key = [None, 'ix', 1]
+        # index_types = ['int', 'char', 'datetime', 'Timestamp']
+        # column_types = ['int', 'char', 'datetime', 'Timestamp']
 
-        # Leaving out some basic types here because we're not worried about
-        # serialization.
-        value_types = [
-            'char', 'datetime', 'Timestamp', 'numpy float', 'numpy int']
+        # # Leaving out some basic types here because we're not worried about
+        # # serialization.
+        # value_types = [
+        #     'char', 'datetime', 'Timestamp', 'numpy float', 'numpy int']
 
-        dataframe_info = product(
-            name, length, length, index_key, index_types, column_types,
-            value_types)
-        for n, rows, cols, ikey, itype, ctype, vtype in dataframe_info:
-            index = sequences[itype](rows)
-            columns = sequences[ctype](cols)
-            series = {
-                c: pd.Series(sequences[vtype](rows), index=index, name=n)
-                for c in columns}
-            dataframe = pd.DataFrame(series)
+        # dataframe_info = product(
+        #     name, length, length, index_key, index_types, column_types,
+        #     value_types)
+        # for n, rows, cols, ikey, itype, ctype, vtype in dataframe_info:
+        #     index = sequences[itype](rows)
+        #     columns = sequences[ctype](cols)
+        #     series = {
+        #         c: pd.Series(sequences[vtype](rows), index=index, name=n)
+        #         for c in columns}
+        #     dataframe = pd.DataFrame(series)
 
-            ikey = ikey or Data._default_index_key
-            if cols == 0:
-                expected = []
-            else:
-                expected = [
-                    dict([(ikey, Data.serialize(index[i]))] +
-                         [(str(c), Data.serialize(series[c][i]))
-                          for c in columns])
-                    for i in xrange(rows)]
+        #     ikey = ikey or Data._default_index_key
+        #     if cols == 0:
+        #         expected = []
+        #     else:
+        #         expected = [
+        #             dict([(ikey, Data.serialize(index[i]))] +
+        #                  [(str(c), Data.serialize(series[c][i]))
+        #                   for c in columns])
+        #             for i in xrange(rows)]
 
-            data = Data.from_pandas(dataframe, name=n, index_key=ikey)
-            nt.assert_list_equal(expected, data.values)
-            nt.assert_equal(n, data.name)
-            data.to_json()
+        #     data = Data.from_pandas(dataframe, name=n, index_key=ikey)
+        #     nt.assert_list_equal(expected, data.values)
+        #     nt.assert_equal(n, data.name)
+        #     data.to_json()
 
         #Simple columns/key_on tests
         df = pd.DataFrame({'one': [1,2,3], 'two': [6,7,8],
                            'three': [11, 12, 13], 'four': [17, 18, 19]})
-        get1 = [{'idx': 0, 'one': 1}, {'idx': 1, 'one': 2}, {'idx': 2, 'one': 3}]
-        get2 = [{'idx': 0, 'one': 1, 'two': 6},
-                {'idx': 1, 'one': 2, 'two': 7},
-                {'idx': 2, 'one': 3, 'two': 8}]
-        getkey2 = [{'one': 1, 'two': 6}, {'one': 2, 'two': 7}, {'one': 3, 'two': 8}]
-        getkey3 = [{'one': 1, 'three': 11, 'two': 6},
-                   {'one': 2, 'three': 12, 'two': 7},
-                   {'one': 3, 'three': 13, 'two': 8}]
+        get_all = [{'col': 'four', 'idx': 0, 'val': 17},
+                   {'col': 'one', 'idx': 0, 'val': 1},
+                   {'col': 'three', 'idx': 0, 'val': 11},
+                   {'col': 'two', 'idx': 0, 'val': 6},
+                   {'col': 'four', 'idx': 1, 'val': 18},
+                   {'col': 'one', 'idx': 1, 'val': 2},
+                   {'col': 'three', 'idx': 1, 'val': 12},
+                   {'col': 'two', 'idx': 1, 'val': 7},
+                   {'col': 'four', 'idx': 2, 'val': 19},
+                   {'col': 'one', 'idx': 2, 'val': 3},
+                   {'col': 'three', 'idx': 2, 'val': 13},
+                   {'col': 'two', 'idx': 2, 'val': 8}]
+        get1 = [{'col': 'one', 'idx': 0, 'val': 1},
+                {'col': 'one', 'idx': 1, 'val': 2},
+                {'col': 'one', 'idx': 2, 'val': 3}]
+        get2 = [{'col': 'one', 'idx': 0, 'val': 1},
+                {'col': 'two', 'idx': 0, 'val': 6},
+                {'col': 'one', 'idx': 1, 'val': 2},
+                {'col': 'two', 'idx': 1, 'val': 7},
+                {'col': 'one', 'idx': 2, 'val': 3},
+                {'col': 'two', 'idx': 2, 'val': 8}]
+        getkey2 = [{'col': 'one', 'idx': 6, 'val': 1},
+                   {'col': 'one', 'idx': 7, 'val': 2},
+                   {'col': 'one', 'idx': 8, 'val': 3}]
+        getkey3 = [{'col': 'one', 'idx': 11, 'val': 1},
+                   {'col': 'two', 'idx': 11, 'val': 6},
+                   {'col': 'one', 'idx': 12, 'val': 2},
+                   {'col': 'two', 'idx': 12, 'val': 7},
+                   {'col': 'one', 'idx': 13, 'val': 3},
+                   {'col': 'two', 'idx': 13, 'val': 8}]
+        val_all = Data.from_pandas(df)
         val1 = Data.from_pandas(df, columns=['one'])
         val2 = Data.from_pandas(df, columns=['one', 'two'])
         key2 = Data.from_pandas(df, columns=['one'], key_on='two')
         key3 = Data.from_pandas(df, columns=['one', 'two'], key_on='three')
 
+        nt.assert_list_equal(val_all.values, get_all)
         nt.assert_list_equal(val1.values, get1)
         nt.assert_list_equal(val2.values, get2)
         nt.assert_list_equal(key2.values, getkey2)
@@ -516,10 +538,19 @@ class TestData(object):
 
     def test_from_mult_iters(self):
         """Test set of iterables"""
-        test1 = Data.from_mult_iters(x=[0, 1, 2], y=[3, 4, 5])
-        test2 = Data.from_mult_iters(apple=['one', 'two'], pear=[3, 4])
-        values1 = [{'x': 0, 'y': 3}, {'x': 1, 'y': 4}, {'x': 2, 'y': 5}]
-        values2 = [{'apple': 'one', 'pear': 3}, {'apple': 'two', 'pear': 4}]
+        test1 = Data.from_mult_iters(x=[0, 1, 2], y=[3, 4, 5], z=[7, 8, 9],
+                                     idx='x')
+        test2 = Data.from_mult_iters(fruit=['apples', 'oranges', 'grapes'],
+                                     count=[12, 16, 54], idx='fruit')
+        values1 = [{'col': 'y', 'idx': 0, 'val': 3},
+                   {'col': 'y', 'idx': 1, 'val': 4},
+                   {'col': 'y', 'idx': 2, 'val': 5},
+                   {'col': 'z', 'idx': 0, 'val': 7},
+                   {'col': 'z', 'idx': 1, 'val': 8},
+                   {'col': 'z', 'idx': 2, 'val': 9}]
+        values2 = [{'col': 'count', 'idx': 'apples', 'val': 12},
+                   {'col': 'count', 'idx': 'oranges', 'val': 16},
+                   {'col': 'count', 'idx': 'grapes', 'val': 54}]
 
         nt.assert_list_equal(test1.values, values1)
         nt.assert_list_equal(test2.values, values2)
@@ -527,103 +558,18 @@ class TestData(object):
         #Iter errors
         nt.assert_raises(ValueError, Data.from_mult_iters, x=[0], y=[1, 2])
 
-    def test_stacked(self):
-        """Testing stacked data import"""
-        data1 = {'x': [1, 2, 3], 'y': [4, 5, 6], 'y2': [7, 8, 9]}
-        data2 = {'x': ['one', 'two', 'three'], 'y': [1.0, 2.0, 3.0],
-                 'y2': [4.0, 5.0, 6.0], 'y3': [7, 8, 9]}
-        df1 = pd.DataFrame(data1)
-        df2 = pd.DataFrame(data2)
-        df3 = pd.DataFrame(data1, index=sequences['Timestamp'](3))
-
-        stamps = []
-        for stamp in sequences['Timestamp'](3):
-            stamps.append(Data.serialize(stamp))
-
-        #Input errors
-        nt.assert_raises(ValueError, Data.stacked, data=data1)
-        nt.assert_raises(ValueError, Data.stacked, x=[0, 1], y=[1])
-        nt.assert_raises(ValueError, Data.stacked, data=df1, stack_on='x')
-
-        truthy = {'data1_out':  [{'c': 0, 'x': 1, 'y': 4},
-                                 {'c': 0, 'x': 2, 'y': 5},
-                                 {'c': 0, 'x': 3, 'y': 6},
-                                 {'c': 1, 'x': 1, 'y2': 7},
-                                 {'c': 1, 'x': 2, 'y2': 8},
-                                 {'c': 1, 'x': 3, 'y2': 9}],
-                  'data2_out':  [{'c': 0, 'x': 'one', 'y': 1.0},
-                                 {'c': 0, 'x': 'two', 'y': 2.0},
-                                 {'c': 0, 'x': 'three', 'y': 3.0},
-                                 {'c': 1, 'x': 'one', 'y3': 7},
-                                 {'c': 1, 'x': 'two', 'y3': 8},
-                                 {'c': 1, 'x': 'three', 'y3': 9},
-                                 {'c': 2, 'x': 'one', 'y2': 4.0},
-                                 {'c': 2, 'x': 'two', 'y2': 5.0},
-                                 {'c': 2, 'x': 'three', 'y2': 6.0}],
-                  'data2_out_2':  [{'c': 0, 'y': 1.0, 'y3': 7},
-                                   {'c': 0, 'y': 2.0, 'y3': 8},
-                                   {'c': 0, 'y': 3.0, 'y3': 9},
-                                   {'c': 1, 'x': 'one', 'y3': 7},
-                                   {'c': 1, 'x': 'two', 'y3': 8},
-                                   {'c': 1, 'x': 'three', 'y3': 9},
-                                   {'c': 2, 'y2': 4.0, 'y3': 7},
-                                   {'c': 2, 'y2': 5.0, 'y3': 8},
-                                   {'c': 2, 'y2': 6.0, 'y3': 9}],
-                  'df3_out':  [{'c': 0, 'idx': stamps[0], 'x': 1},
-                               {'c': 0, 'idx': stamps[1], 'x': 2},
-                               {'c': 0, 'idx': stamps[2], 'x': 3},
-                               {'c': 1, 'idx': stamps[0], 'y': 4},
-                               {'c': 1, 'idx': stamps[1], 'y': 5},
-                               {'c': 1, 'idx': stamps[2], 'y': 6},
-                               {'c': 2, 'idx': stamps[0], 'y2': 7},
-                               {'c': 2, 'idx': stamps[1], 'y2': 8},
-                               {'c': 2, 'idx': stamps[2], 'y2': 9}]}
-
-        stack_mat = [{'ref': 'data1_out', 'dat': {'data': data1,
-                      'stack_on': 'x'}},
-                     {'ref': 'data2_out', 'dat': {'data': data2,
-                      'stack_on': 'x'}},
-                     {'ref': 'data2_out_2', 'dat': {'data': data2,
-                      'stack_on': 'y3'}},
-                     {'ref': 'data1_out', 'dat': {'data': df1, 'stack_on': 'x',
-                      'on_index': False}},
-                     {'ref': 'df3_out', 'dat': {'data': df3}},
-                     {'ref': 'data1_out', 'dat': {'x': [1, 2, 3], 'y': [4, 5, 6],
-                      'y2': [7, 8, 9], 'stack_on': 'x'}}]
-
-        for stacker in stack_mat:
-            kwargs = stacker['dat']
-            stack = Data.stacked(**kwargs)
-            nt.assert_list_equal(truthy[stacker['ref']], stack.values)
-
     def test_from_iter(self):
         """Test data from single iterable"""
-        test = Data.from_iter(iter([10, 20, 30]))
-        test1 = Data.from_iter((10, 20, 30))
-        values = [{'x': 0, 'y': 10}, {'x': 1, 'y': 20}, {'x': 2, 'y': 30}]
-        nt.assert_list_equal(test.values, values)
-        nt.assert_list_equal(test1.values, values)
-
-    def test_from_iter_pairs(self):
-        """Test data from tuple of tuples"""
-        test = Data.from_iter_pairs(((1, 10), (2, 20)))
-        test1 = Data.from_iter_pairs([(1, 10), (2, 20)])
-        test2 = Data.from_iter_pairs([[1, 10], [2, 20]])
-        values = [{'x': 1, 'y': 10}, {'x': 2, 'y': 20}]
-
-        nt.assert_list_equal(test.values, values)
-        nt.assert_list_equal(test1.values, values)
-        nt.assert_list_equal(test1.values, values)
-
-    def test_from_dict(self):
-        """Test data from dict"""
-        test1 = Data.from_dict({'apples': 10, 'oranges': 20})
-        test2 = Data.from_dict({1: 30, 2: 40})
-        values1 = [{'x': 'apples', 'y': 10}, {'x': "oranges", 'y': 20}]
-        values2 = [{'x': 1, 'y': 30}, {'x': 2, 'y': 40}]
-
-        nt.assert_list_equal(test1.values, values1)
-        nt.assert_list_equal(test2.values, values2)
+        test_list = Data.from_iter([10, 20, 30])
+        test_dict = Data.from_iter({'apples': 10, 'bananas': 20, 'oranges': 30})
+        get1 = [{'col': 'data', 'idx': 0, 'val': 10},
+                {'col': 'data', 'idx': 1, 'val': 20},
+                {'col': 'data', 'idx': 2, 'val': 30}]
+        get2 = [{'col': 'data', 'idx': 'apples', 'val': 10},
+                {'col': 'data', 'idx': 'oranges', 'val': 30},
+                {'col': 'data', 'idx': 'bananas', 'val': 20}]
+        nt.assert_list_equal(test_list.values, get1)
+        nt.assert_list_equal(test_dict.values, get2)
 
 
 class TestTransform(object):

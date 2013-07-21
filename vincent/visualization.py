@@ -175,7 +175,7 @@ class Visualization(GrammarClass):
                 elif key == 'y':
                     self.axes[key].title = y
         else:
-            self.axes.extend([Axis(type='x', title=x_axis), Axis(type='y', title=y_axis)])
+            self.axes.extend([Axis(type='x', title=x), Axis(type='y', title=y)])
 
     def validate(self, require_all=True):
         """Validate the visualization contents.

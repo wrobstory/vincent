@@ -142,7 +142,7 @@ class Data(GrammarClass):
 
     @classmethod
     def from_pandas(cls, data, columns=None, key_on='idx', name=None,
-                    index_key=None, series_key=None, **kwargs):
+                    series_key=None, **kwargs):
         """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters
@@ -159,14 +159,11 @@ class Data(GrammarClass):
             Applies to the ``name`` attribute of the generated class. If
             ``None`` (default), then the ``name`` attribute of ``pd_obj`` is
             used if it exists, or ``'table'`` if it doesn't.
-        index_key : string, default None
-            If keying by index, custom key name for the index. Defaults to
-            index.name, then finally 'idx'
         series_key : string, default None
             Applies only to ``Series``. If ``None`` (default), then defaults to
-            'y'. Otherwise, the data will be indexed by this key. For example, if
+            data.name. Otherwise, the data will be indexed by this key. For example, if
             ``series_key`` is ``'x'``, then the entries of the ``values`` list
-            will be ``{'idx': ..., 'x': ...}``.
+            will be ``{'idx': ..., 'col': 'x', 'val': ...}``.
         **kwargs : dict
             Additional arguments passed to the :class:`Data` constructor.
         """
@@ -191,7 +188,6 @@ class Data(GrammarClass):
         if key_on != 'idx':
             pd_obj.index = data[key_on]
 
-        index_key = index_key or pd_obj.index.name or cls._default_index_key
         vega_data.values = []
 
         if isinstance(pd_obj, pd.Series):
