@@ -73,6 +73,10 @@ class Legend(GrammarClass):
         if value not in ('left', 'right'):
             raise ValueError('Value must be one of "left" or "right".')
 
+    @grammar(int)
+    def offset(value):
+        """Pixel offset from figure"""
+
     @grammar(str)
     def title(value):
         """The Legend title"""

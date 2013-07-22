@@ -164,8 +164,10 @@ def test_grammar_dict():
 
     g_dict = GrammarDict()
     test = Visualization()
-    test_dict = {'axes': [], 'data': [], 'marks': [], 'scales': []}
-    test_str = '{"marks": [], "axes": [], "data": [], "scales": []}'
+    test_dict = {'axes': [], 'data': [], 'marks': [],
+                 'scales': [], 'legends': []}
+    test_str = ('{"marks": [], "axes": [], "data": [],'
+                ' "legends": [], "scales": []}')
 
     nt.assert_equal(test.grammar(), test_dict)
     nt.assert_equal(str(test.grammar), test_str)
@@ -314,7 +316,8 @@ class TestVisualization(object):
           "marks": [],
           "axes": [],
           "data": [],
-          "scales": []
+          "scales": [],
+          "legends": []
         }'''
 
         test = Visualization()

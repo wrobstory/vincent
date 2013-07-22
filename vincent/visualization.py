@@ -12,6 +12,7 @@ from data import Data
 from scales import Scale
 from marks import Mark
 from axes import Axis
+from legends import Legend
 
 
 class Visualization(GrammarClass):
@@ -38,9 +39,11 @@ class Visualization(GrammarClass):
         # The axes get keyed by "type" instead of name.
         if not self.axes:
             self.axes = KeyedList(attr_name='type')
-        # Marks don't get keyed.
+        # Marks and Legends don't get keyed.
         if not self.marks:
             self.marks = []
+        if not self.legends:
+            self.legends = []
 
     @grammar(str)
     def name(value):
@@ -149,6 +152,16 @@ class Visualization(GrammarClass):
         for i, entry in enumerate(value):
             _assert_is_type('marks[{0}]'.format(i), entry, Mark)
 
+    @grammar((list, KeyedList))
+    def legends(value):
+        """list or KeyedList of ``Legends`` : Legend definitions
+
+        Legends visualize scales, and take one or more scales as their input.
+        They can be customized via a LegendProperty object.
+        """
+        for i, entry in enumerate(value):
+            _assert_is_type('marks[{0}]'.format(i), entry, Mark)
+
     def axis_titles(self, x=None, y=None):
         """Apply axis titles to the figure.
 
@@ -177,7 +190,25 @@ class Visualization(GrammarClass):
         else:
             self.axes.extend([Axis(type='x', title=x), Axis(type='y', title=y)])
 
-    def validate(self, require_all=True):
+    def legend(self, title=None, scale='color'):
+        """Convience method for adding a legend to the figure.
+
+        Important: This defaults to the color scale that is generated with Line,
+        Area, Stacked Line, etc charts. For bar charts, the scale ref is usually
+        'y'.
+
+        Parameters
+        ----------
+        title: string, default None
+            Legend Title
+        scale: string, default 'color'
+            Scale reference for legend
+
+        """
+
+        self.legends.append(Legend(title=title, fill=scale, offset=0))
+
+    def validate(self, require_all=True, scale='colors'):
         """Validate the visualization contents.
 
         Parameters
