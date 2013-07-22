@@ -6,170 +6,157 @@
 
 ###A Python to Vega translator
 
-The folks at Trifacta are making it easy to build visualizations on top of D3 with Vega. Vincent makes it easy to build Vega with Python.  
+The folks at Trifacta are making it easy to build visualizations on top of D3 with Vega. Vincent makes it easy to build Vega with Python.
 
 Concept
 -------
 The data capabilities of Python. The visualization capabilities of JavaScript.
 
-Vincent takes Python data structures (tuples, lists, dicts, and Pandas DataFrames) and translates them into [Vega](https://github.com/trifacta/vega) visualization grammar. It allows for quick iteration of visualization designs via simple addition and subtraction of grammar elements, and outputs the final visualization to JSON.
+Vincent takes Python data structures and translates them into [Vega](https://github.com/trifacta/vega) visualization grammar. It allows for quick iteration of visualization designs via getters and setters on grammar elements, and outputs the final visualization to JSON.
 
-Status/Development
+Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intuitive way.
+
+Status
 ---------------
-A new style of Vincent syntax is coming on the next major release, 0.2. This can be previewed in the [Vincent Bar Tutorial ipynb](http://nbviewer.ipython.org/urls/raw.github.com/wrobstory/vincent/master/examples/Vega%2520Bar%2520Tutorial.ipynb). We're shooting for the release by 8/1/13. If you prefer the old-style Vincent syntax as detailed below and in the current examples, [release 0.1.7](https://github.com/wrobstory/vincent/releases) is available. 
+This Readme represents the new Vincent syntax, which is gunning for an official release by the beginning of August (there are still a few features missing). If you prefer the old-style Vincent syntax as detailed below and in the current examples, [release 0.1.7](https://github.com/wrobstory/vincent/releases) is available. Additionally, until the release of 0.2, old Vincent features can be found in ```import vincent.legacy```
+
+Yes, map features will return. Soon.
 
 Getting Started
 ---------------
 
-Lets build the Vega [bar chart example](https://github.com/trifacta/vega/wiki/Tutorial) with Vincent manually, then show some shortcuts to help get there a little faster, as well as methods for manipulating the components. First, create a Vincent object, which will initialize with some default parameters for the visualization: 
-```python
->>> import vincent
->>> vis = vincent.Vega()
+Let's start with some lists of data, and then show some different ways to visualize them with Vincent.
+
 ```
-Now add some data. We could pass a dict, but nested tuples will keep our data sorted properly: 
-```python
->>> vis.tabular_data((('A', 28), ('B', 55), ('C', 43), ('D', 91), ('E', 81), ('F', 53),
-                     ('G', 19), ('H', 87), ('I', 52)))
-```
-Pass components to the visualization grammar as keyword arguments (skipping the 'marks' component here for brevity): 
-```python
->>> vis.build_component(axes=[{"type":"x", "scale":"x"},{"type":"y", "scale":"y"}],
-                        scales=[{"name":"x", "type":"ordinal", "range":"width", 
-                                 "domain":{"data":"table", "field":"data.x"}},
-                                {"name":"y", "range":"height", "nice":True, 
-                                 "domain":{"data":"table", "field":"data.y"}}])
-```
-One option is to output to JSON:
-```python
->>> vis.to_json(path)
-```
-Then copy/paste the JSON output to [Vega's online editor](http://trifacta.github.io/vega/editor/), where you should see a replica of the example. 
-
-The other option is to output the Vega grammar and data into separate JSONs, as well as a simple [HTML scaffold](https://github.com/trifacta/vega/wiki/Runtime), then fire up a simple Python server locally: 
-
-```python
->>> vis.to_json(path, split_data=True, html=True)
-```
-```
-$ python -m SimpleHTTPServer 8000
-```
-
-CD to your path and point your browser at http://localhost:8000/vega_template.html to see your visualization. Please see the README in the examples folder for a more complete description of running the example files. 
-
-Creating visualizations manually is a little tedious. The vincent.Vega() object can be subclassed to pre-define components and parameters. Lets take a shortcut and use the Bar class:  
-```python
->>> import random
->>> vis = vincent.Bar()
->>> vis.tabular_data([random.randint(10, 100) for x in range(0, 21, 1)])
->>> vis.to_json(path)
-```
-![Bar](http://farm9.staticflickr.com/8532/8645065132_3f96e1be49.jpg)
-
-Vincent also allows you to add and subtract components at varying levels of nesting depth in order to change the visualization. Vincent syntax for modifying component pieces on the fly is:
-> Addition: += ( **New Value**, **Component**, **Component index**, **Keywords into nested structure** )
-
-> Removal: -= ( **Old key**, **Component**, **Component index**, **Keywords into nested structure** ) 
-
-For example, if we wanted to change the bar plot to an area plot: 
-```python
->>> vis -= ('width', 'marks', 0, 'properties', 'enter') 
->>> vis += ('area', 'marks', 0, 'type')
->>> vis += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 'interpolate')
->>> vis += ('linear', 'scales', 0, 'type')
->>> vis.to_json(path)
-```
-
-![Area](http://farm9.staticflickr.com/8540/8645065128_d2cf65bdf9_o.jpg)
-
-You can create new visualizations from existing `Vega` objects with similar syntax
-```python
->>> new_vis = vis + ('area', 'marks', 0, 'type')
->>> newer_vis = new_vis - ('scale', 'axes', 0)
-```
-
-Vincent also plays nice with Pandas DatetimeIndex, and allows for simple axis labeling and titling: 
-
-```python
-import vincent
 import pandas as pd
 
-# All of the following import code comes from Wes McKinney's book, Python for Data Analysis
+farm_1 = {'apples': 10, 'berries': 32, 'squash': 21, 'melons': 13, 'corn': 18}
+farm_2 = {'apples': 15, 'berries': 43, 'squash': 17, 'melons': 10, 'corn': 22}
+farm_3 = {'apples': 6, 'berries': 24, 'squash': 22, 'melons': 16, 'corn': 30}
+farm_4 = {'apples': 12, 'berries': 30, 'squash': 15, 'melons': 9, 'corn': 15}
 
+data = [farm_1, farm_2, farm_3, farm_4]
+index = ['Farm 1', 'Farm 2', 'Farm 3', 'Farm 4']
+
+df = pd.DataFrame(data, index=index)
+```
+
+We'll start with a simple bar chart looking at apple production:
+
+```
+import vincent
+bar = vincent.Bar(df['apples'])
+bar.axis_titles(x='Farms', y='Apples')
+bar.to_json('vega.json')
+```
+
+![bars](http://farm3.staticflickr.com/2879/9341465882_00020fbe60_o.jpg)
+
+Now let's stack some bars:
+
+```
+stack = vincent.StackedBar(df)
+stack.axis_titles(x='Farms', y='Fruit')
+stack.legend(title='Fruit Production')
+```
+
+![stackedbars](http://farm4.staticflickr.com/3767/9338692307_849e0d4631_o.jpg)
+
+Nice! What if we want to look at farms on the y-axis, and fruit on the x? Just do a quick data swap:
+
+```
+flipped = df.T
+stack.data[0] = vincent.Data.from_pandas(df.T)
+stack.axis_titles(x='Fruit', y='Farms')
+```
+
+![stackedfruit](http://farm3.staticflickr.com/2861/9341465850_dd7db7802f_o.jpg)
+
+Let's look at some stocks data:
+```
 import pandas.io.data as web
 all_data = {}
-for ticker in ['AAPL', 'GOOG']:
+for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:
     all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2010', '1/1/2013')
 price = pd.DataFrame({tic: data['Adj Close']
                       for tic, data in all_data.iteritems()})
 
-# Create line graph, with monthly plotting on the axes                       
-line = vincent.Line()
-line.tabular_data(price, columns=['AAPL'], axis_time='month')
-line.to_json(path)
-
-# Manipulate the axis tick/tick label orientation
-line += ({'labels': {'angle': {'value': 25}}}, 'axes', 0, 'properties')
-line += ({'value': 22}, 'axes', 0, 'properties', 'labels', 'dx')
-line.update_vis(padding={'bottom': 50, 'left': 30, 'right': 30, 'top': 10})
-line.update_vis(width=800, height=300)
-
-# Add axis labels and a title
-line.axis_label(y_label='AAPL Price', title='AAPL Stock Price 1/1/2010-1/1/2013')
-line.to_json(path)
+lines = vincent.Line(price)
+lines.axis_titles(x='Date', y='Price')
+lines.legend(title='Tech Stocks')
 ```
-![AAPL fig](http://farm9.staticflickr.com/8393/8669181178_e22e576144_c.jpg)
 
-Vincent fully supports the mapping component of Vega, allowing for rapid creation of regular maps and chloropleths by binding Python data structures to 
-geoJSON data: 
-```python
-# Regular map, no data binding
-vis = vincent.Map(width=1000, height=800)
-vis.geo_data(projection='albersUsa', scale=1000, counties=r'county_geo.json')
-vis += ('2B4ECF', 'marks', 0, 'properties', 'enter', 'stroke', 'value')
-vis.geo_data(states=r'state_geo.json')
-vis -= ('fill', 'marks', 1, 'properties', 'enter')
-vis.to_json(path)
+![stocklines](http://farm8.staticflickr.com/7450/9341465844_5a2fa7eda9_o.jpg)
+
+We can also visualize this as a stacked area:
+
 ```
-![Map](http://farm9.staticflickr.com/8389/8690908267_d7a3a83dae_z.jpg)
-```python
-# Bind Pandas DataFrame to map
-vis = vincent.Map(width=1000, height=800)
-vis.tabular_data(dataframe, columns=['FIPS_Code', 'Unemployment_rate_2011']) 
-vis.geo_data(projection='albersUsa', scale=1000, bind_data='data.id',
-             counties=r'county_geo.json')
-vis += (["#f5f5f5","#000045"], 'scales', 0, 'range')
-vis.to_json(path)
+stacked = vincent.StackedArea(price)
+stacked.axis_titles(x='Date', y='Price')
+stacked.legend(title='Tech Stocks')
 ```
-![Map](http://farm9.staticflickr.com/8543/8692026644_a1ee888398_z.jpg)
 
-I also have Vincent incorporated into a [fork](https://github.com/wrobstory/d3py) of Mike Dewar's [d3py](https://github.com/mikedewar/d3py), with a pull request to merge into the main repo. 
+![stockstacked](http://farm6.staticflickr.com/5487/9341465834_788f3e68ff_o.jpg)
 
-For now, here is the syntax for using the d3py fork: 
-```python
-import d3py
+You could also create a scatterplot with a couple of stocks (thought I would not recommend it):
+```
+scatter = vincent.Scatter(price[['AAPL', 'GOOG']])
+scatter.axis_titles(x='Date', y='Price')
+scatter.legend(title='Apple vs. Google')
+```
+
+![stockscatter](http://farm6.staticflickr.com/5524/9338681017_f5dd1cb23b_o.jpg)
+
+Built from Scratch
+------------------
+
+To see how the charts are being built with Vincent -> Vega grammar, see charts.py.
+
+Building the bar chart from scratch will provide a quick example of building with Vincent:
+
+```
 import pandas as pd
-import random
+from vincent import (Visualization, Scale, DataRef, Data, PropertySet,
+                     Axis, ValueRef, MarkRef, MarkProperties, Mark)
 
-x = range(0, 21, 1)
-y = [random.randint(25, 100) for num in range(0, 21, 1)]
+df = pd.DataFrame({'Data 1': [15, 29, 63, 28, 45, 73, 15, 62],
+                   'Data 2': [42, 27, 52, 18, 61, 19, 62, 33]})
 
-df = pd.DataFrame({'x': x, 'y': y})
+#Top level Visualization
+vis = Visualization(width=500, height=300)
+vis.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 100}
 
-# Create Pandas figure
-fig = d3py.PandasFigure(df, 'd3py_area', port=8080, columns=['x', 'y'])
+#Data. We're going to key Data 2 on Data 1
+vis.data.append(Data.from_pandas(df, columns=['Data 2'], key_on='Data 1', name='table'))
 
-# Add Vega Area plot
-fig += d3py.vega.Area()
+#Scales
+vis.scales.append(Scale(name='x', type='ordinal', range='width',
+                        domain=DataRef(data='table', field="data.idx")))
+vis.scales.append(Scale(name='y', range='height', nice=True,
+                        domain=DataRef(data='table', field="data.val")))
 
-# Add interpolation to figure data
-fig.vega += ({'value': 'basis'}, 'marks', 0, 'properties', 'enter', 
-            'interpolate')
-fig.show()
+#Axes
+vis.axes.extend([Axis(type='x', scale='x'), Axis(type='y', scale='y')])
+
+#Marks
+enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
+                                     y=ValueRef(scale='y', field="data.val"),
+                                     width=ValueRef(scale='x', band=True, offset=-1),
+                                     y2=ValueRef(scale='y', value=0))
+update_props = PropertySet(fill=ValueRef(value='steelblue'))
+mark = Mark(type='rect', from_=MarkRef(data='table'),
+            properties=MarkProperties(enter=enter_props,
+            update=update_props))
+
+vis.marks.append(mark)
+vis.axis_titles(x='Data 1', y='Data 2')
+vis.to_json('vega.json')
 ```
+![barscratch](http://farm3.staticflickr.com/2866/9341688818_c154660c3f_o.jpg)
+
 
 Dependencies
 ------------
 pandas
 
-requests (for shapefiles only)
 

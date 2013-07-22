@@ -177,8 +177,6 @@ class Data(GrammarClass):
 
         if name:
             vega_data = cls(name=name, **kwargs)
-        elif hasattr(data, 'name') and data.name:
-            vega_data = cls(name=data.name, **kwargs)
         else:
             vega_data = cls(name='table', **kwargs)
 

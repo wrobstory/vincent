@@ -6,6 +6,8 @@ Core: The core functionality for Vincent to map to Vega grammar
 """
 from __future__ import (print_function, division)
 import json
+from string import Template
+from pkg_resources import resource_string
 
 try:
     import pandas as pd
@@ -233,7 +235,8 @@ class GrammarClass(object):
             except ValueError as e:
                 raise ValidationError('invalid contents: ' + e.message)
 
-    def to_json(self, path=None, validate=False, pretty_print=True):
+    def to_json(self, path=None, html_out=False, html_path='vega_template.html',
+                validate=False, pretty_print=True):
         """Convert object to JSON
 
         Parameters
@@ -241,6 +244,11 @@ class GrammarClass(object):
         path: string, default None
             Path to write JSON out. If there is no path provided, JSON
             will be returned as a string to the console.
+        html_out: boolean, default False
+            If True, vincent will output an simple HTML scaffold to
+            visualize the vega json output.
+        html_path: string, default 'vega_template.html'
+            Path for the html file (if html_out=True)
         validate : boolean
             If True, call the object's `validate` method before
             serializing. Default is False.
@@ -264,6 +272,12 @@ class GrammarClass(object):
         def encoder(obj):
             if hasattr(obj, 'grammar'):
                 return obj.grammar
+
+        if html_out:
+            template = Template(resource_string('vincent',
+                                                'vega_template.html'))
+            with open(html_path, 'w') as f:
+                f.write(template.substitute(path=path))
 
         if path:
             with open(path, 'w') as f:
