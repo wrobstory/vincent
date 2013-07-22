@@ -19,6 +19,7 @@ from vincent.properties import PropertySet
 from vincent.scales import DataRef, Scale
 from vincent.marks import ValueRef, MarkProperties, MarkRef, Mark
 from vincent.axes import AxisProperties, Axis
+from vincent.legends import LegendProperties, Legend
 
 import nose.tools as nt
 
@@ -791,3 +792,41 @@ class TestAxis(object):
                          ('properties', [AxisProperties])]
 
         assert_grammar_typechecking(grammar_types, Axis())
+
+
+class TestLegendProperties(object):
+    """Test LegendProperties class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of LegendProperties"""
+
+        grammar_types = [('title', [ValueRef]),
+                         ('labels', [ValueRef]),
+                         ('symbols', [ValueRef]),
+                         ('gradient', [ValueRef]),
+                         ('legend', [ValueRef])]
+
+        assert_grammar_typechecking(grammar_types, LegendProperties())
+
+
+class TestLegend(object):
+    """Test Legend Class"""
+
+    def test_grammar_typechecking(self):
+        """Test grammar of Legend"""
+
+        grammar_types = [('size', [str]),
+                         ('shape', [str]),
+                         ('fill', [str]),
+                         ('stroke', [str]),
+                         ('title', [str]),
+                         ('format', [str]),
+                         ('values', [list]),
+                         ('properties', [LegendProperties])]
+
+        assert_grammar_typechecking(grammar_types, Legend())
+
+    def test_validation_checking(self):
+        """Legend fields are grammar checked"""
+
+        nt.assert_raises(ValueError, Legend, orient='center')
