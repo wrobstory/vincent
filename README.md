@@ -18,7 +18,7 @@ Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intui
 
 Status
 ---------------
-This Readme represents the new Vincent syntax, which is gunning for an official release by the beginning of August (there are still a few features missing). If you prefer the old-style Vincent syntax as detailed below and in the current examples, [release 0.1.7](https://github.com/wrobstory/vincent/releases) is available. Additionally, until the release of 0.2, old Vincent features can be found in ```import vincent.legacy```
+This Readme represents the new Vincent syntax, which is gunning for an official release by the beginning of August (there are still a few features missing). If you prefer the old-style Vincent syntax, [release 0.1.7](https://github.com/wrobstory/vincent/releases) is available. Additionally, until the release of 0.2, old Vincent features can be found in ```import vincent.legacy```
 
 Yes, map features will return. Soon.
 
@@ -27,7 +27,7 @@ Getting Started
 
 Let's start with some lists of data, and then show some different ways to visualize them with Vincent.
 
-```
+```python
 import pandas as pd
 
 farm_1 = {'apples': 10, 'berries': 32, 'squash': 21, 'melons': 13, 'corn': 18}
@@ -43,7 +43,7 @@ df = pd.DataFrame(data, index=index)
 
 We'll start with a simple bar chart looking at apple production:
 
-```
+```python
 import vincent
 bar = vincent.Bar(df['apples'])
 bar.axis_titles(x='Farms', y='Apples')
@@ -54,7 +54,7 @@ bar.to_json('vega.json')
 
 Now let's stack some bars:
 
-```
+```python
 stack = vincent.StackedBar(df)
 stack.axis_titles(x='Farms', y='Fruit')
 stack.legend(title='Fruit Production')
@@ -64,7 +64,7 @@ stack.legend(title='Fruit Production')
 
 Nice! What if we want to look at farms on the y-axis, and fruit on the x? Just do a quick data swap:
 
-```
+```python
 flipped = df.T
 stack.data[0] = vincent.Data.from_pandas(df.T)
 stack.axis_titles(x='Fruit', y='Farms')
@@ -73,7 +73,8 @@ stack.axis_titles(x='Fruit', y='Farms')
 ![stackedfruit](http://farm3.staticflickr.com/2861/9341465850_dd7db7802f_o.jpg)
 
 Let's look at some stocks data:
-```
+
+```python
 import pandas.io.data as web
 all_data = {}
 for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:
@@ -90,7 +91,7 @@ lines.legend(title='Tech Stocks')
 
 We can also visualize this as a stacked area:
 
-```
+```python
 stacked = vincent.StackedArea(price)
 stacked.axis_titles(x='Date', y='Price')
 stacked.legend(title='Tech Stocks')
@@ -99,7 +100,7 @@ stacked.legend(title='Tech Stocks')
 ![stockstacked](http://farm6.staticflickr.com/5487/9341465834_788f3e68ff_o.jpg)
 
 You could also create a scatterplot with a couple of stocks (thought I would not recommend it):
-```
+```python
 scatter = vincent.Scatter(price[['AAPL', 'GOOG']])
 scatter.axis_titles(x='Date', y='Price')
 scatter.legend(title='Apple vs. Google')
@@ -114,7 +115,7 @@ To see how the charts are being built with Vincent -> Vega grammar, see charts.p
 
 Building the bar chart from scratch will provide a quick example of building with Vincent:
 
-```
+```python
 import pandas as pd
 from vincent import (Visualization, Scale, DataRef, Data, PropertySet,
                      Axis, ValueRef, MarkRef, MarkProperties, Mark)
