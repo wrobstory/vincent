@@ -155,6 +155,84 @@ vis.to_json('vega.json')
 ```
 ![barscratch](http://farm3.staticflickr.com/2866/9341688818_c154660c3f_o.jpg)
 
+Because the Vega elements are represented by Python classes, it can be difficult to get a good idea of what the Vega grammar looks like:
+```python
+In [5]: vis.marks[0]
+<vincent.marks.Mark at 0x110d630d0>
+```
+
+However, at almost any point in the Vincent stack, you can call the ```grammar()``` method to output the Vega grammar as Python data structures:
+
+```python
+>>>vis.marks[0].grammar()
+{u'from': {u'data': u'table'},
+ u'properties': {u'enter': {u'width': {u'band': True,
+    u'offset': -1,
+    u'scale': u'x'},
+   u'x': {u'field': u'data.idx', u'scale': u'x'},
+   u'y': {u'field': u'data.val', u'scale': u'y'},
+   u'y2': {u'scale': u'y', u'value': 0}},
+  u'update': {u'fill': {u'value': u'steelblue'}}},
+ u'type': u'rect'}
+>>>vis.marks[0].properties.enter.x.grammar()
+{u'field': u'data.idx', u'scale': u'x'}
+```
+
+or you can simply output it to a string of JSON:
+```python
+>>>print(vis.marks[0].to_json())
+{
+  "type": "rect",
+  "from": {
+    "data": "table"
+  },
+  "properties": {
+    "update": {
+      "fill": {
+        "value": "steelblue"
+      }
+    },
+    "enter": {
+      "y": {
+        "field": "data.val",
+        "scale": "y"
+      },
+      "width": {
+        "band": true,
+        "scale": "x",
+        "offset": -1
+      },
+      "y2": {
+        "scale": "y",
+        "value": 0
+      },
+      "x": {
+        "field": "data.idx",
+        "scale": "x"
+      }
+    }
+  }
+}
+```
+
+Vincent is built around classes and attributes that map 1:1 to Vega grammar, for easy getting, setting,
+and deleting of grammar elements:
+
+```python
+>>>vis.marks[0].properties.enter.grammar()
+{u'width': {u'band': True, u'offset': -1, u'scale': u'x'},
+ u'x': {u'field': u'data.idx', u'scale': u'x'},
+ u'y': {u'field': u'data.val', u'scale': u'y'},
+ u'y2': {u'scale': u'y', u'value': 0}}
+ >>> del vis.marks[0].properties.enter.width
+ >>> vis.marks[0].properties.enter.y2.scale = 'y2'
+ >>> vis.marks[0].properties.enter.grammar()
+{u'x': {u'field': u'data.idx', u'scale': u'x'},
+ u'y': {u'field': u'data.val', u'scale': u'y'},
+ u'y2': {u'scale': u'y2', u'value': 0}}
+```
+
+
 
 Dependencies
 ------------
