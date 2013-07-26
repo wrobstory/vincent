@@ -142,7 +142,7 @@ class Data(GrammarClass):
 
     @classmethod
     def from_pandas(cls, data, columns=None, key_on='idx', name=None,
-                    series_key=None, **kwargs):
+                    series_key=None, group_col=None, **kwargs):
         """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters
@@ -164,6 +164,8 @@ class Data(GrammarClass):
             data.name. Otherwise, the data will be indexed by this key. For example, if
             ``series_key`` is ``'x'``, then the entries of the ``values`` list
             will be ``{'idx': ..., 'col': 'x', 'val': ...}``.
+        group_col: string, default None
+            Column on which to group for grouped bar charts
         **kwargs : dict
             Additional arguments passed to the :class:`Data` constructor.
         """
@@ -185,6 +187,8 @@ class Data(GrammarClass):
             pd_obj = data[columns]
         if key_on != 'idx':
             pd_obj.index = data[key_on]
+        if group_col:
+            col = pd_obj.pop(group_col)
 
         vega_data.values = []
 
@@ -206,6 +210,8 @@ class Data(GrammarClass):
                     value['idx'] = cls.serialize(i)
                     value['col'] = cls.serialize(k)
                     value['val'] = cls.serialize(v)
+                    if group_col:
+                        value['group'] = cls.serialize(col[i])
                     vega_data.values.append(value)
         else:
             raise ValueError('cannot load from data type '

@@ -1,9 +1,8 @@
 <html>
   <head>
     <title>Vega Scaffold</title>
-    <script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="http://trifacta.github.com/vega/vega.js"></script>
-    <script src="http://trifacta.github.com/vega/d3.geo.projection.min.js"></script>
   </head>
   <body>
     <div id="vis"></div>
@@ -13,6 +12,6 @@
 function parse(spec) {
   vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); });
 }
-parse("$path");
+parse("vega.json");
 </script>
 </html>

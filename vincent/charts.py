@@ -41,13 +41,13 @@ def data_type(data, columns=None, key_on='idx', iter_idx=None):
 class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
-    def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None, stacked=False,
-                 width=500, height=300, *args, **kwargs):
+    def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
+                 stacked=False, width=500, height=300, *args, **kwargs):
         """Create a Vega Chart
 
         Parameters:
         -----------
-        data: Tuples, List, Dict, Pandas Series, Pandas DataFrame, or Numpy ndarray
+        data: Tuples, List, Dict, Pandas Series, or Pandas DataFrame
             Input data. Tuple of paired tuples, List of single values,
             dict of key/value pairs, Pandas Series/DataFrame, Numpy ndarray
         columns: list, default None
@@ -115,7 +115,8 @@ class Bar(Chart):
         #Marks
         enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
                                   y=ValueRef(scale='y', field="data.val"),
-                                  width=ValueRef(scale='x', band=True, offset=-1),
+                                  width=ValueRef(scale='x', band=True,
+                                                 offset=-1),
                                   y2=ValueRef(scale='y', value=0))
 
         update_props = PropertySet(fill=ValueRef(value='steelblue'))
