@@ -43,7 +43,8 @@ vis.marks.append(mark)
 
 data = Data.from_pandas(df['apples'])
 
-vis.data.append(data)
+#Using a Vincent KeyedList here
+vis.data['table'] = data
 vis.axis_titles(x='Farms', y='Data')
 vis.to_json('vega.json')
 

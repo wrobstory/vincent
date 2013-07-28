@@ -13,6 +13,7 @@ from scales import Scale
 from marks import Mark
 from axes import Axis
 from legends import Legend
+from colors import brews
 
 
 class Visualization(GrammarClass):
@@ -207,6 +208,22 @@ class Visualization(GrammarClass):
         """
 
         self.legends.append(Legend(title=title, fill=scale, offset=0))
+
+    def colors(self, brew=None):
+        """Convenience method for adding color brewer scales to charts with a
+        color scale, such as stacked or grouped bars.
+
+        See the colors here: http://colorbrewer2.org/
+
+        This assumes that a 'color' scale exists on your chart.
+
+        Parameters
+        ----------
+        brew: string, default None
+            Color brewer scheme (BuGn, YlOrRd, etc)
+        """
+        self.scales['color'].range = brews[brew]
+
 
     def validate(self, require_all=True, scale='colors'):
         """Validate the visualization contents.
