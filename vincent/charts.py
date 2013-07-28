@@ -26,7 +26,7 @@ except ImportError:
     np = None
 
 
-def data_type(data, grouped, columns=None, key_on='idx', iter_idx=None):
+def data_type(data, grouped=False, columns=None, key_on='idx', iter_idx=None):
     '''Data type check for automatic import'''
     if iter_idx:
         return Data.from_mult_iters(idx=iter_idx, **data)
@@ -96,7 +96,7 @@ class Chart(Visualization):
                 self._is_datetime = True
 
         #Using a vincent KeyedList here
-        self.data['table'] = (data_type(data, grouped, columns=columns,
+        self.data['table'] = (data_type(data, grouped=grouped, columns=columns,
                               key_on=key_on, iter_idx=iter_idx))
 
 

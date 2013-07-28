@@ -76,6 +76,9 @@ def test_keyed_list():
     key_list['test_2'] = mirror_key_2
     nt.assert_equal(key_list['test_2'], mirror_key_2)
 
+    key_list[0] = mirror_key_2
+    nt.assert_equal(key_list[0], mirror_key_2)
+
     #Keysetting errors
     test_key_3 = TestKey(name='test_3')
     with nt.assert_raises(ValidationError) as err:
@@ -273,7 +276,8 @@ class TestVisualization(object):
         """Test manual typechecking for elements like marks"""
 
         test_attr = [('data', [1]), ('scales', [1]),
-                     ('axes', [1]), ('marks', [1])]
+                     ('axes', [1]), ('marks', [1]),
+                     ('legends', [1])]
 
         assert_manual_typechecking(test_attr, Visualization())
 
@@ -575,6 +579,16 @@ class TestData(object):
         nt.assert_list_equal(test_list.values, get1)
         nt.assert_list_equal(test_dict.values, get2)
 
+    def test_serialize_error(self):
+        """Test serialization error"""
+
+        class badType(object):
+            """I am a bad actor"""
+
+        broken = badType()
+
+        nt.assert_raises(LoadError, Data.serialize, broken)
+
 
 class TestTransform(object):
     """Test the Transform class"""
@@ -719,7 +733,8 @@ class TestMark(object):
                          ('from_', [MarkRef]),
                          ('properties', [MarkProperties]), ('key', [str]),
                          ('key', [str]), ('delay', [ValueRef]),
-                         ('ease', [str])]
+                         ('ease', [str]), ('marks', [list]),
+                         ('scales', [list, KeyedList])]
         assert_grammar_typechecking(grammar_types, Mark())
 
     def test_validation_checking(self):
@@ -795,6 +810,11 @@ class TestAxis(object):
                          ('properties', [AxisProperties])]
 
         assert_grammar_typechecking(grammar_types, Axis())
+
+    def test_validation_checking(self):
+        """Axis fields are grammar checked"""
+
+        nt.assert_raises(ValueError, Axis, type='panda')
 
 
 class TestLegendProperties(object):

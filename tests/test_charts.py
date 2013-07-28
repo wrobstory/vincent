@@ -10,7 +10,7 @@ Tests for Vincent chart types, which also serve as reference grammar.
 import pandas as pd
 import nose.tools as nt
 from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
-                            StackedArea, StackedBar)
+                            StackedArea, StackedBar, GroupedBar)
 
 
 def chart_runner(chart, scales, axes, marks):
@@ -298,6 +298,7 @@ class TestStackedArea(object):
         for i, data in enumerate(datas):
             nt.assert_dict_equal(stack.data[i].grammar(), data)
 
+
 class TestStackedBar(object):
     """Test Stacked Bar Chart"""
 
@@ -352,6 +353,68 @@ class TestStackedBar(object):
 
         for i, data in enumerate(datas):
             nt.assert_dict_equal(stack.data[i].grammar(), data)
+
+
+class TestGroupedBar(object):
+    """Test grouped bar chart"""
+
+    def test_init(self):
+
+        farm_1 = {'apples': 10, 'berries': 32, 'squash': 21}
+        farm_2 = {'apples': 15, 'berries': 40, 'squash': 17}
+        data = [farm_1, farm_2]
+        index = ['Farm 1', 'Farm 2']
+        df = pd.DataFrame(data, index=index)
+
+        group = GroupedBar(df)
+
+        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
+                   u'name': u'x',
+                   u'padding': 0.2,
+                   u'range': u'width',
+                   u'type': u'ordinal'},
+                  {u'domain': {u'data': u'table', u'field': u'data.val'},
+                   u'name': u'y',
+                   u'nice': True,
+                   u'range': u'height'},
+                  {u'domain': {u'data': u'table', u'field': u'data.col'},
+                   u'name': u'color',
+                   u'range': u'category20',
+                   u'type': u'ordinal'}]
+
+        axes = [{u'scale': u'x', u'type': u'x'},
+                {u'scale': u'y', u'type': u'y'}]
+
+        datas = [{u'name': u'table',
+                  u'values':
+                  [{u'col': u'apples', u'group': 0, u'idx': u'Farm 1', u'val': 10},
+                  {u'col': u'berries', u'group': 1, u'idx': u'Farm 1', u'val': 32},
+                  {u'col': u'squash', u'group': 2, u'idx': u'Farm 1', u'val': 21},
+                  {u'col': u'apples', u'group': 0, u'idx': u'Farm 2', u'val': 15},
+                  {u'col': u'berries', u'group': 1, u'idx': u'Farm 2', u'val': 40},
+                  {u'col': u'squash', u'group': 2, u'idx': u'Farm 2', u'val': 17}]}]
+
+        marks = [{u'from': {u'data': u'table',
+                  u'transform': [{u'keys': [u'data.idx'], u'type': u'facet'}]},
+                  u'marks': [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
+                      u'scale': u'color'},
+                     u'width': {u'band': True, u'offset': -1, u'scale': u'pos'},
+                     u'x': {u'field': u'data.group', u'scale': u'pos'},
+                     u'y': {u'field': u'data.val', u'scale': u'y'},
+                     u'y2': {u'scale': u'y', u'value': 0}}},
+                   u'type': u'rect'}],
+                 u'properties': {u'enter': {u'width': {u'band': True, u'scale': u'x'},
+                   u'x': {u'field': u'key', u'scale': u'x'}}},
+                 u'scales': [{u'domain': {u'field': u'data.group'},
+                   u'name': u'pos',
+                   u'range': u'width',
+                   u'type': u'ordinal'}],
+                 u'type': u'group'}]
+
+        chart_runner(group, scales, axes, marks)
+
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(group.data[i].grammar(), data)
 
 
 

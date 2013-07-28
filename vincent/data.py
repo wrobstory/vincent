@@ -336,9 +336,6 @@ class Data(GrammarClass):
             ``'table'``.
 
         """
-        def iter_it(iterable):
-            return [{'idx': x, 'col': 'y', 'val': y}
-                    for x, y in enumerate(data)]
 
         if not name:
             name = 'table'

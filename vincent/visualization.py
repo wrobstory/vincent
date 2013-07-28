@@ -160,7 +160,7 @@ class Visualization(GrammarClass):
         They can be customized via a LegendProperty object.
         """
         for i, entry in enumerate(value):
-            _assert_is_type('marks[{0}]'.format(i), entry, Mark)
+            _assert_is_type('legends[{0}]'.format(i), entry, Legend)
 
     def axis_titles(self, x=None, y=None):
         """Apply axis titles to the figure.
