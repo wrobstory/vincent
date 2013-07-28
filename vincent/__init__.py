@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import legacy
-from charts import Bar, Line, Area, Scatter, StackedBar, StackedArea
+from charts import Bar, Line, Area, Scatter, StackedBar, StackedArea, GroupedBar
 from visualization import Visualization
 from data import Data
 from transforms import Transform

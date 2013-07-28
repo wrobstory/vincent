@@ -4,7 +4,7 @@
 Marks: Classes to define Vega Marks
 
 """
-from core import grammar, GrammarClass
+from core import grammar, GrammarClass, KeyedList
 from values import ValueRef
 from properties import PropertySet
 
@@ -125,4 +125,10 @@ class Mark(GrammarClass):
     @grammar(list)
     def marks(value):
         """list: For grouped marks, you can define a "marks" with a mark
+        """
+
+    @grammar((list, KeyedList))
+    def scales(value):
+        """list or KeyedList: For grouped marks, you can define a set of scales
+        for within the mark groups
         """

@@ -142,7 +142,7 @@ class Data(GrammarClass):
 
     @classmethod
     def from_pandas(cls, data, columns=None, key_on='idx', name=None,
-                    series_key=None, grouped=None, **kwargs):
+                    series_key=None, grouped=False, **kwargs):
         """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters

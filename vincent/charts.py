@@ -5,6 +5,7 @@ Charts: Constructors for different chart types in Vega grammar.
 
 """
 import copy
+from core import KeyedList
 from visualization import Visualization
 from data import Data
 from transforms import Transform
@@ -25,13 +26,14 @@ except ImportError:
     np = None
 
 
-def data_type(data, columns=None, key_on='idx', iter_idx=None):
+def data_type(data, grouped, columns=None, key_on='idx', iter_idx=None):
     '''Data type check for automatic import'''
     if iter_idx:
         return Data.from_mult_iters(idx=iter_idx, **data)
     if pd:
         if isinstance(data, (pd.Series, pd.DataFrame)):
-            return Data.from_pandas(data, columns=columns, key_on=key_on)
+            return Data.from_pandas(data, grouped=grouped, columns=columns,
+                                    key_on=key_on)
     if isinstance(data, (list, tuple, dict)):
             return Data.from_iter(data)
     else:
@@ -42,7 +44,7 @@ class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
-                 stacked=False, width=500, height=300, *args, **kwargs):
+                 grouped=False, width=500, height=300, *args, **kwargs):
         """Create a Vega Chart
 
         Parameters:
@@ -61,8 +63,9 @@ class Chart(Visualization):
             Chart width
         height: int, default 500
             Chart height
-        stacked: boolean, default False
-            If true, data will be imported using Data.stacked
+        grouped: boolean, default False
+            Pass true for grouped charts. Currently only enabled for Pandas
+            DataFrames
 
         Output:
         -------
@@ -92,8 +95,9 @@ class Chart(Visualization):
             if isinstance(data.index, pd.DatetimeIndex):
                 self._is_datetime = True
 
-        self.data.append(data_type(data, columns=columns, key_on=key_on,
-                                   iter_idx=iter_idx))
+        #Using a vincent KeyedList here
+        self.data['table'] = (data_type(data, grouped, columns=columns,
+                              key_on=key_on, iter_idx=iter_idx))
 
 
 class Bar(Chart):
@@ -206,7 +210,7 @@ class StackedArea(Area):
         facets = Transform(type='facet', keys=['data.idx'])
         stats = Transform(type='stats', value='data.val')
         stat_dat = Data(name='stats', source='table', transform=[facets, stats])
-        self.data.append(stat_dat)
+        self.data['stats'] = stat_dat
 
         self.scales['x'].zero = False
         self.scales['y'].domain = DataRef(field='sum', data='stats')
@@ -236,16 +240,38 @@ class StackedBar(StackedArea):
         self.marks[0].marks[0].type = 'rect'
 
 
+class GroupedBar(StackedBar):
+    """Vega Grouped Bar Chart"""
 
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Grouped Bar Chart"""
 
+        if 'grouped' not in kwargs:
+            kwargs['grouped'] = True
 
+        super(GroupedBar, self).__init__(*args, **kwargs)
 
+        del self.data['stats']
 
+        del self.scales['y'].type
+        self.scales['y'].domain.field = 'data.val'
+        self.scales['y'].domain.data = 'table'
+        self.scales['x'].padding = 0.2
 
+        del self.marks[0].from_.transform[1]
+        self.marks[0].from_.transform[0].keys[0] = 'data.idx'
+        enter_props = PropertySet(x=ValueRef(scale='x', field="key"),
+                                  width=ValueRef(scale='x', band=True))
+        self.marks[0].properties = MarkProperties(enter=enter_props)
+        self.marks[0].scales = KeyedList()
+        self.marks[0].scales['pos'] = Scale(name='pos', type='ordinal',
+                                            range='width',
+                                            domain=DataRef(field='data.group'))
 
+        self.marks[0].marks[0].properties.enter.width.scale = 'pos'
+        self.marks[0].marks[0].properties.enter.y.field = 'data.val'
+        self.marks[0].marks[0].properties.enter.x.field = 'data.group'
+        self.marks[0].marks[0].properties.enter.x.scale = 'pos'
 
-
-
-
-
-
+        del self.marks[0].marks[0].properties.enter.y2.field
+        self.marks[0].marks[0].properties.enter.y2.value = 0

@@ -168,3 +168,10 @@ class Scale(GrammarClass):
         Only valid for quantitative scale types. This is useful if the
         domain is defined as a DataRef that may not include 0 exactly.
         """
+
+    @grammar((float, int))
+    def padding(value):
+        """string: Ordinal element padding
+
+        Only valid for ordinal scale types
+        """

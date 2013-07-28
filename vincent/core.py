@@ -80,6 +80,16 @@ class KeyedList(list):
         else:
             return list.__getitem__(self, key)
 
+    def __delitem__(self, key):
+        if isinstance(key, str):
+            keys = self.get_keys()
+            if key not in keys:
+                raise KeyError(' "{0}" is an invalid key'.format(key))
+            else:
+                list.__delitem__(self, keys.index(key))
+        else:
+            return list.__delitem__(self, key)
+
     def __setitem__(self, key, value):
         if isinstance(key, str):
             if not hasattr(value, self.attr_name):
