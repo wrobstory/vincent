@@ -6,18 +6,16 @@ except ImportError:
     from distutils.core import setup
 
 classifiers = (
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 4 - Beta',
     'Programming Language :: Python :: 2.7',
     'License :: OSI Approved :: MIT License',
 )
 
-required = (
-    'pandas'
-)
+required = ()
 
 kw = {
     'name': 'vincent',
-    'version': '0.1.7',
+    'version': '0.2',
     'description': 'A Python to Vega translator',
     'long_description': open('README.rst', 'rt').read(),
     'author': 'Rob Story',

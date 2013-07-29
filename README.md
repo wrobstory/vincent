@@ -278,6 +278,8 @@ Huge thanks to all who have contributed to Vincent development:
 Dependencies
 ------------
 
+Optional:
+
  * pandas
  * numpy
 
