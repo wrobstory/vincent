@@ -158,7 +158,7 @@ class TestScatter(object):
                   u'marks':
                   [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
                     u'scale': u'color'},
-                    u'size': {u'value': 10},
+                    u'size': {u'value': 100},
                     u'x': {u'field': u'data.idx', u'scale': u'x'},
                     u'y': {u'field': u'data.val', u'scale': u'y'}}},
                     u'type': u'symbol'}],

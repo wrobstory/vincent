@@ -397,7 +397,7 @@ class TestData(object):
             index = sequences[itype](l)
             series = pd.Series(sequences[vtype](l), index=index, name=n,)
 
-            vkey = vkey or series.name
+            vkey = series.name or vkey
             expected = [{'idx': Data.serialize(i), 'col': vkey,
                          'val': Data.serialize(v)}
                         for i, v in zip(index, series)]

@@ -191,7 +191,7 @@ class Data(GrammarClass):
         vega_data.values = []
 
         if isinstance(pd_obj, pd.Series):
-            data_key = series_key or data.name
+            data_key = data.name or series_key
             for i, v in pd_obj.iterkv():
                 value = {}
                 value['idx'] = cls.serialize(i)
