@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Vega API Reference &mdash; vincent 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/2.3.2/spacelab/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="vincent 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Building Vega with Vincent" href="building_vega.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="brand" href="index.html">vincent</a>
+        <span class="navbar-text pull-left"><b>0.1</b></span>
+
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a href="index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#axis-labels">Axis Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#legends">Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#colors">Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#data">Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charts_library.html">Charts Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#chart">Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#grouped-bar">Grouped Bar</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building_vega.html">Building Vega with Vincent</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Vega API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scale">Scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dataref">DataRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#valueref">ValueRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mark">Mark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#propertyset">PropertySet</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Vega API Reference</a><ul>
+<li><a class="reference internal" href="#visualization">Visualization</a></li>
+<li><a class="reference internal" href="#data">Data</a></li>
+<li><a class="reference internal" href="#scale">Scale</a></li>
+<li><a class="reference internal" href="#dataref">DataRef</a></li>
+<li><a class="reference internal" href="#valueref">ValueRef</a></li>
+<li><a class="reference internal" href="#mark">Mark</a></li>
+<li><a class="reference internal" href="#properties">Properties</a></li>
+<li><a class="reference internal" href="#propertyset">PropertySet</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            
+            
+              
+  <li><a href="building_vega.html"
+         title="Previous Chapter: Building Vega with Vincent">&laquo; Building Vega wi...</a></li>
+            
+            
+              <li>
+  <a href="_sources/vega_api.txt"
+     rel="nofollow">Source</a></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-search pull-right" action="search.html" method="get">
+  <input type="text" name="q" class="search-query" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="container">
+  
+  <div class="section" id="vega-api-reference">
+<h1>Vega API Reference<a class="headerlink" href="#vega-api-reference" title="Permalink to this headline">¶</a></h1>
+<p>The full Vega specification is exposed through a set of object-relational
+JSON classes.</p>
+<div class="section" id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">Visualization</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>name</strong></dt>
+<dd><p class="field-property first last">string : Name of the visualization (optional)</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>width</strong></dt>
+<dd><p class="field-property first">int : Width of the visualization in pixels</p>
+<p class="field-property last">Default is 500 if undefined.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>height</strong></dt>
+<dd><p class="field-property first">int : Height of the visualization in pixels</p>
+<p class="field-property last">Default is 500 if undefined.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>viewport</strong></dt>
+<dd><p class="field-property first">2-element list of ints : Dimensions of the viewport</p>
+<p class="field-property">The viewport is a bounding box containing the visualization. If the
+dimensions of the visualization are larger than the viewport, then
+the visualization will be scrollable.</p>
+<p class="field-property last">If undefined, then the full visualization is shown.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>padding</strong></dt>
+<dd><p class="field-property first">int or dict : Padding around visualization</p>
+<p class="field-property">The padding defines the distance between the edge of the
+visualization canvas to the visualization box. It does not count as
+part of the visualization width/height. Values cannot be negative.</p>
+<p class="field-property last">If a dict, padding must have all keys <tt class="docutils literal"><span class="pre">''top'</span></tt>, <tt class="docutils literal"><span class="pre">'left'</span></tt>,
+<tt class="docutils literal"><span class="pre">'right'</span></tt>, and <tt class="docutils literal"><span class="pre">'bottom'</span></tt> with int values.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>data</strong></dt>
+<dd><p class="field-property first">list or KeyedList of <tt class="docutils literal"><span class="pre">Data</span></tt> : Data definitions</p>
+<p class="field-property last">This defines the data being visualized. See the <tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt> class
+for details.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>scales</strong></dt>
+<dd><p class="field-property first">list or KeyedList of <tt class="docutils literal"><span class="pre">Scale</span></tt> : Scale definitions</p>
+<p class="field-property last">Scales map the data from the domain of the data to some
+visualization space (such as an x-axis). See the <tt class="xref py py-class docutils literal"><span class="pre">Scale</span></tt>
+class for details.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>axes</strong></dt>
+<dd><p class="field-property first">list or KeyedList of <tt class="docutils literal"><span class="pre">Axis</span></tt> : Axis definitions</p>
+<p class="field-property last">Axes define the locations of the data being mapped by the scales.
+See the <tt class="xref py py-class docutils literal"><span class="pre">Axis</span></tt> class for details.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>marks</strong></dt>
+<dd><p class="field-property first">list or KeyedList of <tt class="docutils literal"><span class="pre">Mark</span></tt> : Mark definitions</p>
+<p class="field-property last">Marks are the visual objects (such as lines, bars, etc.) that
+represent the data in the visualization space. See the <tt class="xref py py-class docutils literal"><span class="pre">Mark</span></tt>
+class for details.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="data">
+<h2>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>name</strong></dt>
+<dd><p class="field-property first">string : Name of the data</p>
+<p class="field-property last">This is used by other components (<tt class="docutils literal"><span class="pre">Mark</span></tt>, etc.) for reference.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>url</strong></dt>
+<dd><p class="field-property first">string : URL from which to load the data</p>
+<p class="field-property last">This can be used as an alternative to defining the data in the
+<tt class="docutils literal"><span class="pre">values</span></tt> attribute.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>values</strong></dt>
+<dd><p class="field-property first">list : Data contents</p>
+<p class="field-property">Data is represented in tabular form, where each element of
+<tt class="docutils literal"><span class="pre">values</span></tt> corresponds to a row of data.  Each row of data is
+represented by a dict or a raw number. The keys of the dict are
+columns and the values are individual data points. The keys of the
+dicts must be strings for the data to correctly serialize to JSON.</p>
+<p class="field-property">The data will often have an &#8220;index&#8221; column representing the
+independent variable, with the remaining columns representing the
+dependent variables, though this is not required. The <tt class="docutils literal"><span class="pre">Data</span></tt> class
+itself, however, is agnostic to which columns are dependent and
+independent.</p>
+<p class="field-property">For example, the values attribute
+<tt class="docutils literal"><span class="pre">[{'x':</span> <span class="pre">0,</span> <span class="pre">'y':</span> <span class="pre">3.2},</span> <span class="pre">{'x':</span> <span class="pre">1,</span> <span class="pre">'y':</span> <span class="pre">1.3}]</span></tt>
+could represent two rows of two variables - possibly an independent
+variable <tt class="docutils literal"><span class="pre">'x'</span></tt> and a dependent variable <tt class="docutils literal"><span class="pre">'y'</span></tt>.
+For simple data sets, an alternative values attribute could be a
+simple list of numbers such as
+<tt class="docutils literal"><span class="pre">[2,</span> <span class="pre">12,</span> <span class="pre">3,</span> <span class="pre">5]</span></tt>.</p>
+<p class="field-property last">It may be more convenient to load data from pandas or NumPy objects.
+See the methods <tt class="xref py py-func docutils literal"><span class="pre">Data.from_pandas()</span></tt> and
+<tt class="xref py py-func docutils literal"><span class="pre">Data.from_numpy()</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>source</strong></dt>
+<dd><p class="field-property first">string : <tt class="docutils literal"><span class="pre">name</span></tt> field of another data set</p>
+<p class="field-property last">This is typically used with data transforms to create new data
+values.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>transform</strong></dt>
+<dd><p class="field-property first">list : transforms to apply to the data</p>
+<p class="field-property last">Note: Transform-relational classes are not yet implemented.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>format</strong></dt>
+<dd><p class="field-property first">dict : information about the data format</p>
+<p class="field-property last">This is only used when loading data from the <tt class="docutils literal"><span class="pre">url</span></tt> attribute.
+Format-relational classes are not yet implemented.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="scale">
+<h2>Scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">Scale</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>name</strong></dt>
+<dd><p class="field-property first">string : Unique name for the scale</p>
+<p class="field-property last">This is used for referencing by other components (mainly <tt class="docutils literal"><span class="pre">Mark</span></tt>).</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>type</strong></dt>
+<dd><p class="field-property first">string : Type of the scale</p>
+<p class="field-property">Valid types are as follows:</p>
+<ul class="field-property simple">
+<li><tt class="docutils literal"><span class="pre">'ordinal'</span></tt>: ordinal scale types</li>
+<li><tt class="docutils literal"><span class="pre">'time'</span></tt> or <tt class="docutils literal"><span class="pre">'utc'</span></tt>: time scale types</li>
+<li><tt class="docutils literal"><span class="pre">'linear'</span></tt>, <tt class="docutils literal"><span class="pre">'log'</span></tt>, <tt class="docutils literal"><span class="pre">'pow'</span></tt>, <tt class="docutils literal"><span class="pre">'sqrt'</span></tt>, <tt class="docutils literal"><span class="pre">'quantile'</span></tt>,
+<tt class="docutils literal"><span class="pre">'quantize'</span></tt>, and <tt class="docutils literal"><span class="pre">'threshold'</span></tt>: quantitative scale types</li>
+</ul>
+<p class="field-property">For time scales, the value should be a Javascript-style numeric
+value of seconds.  <tt class="docutils literal"><span class="pre">'time'</span></tt> implies the value is in local time.</p>
+<p class="field-property last">If unspecified, then the scale is assumed to be linear. See the d3
+documentation for scale type details.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>domain</strong></dt>
+<dd><p class="field-property first last">list or DataRef : Domain of the scale</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>domain_min</strong></dt>
+<dd><p class="field-property first">float, int, or DataRef : Minimum domain value</p>
+<p class="field-property last">Only used for quantitative/time scales. This takes precedence over
+the minimum of the <tt class="docutils literal"><span class="pre">domain</span></tt> property.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>domain_max</strong></dt>
+<dd><p class="field-property first">float, int, or DataRef : Maximum domain value</p>
+<p class="field-property last">Only used for quantitative/time scales. This takes precedence over
+the maximum of the <tt class="docutils literal"><span class="pre">domain</span></tt> property.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>range</strong></dt>
+<dd><p class="field-property first">list or string : Range of the scale</p>
+<p class="field-property">For quantitative scales, the range may be specified as a two-element
+list of min/max values. For ordinal scales, the range should be a
+list of output values mapped to the input values.</p>
+<dl class="field-property last docutils">
+<dt>String values may be used to automatically set a range:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">'width'</span></tt> - Set the range to the width of the visualization</li>
+<li><tt class="docutils literal"><span class="pre">'height'</span></tt> - Set the range to the height of the visualization</li>
+<li><tt class="docutils literal"><span class="pre">'shapes'</span></tt> - Equivalent to the symbol types <tt class="docutils literal"><span class="pre">['circle',</span>
+<span class="pre">'cross',</span> <span class="pre">'diamond',</span> <span class="pre">'square',</span> <span class="pre">'triangle-down',</span>
+<span class="pre">'triangle-up']</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'category10'</span></tt> - A pre-determined 10-color pallet</li>
+<li><tt class="docutils literal"><span class="pre">'category20'</span></tt> - A pre-determined 20-color pallet</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>range_min</strong></dt>
+<dd><p class="field-property first">float, int, or DataRef : Minimum range value</p>
+<p class="field-property last">Only used for quantitative/time scales. This takes precedence over
+the minimum of the <tt class="docutils literal"><span class="pre">range</span></tt> property.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>range_max</strong></dt>
+<dd><p class="field-property first">float, int, or DataRef : Maximum range value</p>
+<p class="field-property last">Only used for quantitative/time scales. This takes precedence over
+the maximum of the <tt class="docutils literal"><span class="pre">range</span></tt> property.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>reverse</strong></dt>
+<dd><p class="field-property first last">boolean : If True, flip the scale range</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>round</strong></dt>
+<dd><p class="field-property first last">boolean : If True, numeric output values are rounded to
+integers</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>points</strong></dt>
+<dd><p class="field-property first">boolean : If True, distribute ordinal values over evenly spaced
+points between <tt class="docutils literal"><span class="pre">range_min</span></tt> and <tt class="docutils literal"><span class="pre">range_max</span></tt></p>
+<p class="field-property last">Ignored for non-ordinal scales.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>clamp</strong></dt>
+<dd><p class="field-property first">boolean : If True, values that exceed the domain are clamped to
+within the domain</p>
+<p class="field-property last">Ignored for ordinal scales.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>nice</strong></dt>
+<dd><p class="field-property first">boolean or string : scale the domain to a more human-friendly set</p>
+<p class="field-property">If the scale <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'time'</span></tt> or <tt class="docutils literal"><span class="pre">'utc'</span></tt>, then the value
+should be one of <tt class="docutils literal"><span class="pre">'second'</span></tt>, <tt class="docutils literal"><span class="pre">'minute'</span></tt>, <tt class="docutils literal"><span class="pre">'hour'</span></tt>, <tt class="docutils literal"><span class="pre">'day'</span></tt>,
+<tt class="docutils literal"><span class="pre">'week'</span></tt>, <tt class="docutils literal"><span class="pre">'month'</span></tt>, or <tt class="docutils literal"><span class="pre">'year'</span></tt>.</p>
+<p class="field-property">If the scale <tt class="docutils literal"><span class="pre">type</span></tt> is a quantitative scale, then the value should
+be a boolean. The input values are rounded to a more human-friendly
+value. The details of the rounding are in the d3 documentation.</p>
+<p class="field-property last">Ignored for ordinal scales.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>exponent</strong></dt>
+<dd><p class="field-property first">float or int : Exponent for <tt class="docutils literal"><span class="pre">'pow'</span></tt> scale types</p>
+<p class="field-property last">Ignored for all scale types other than <tt class="docutils literal"><span class="pre">'pow'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>zero</strong></dt>
+<dd><p class="field-property first">boolean : If True, include zero in the domain</p>
+<p class="field-property last">Only valid for quantitative scale types. This is useful if the
+domain is defined as a DataRef that may not include 0 exactly.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="dataref">
+<h2>DataRef<a class="headerlink" href="#dataref" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">DataRef</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>data</strong></dt>
+<dd><p class="field-property first last">string : Name of data-set containing the domain values</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>field</strong></dt>
+<dd><p class="field-property first">string or list of strings : Reference to desired data field(s)</p>
+<p class="field-property last">If multiple fields are given, then the values of all fields are
+included in the domain.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="valueref">
+<h2>ValueRef<a class="headerlink" href="#valueref" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">ValueRef</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>value</strong></dt>
+<dd><p class="field-property first">int, float, or string : used for constant values</p>
+<p class="field-property last">This is ignored if the <tt class="docutils literal"><span class="pre">field</span></tt> property is defined.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>field</strong></dt>
+<dd><p class="field-property first">string : reference to a field of the data in dot-notation</p>
+<p class="field-property last">The data is taken from the Mark&#8217;s <tt class="docutils literal"><span class="pre">from_</span></tt> property. For instance, if
+the data has a definition
+<tt class="docutils literal"><span class="pre">[{'x':</span> <span class="pre">2},</span> <span class="pre">{'x':</span> <span class="pre">3},</span> <span class="pre">{'x':</span> <span class="pre">1}]</span></tt>
+then the data should be referenced as <tt class="docutils literal"><span class="pre">data.x</span></tt>. Note that the first
+element is always <cite>data</cite> regardless of the name of the data.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>scale</strong></dt>
+<dd><p class="field-property first">string : reference to the name of a <tt class="docutils literal"><span class="pre">Scale</span></tt></p>
+<p class="field-property last">The scale is applied to the <tt class="docutils literal"><span class="pre">value</span></tt> and <tt class="docutils literal"><span class="pre">field</span></tt> attributes.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>mult</strong></dt>
+<dd><p class="field-property first last">int or float : multiplier applied to the data after any scaling</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>offset</strong></dt>
+<dd><p class="field-property first last">int or float : additive offset applied to the data after any
+scaling and multipliers</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>band</strong></dt>
+<dd><p class="field-property first">boolean : use the range of the scale if applicable</p>
+<p class="field-property last">If this is True and <tt class="docutils literal"><span class="pre">scale</span></tt> is defined, then the value referenced
+is the range band referenced scale. See the d3 documentation on
+<tt class="docutils literal"><span class="pre">ordinal.rangeBand</span></tt> for more info.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="mark">
+<h2>Mark<a class="headerlink" href="#mark" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">Mark</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>name</strong></dt>
+<dd><p class="field-property first last">string : Optional unique name for mark</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>description</strong></dt>
+<dd><p class="field-property first last">string : Optional description for mark</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>type</strong></dt>
+<dd><p class="field-property first">string : Type of mark</p>
+<p class="field-property last">Valid types are <tt class="docutils literal"><span class="pre">'rect'</span></tt>, <tt class="docutils literal"><span class="pre">'symbol'</span></tt>, <tt class="docutils literal"><span class="pre">'path'</span></tt>, <tt class="docutils literal"><span class="pre">'arc'</span></tt>,
+<tt class="docutils literal"><span class="pre">'area'</span></tt>, <tt class="docutils literal"><span class="pre">'line'</span></tt>, <tt class="docutils literal"><span class="pre">'image'</span></tt>, and <tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>from_</strong></dt>
+<dd><p class="field-property first">dict : Description of data to visualize</p>
+<p class="field-property last">Note that although the property has the name <tt class="docutils literal"><span class="pre">from_</span></tt> (using
+<tt class="docutils literal"><span class="pre">from</span></tt> is invalid Python syntax), the JSON will contain the
+correct property <tt class="docutils literal"><span class="pre">from</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>properties</strong></dt>
+<dd><p class="field-property first last">MarkProperties : Mark property set definitions</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>key</strong></dt>
+<dd><p class="field-property first">string : Field to use for data binding</p>
+<p class="field-property last">When updating data dynamically, restrict dynamic transitions from
+affecting data with the given key. This can be useful for something
+like scrolling time series. See the Vega examples.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>delay</strong></dt>
+<dd><p class="field-property first last">ValueRef, number : Transitional delay in milliseconds.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>ease</strong></dt>
+<dd><p class="field-property first">string : Type of transition easing</p>
+<p class="field-property">Valid types are <tt class="docutils literal"><span class="pre">'linear'</span></tt>, <tt class="docutils literal"><span class="pre">'quad'</span></tt>, <tt class="docutils literal"><span class="pre">'cubic'</span></tt>, <tt class="docutils literal"><span class="pre">'sin'</span></tt>,
+<tt class="docutils literal"><span class="pre">'exp'</span></tt>, <tt class="docutils literal"><span class="pre">'circle'</span></tt>, and <tt class="docutils literal"><span class="pre">'bounce'</span></tt>, which can be appended
+with the modifiers <tt class="docutils literal"><span class="pre">'in'</span></tt>, <tt class="docutils literal"><span class="pre">'out'</span></tt>, <tt class="docutils literal"><span class="pre">'in-out'</span></tt>, and
+<tt class="docutils literal"><span class="pre">'out-in'</span></tt>. The default is <tt class="docutils literal"><span class="pre">'cubic-in-out'</span></tt>.</p>
+<p class="field-property last">See the documentation for the d3 ease function for more details.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">Properties</span></tt>:</p>
+</div>
+<div class="section" id="propertyset">
+<h2>PropertySet<a class="headerlink" href="#propertyset" title="Permalink to this headline">¶</a></h2>
+<p>Field properties for <tt class="xref py py-class docutils literal"><span class="pre">PropertySet</span></tt>:</p>
+<dl class="docutils">
+<dt><strong>x</strong></dt>
+<dd><p class="field-property first">ValueRef : number, left-most x-coordinate</p>
+<p class="field-property last">For most marks, this will be equal to the field of the independent
+variable. For example,
+<tt class="docutils literal"><span class="pre">{&quot;scale&quot;:</span> <span class="pre">&quot;x&quot;,</span> <span class="pre">&quot;field&quot;:</span> <span class="pre">&quot;data.x&quot;}</span></tt>
+will place a mark with its left-most coordinate at the x-values of
+the data. Something like
+<tt class="docutils literal"><span class="pre">{&quot;scale&quot;:</span> <span class="pre">&quot;x&quot;,</span> <span class="pre">&quot;value&quot;:</span> <span class="pre">10}</span></tt>
+will place a single mark at given x-coordinate.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>x2</strong></dt>
+<dd><p class="field-property first">ValueRef : number, right-most x-coordinate</p>
+<p class="field-property last">Generally, for marks where the width is significant, it&#8217;s better to
+use the <tt class="docutils literal"><span class="pre">width</span></tt> property.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>width</strong></dt>
+<dd><p class="field-property first">ValueRef : number, width of the mark</p>
+<p class="field-property last">Set the <tt class="docutils literal"><span class="pre">band</span></tt> property of the <tt class="docutils literal"><span class="pre">ValueRef</span></tt> to True to use the
+full width.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>y</strong></dt>
+<dd><p class="field-property first">ValueRef : number, top-most y-coordinate</p>
+<p class="field-property last">The same remarks for the <tt class="docutils literal"><span class="pre">x</span></tt> property apply here.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>y2</strong></dt>
+<dd><p class="field-property first">ValueRef : number, bottom-most y-coordinate</p>
+<p class="field-property last">The same remarks for the <tt class="docutils literal"><span class="pre">x2</span></tt> property apply here.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>height</strong></dt>
+<dd><p class="field-property first last">ValueRef : number, height of the mark</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>opacity</strong></dt>
+<dd><p class="field-property first last">ValueRef : number, overall opacity (0 to 1)</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>fill</strong></dt>
+<dd><p class="field-property first">ValueRef : string, fill color for the mark</p>
+<p class="field-property last">Colors can be specified in standard HTML hex notation or as CSS3
+compatible strings. The color string is not validated due to its
+large number of valid values.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>fill_opacity</strong></dt>
+<dd><p class="field-property first last">ValueRef : int or float, opacity of the fill (0 to 1)</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>stroke</strong></dt>
+<dd><p class="field-property first">ValueRef : color, stroke color for the mark</p>
+<p class="field-property last">Colors can be specified in standard HTML hex notation or as CSS3
+compatible strings. The color string is not validated due to its
+large number of valid values.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>stroke_width</strong></dt>
+<dd><p class="field-property first last">ValueRef : int, width of the stroke in pixels</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>stroke_opacity</strong></dt>
+<dd><p class="field-property first last">ValueRef : number, opacity of the stroke (0 to 1)</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>size</strong></dt>
+<dd><p class="field-property first">ValueRef : number, area of the mark in pixels</p>
+<p class="field-property last">This is the total area of a symbol. For example, a value of 500 and
+a <tt class="docutils literal"><span class="pre">shape</span></tt> of <tt class="docutils literal"><span class="pre">'circle'</span></tt> would result in circles with an area of
+500 square pixels. Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'symbol'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>shape</strong></dt>
+<dd><p class="field-property first">ValueRef : string, type of symbol to use</p>
+<p class="field-property last">Possible values are <tt class="docutils literal"><span class="pre">'circle'</span></tt> (default), <tt class="docutils literal"><span class="pre">'square'</span></tt>,
+<tt class="docutils literal"><span class="pre">'cross'</span></tt>, <tt class="docutils literal"><span class="pre">'diamond'</span></tt>, <tt class="docutils literal"><span class="pre">'triangle-up'</span></tt>, and
+<tt class="docutils literal"><span class="pre">'triangle-down'</span></tt>. Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'symbol'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>path</strong></dt>
+<dd><p class="field-property first">ValueRef : string, SVG path string</p>
+<p class="field-property last">This would typically be used for maps and other things where the
+path is taken from the data.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>inner_radius</strong></dt>
+<dd><p class="field-property first">ValueRef : number, inner radius of arc in pixels</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'arc'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>outer_radius</strong></dt>
+<dd><p class="field-property first">ValueRef : number, outer radius of the arc in pixels</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'arc'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>start_angle</strong></dt>
+<dd><p class="field-property first">ValueRef : number, start angle of the arc in radians</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'arc'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>end_angle</strong></dt>
+<dd><p class="field-property first">ValueRef : number, end angle of the arc in radians</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'arc'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>interpolate</strong></dt>
+<dd><p class="field-property first">ValueRef : string, line interpolation method to use</p>
+<p class="field-property">Possible values for <tt class="docutils literal"><span class="pre">area</span></tt> types are <cite>&#8216;linear&#8217;</cite>,
+<tt class="docutils literal"><span class="pre">'step-before'</span></tt>, <tt class="docutils literal"><span class="pre">'step-after'</span></tt>, <tt class="docutils literal"><span class="pre">'basis'</span></tt>, <tt class="docutils literal"><span class="pre">'basis-open'</span></tt>,
+<tt class="docutils literal"><span class="pre">'cardinal'</span></tt>, <tt class="docutils literal"><span class="pre">'cardinal-open'</span></tt>, <tt class="docutils literal"><span class="pre">'monotone'</span></tt>. <tt class="docutils literal"><span class="pre">line</span></tt> types
+have all values for <tt class="docutils literal"><span class="pre">area</span></tt> as well as <tt class="docutils literal"><span class="pre">'basis-closed'</span></tt>,
+<tt class="docutils literal"><span class="pre">'bundle'</span></tt>, and <tt class="docutils literal"><span class="pre">'cardinal-closed'</span></tt>.</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'area'</span></tt> or <tt class="docutils literal"><span class="pre">'line'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>tension</strong></dt>
+<dd><p class="field-property first">ValueRef : number, tension used for interpolation</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'area'</span></tt> or <tt class="docutils literal"><span class="pre">'line'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>url</strong></dt>
+<dd><p class="field-property first">ValueRef : string, url of image</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'image'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>align</strong></dt>
+<dd><p class="field-property first">ValueRef : string, horizontal alignment of mark</p>
+<p class="field-property last">Possible values are <tt class="docutils literal"><span class="pre">'left'</span></tt>, <tt class="docutils literal"><span class="pre">'right'</span></tt>, and <tt class="docutils literal"><span class="pre">'center'</span></tt>. Only
+used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'image'</span></tt> or <tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>baseline</strong></dt>
+<dd><p class="field-property first">ValueRef : string, vertical alignment of mark</p>
+<p class="field-property last">Possible values are <tt class="docutils literal"><span class="pre">'top'</span></tt>, <tt class="docutils literal"><span class="pre">'middle'</span></tt>, and <tt class="docutils literal"><span class="pre">'bottom'</span></tt>. Only
+used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'image'</span></tt> or <tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>text</strong></dt>
+<dd><p class="field-property first">ValueRef : string, text to display</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>dx</strong></dt>
+<dd><p class="field-property first">ValueRef : number, horizontal margin between text and anchor
+point in pixels</p>
+<p class="field-property last">Ignored if <tt class="docutils literal"><span class="pre">align</span></tt> is <tt class="docutils literal"><span class="pre">'center'</span></tt>. Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is
+<tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>dy</strong></dt>
+<dd><p class="field-property first">ValueRef : number, vertical margin between text and anchor
+point in pixels</p>
+<p class="field-property last">Ignored if <tt class="docutils literal"><span class="pre">baseline</span></tt> is <tt class="docutils literal"><span class="pre">'middle'</span></tt>. Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is
+<tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>font</strong></dt>
+<dd><p class="field-property first">ValueRef : string, typeface for text</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>font_size</strong></dt>
+<dd><p class="field-property first">ValueRef : number, font size in pixels</p>
+<p class="field-property last">Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is <tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>font_weight</strong></dt>
+<dd><p class="field-property first">ValueRef : string, font weight</p>
+<p class="field-property last">Should be a valid SVG font weight. Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is
+<tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>font_style</strong></dt>
+<dd><p class="field-property first">ValueRef : string, font style</p>
+<p class="field-property last">Should be a valid SVG font style. Only used if <tt class="docutils literal"><span class="pre">type</span></tt> is
+<tt class="docutils literal"><span class="pre">'text'</span></tt>.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

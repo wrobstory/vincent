@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quickstart &mdash; vincent 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/2.3.2/spacelab/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="vincent 0.1 documentation" href="index.html" />
+    <link rel="next" title="Charts Library" href="charts_library.html" />
+    <link rel="prev" title="Vincent: A Python to Vega Translator" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="brand" href="index.html">vincent</a>
+        <span class="navbar-text pull-left"><b>0.1</b></span>
+
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a href="index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#axis-labels">Axis Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#legends">Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#colors">Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data">Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charts_library.html">Charts Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#chart">Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#grouped-bar">Grouped Bar</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building_vega.html">Building Vega with Vincent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vega_api.html">Vega API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#scale">Scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#dataref">DataRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#valueref">ValueRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#mark">Mark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#propertyset">PropertySet</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Quickstart</a><ul>
+<li><a class="reference internal" href="#bar">Bar</a></li>
+<li><a class="reference internal" href="#axis-labels">Axis Labels</a></li>
+<li><a class="reference internal" href="#line">Line</a></li>
+<li><a class="reference internal" href="#legends">Legends</a></li>
+<li><a class="reference internal" href="#scatter">Scatter</a></li>
+<li><a class="reference internal" href="#colors">Colors</a></li>
+<li><a class="reference internal" href="#area">Area</a></li>
+<li><a class="reference internal" href="#stacked-area">Stacked Area</a></li>
+<li><a class="reference internal" href="#stacked-bar">Stacked Bar</a></li>
+<li><a class="reference internal" href="#grouped-bar">Grouped Bar</a></li>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#data">Data</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            
+            
+              
+  <li><a href="index.html"
+         title="Previous Chapter: Vincent: A Python to Vega Translator">&laquo; Vincent: A Pytho...</a></li>
+  <li><a href="charts_library.html"
+         title="Next Chapter: Charts Library">Charts Library &raquo;</a></li>
+            
+            
+              <li>
+  <a href="_sources/quickstart.txt"
+     rel="nofollow">Source</a></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-search pull-right" action="search.html" method="get">
+  <input type="text" name="q" class="search-query" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="container">
+  
+  <div class="section" id="quickstart">
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>Have <a class="reference internal" href="#quick-data"><em>Data</em></a>. Want to make chart.</p>
+<div class="section" id="bar">
+<span id="quick-bar"></span><h2>Bar<a class="headerlink" href="#bar" title="Permalink to this headline">¶</a></h2>
+<p>Bar charts:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">vincent</span>
+<span class="n">bar</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">list_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_bar1.png" src="_images/quick_bar1.png" />
+</div>
+<div class="section" id="axis-labels">
+<span id="quick-axislabels"></span><h2>Axis Labels<a class="headerlink" href="#axis-labels" title="Permalink to this headline">¶</a></h2>
+<p>Labeling the axes is simple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">bar</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">multi_iter1</span><span class="p">[</span><span class="s">&#39;y1&#39;</span><span class="p">])</span>
+<span class="n">bar</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_bar2.png" src="_images/quick_bar2.png" />
+</div>
+<div class="section" id="line">
+<span id="quick-line"></span><h2>Line<a class="headerlink" href="#line" title="Permalink to this headline">¶</a></h2>
+<p>Line charts:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">line</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">list_data</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_line1.png" src="_images/quick_line1.png" />
+</div>
+<div class="section" id="legends">
+<span id="quick-legend"></span><h2>Legends<a class="headerlink" href="#legends" title="Permalink to this headline">¶</a></h2>
+<p>Most plots create a separate set of scales that allow for categorical legends that are generated automatically. Adding the legend is straightforward:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">line</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">multi_iter1</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_line2.png" src="_images/quick_line2.png" />
+<p>Using the stocks data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">line</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">price</span><span class="p">[[</span><span class="s">&#39;GOOG&#39;</span><span class="p">,</span> <span class="s">&#39;AAPL&#39;</span><span class="p">]])</span>
+<span class="n">line</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Price&#39;</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;GOOG vs AAPL&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_line3.png" src="_images/quick_line3.png" />
+</div>
+<div class="section" id="scatter">
+<span id="quick-scatter"></span><h2>Scatter<a class="headerlink" href="#scatter" title="Permalink to this headline">¶</a></h2>
+<p>Scatter charts:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">scatter</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">multi_iter2</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">scatter</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Data Value&#39;</span><span class="p">)</span>
+<span class="n">scatter</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_scatter1.png" src="_images/quick_scatter1.png" />
+</div>
+<div class="section" id="colors">
+<span id="quick-colors"></span><h2>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h2>
+<p>All of the <a class="reference external" href="http://colorbrewer2.org/">Color Brewer</a> scales are built-in to Vincent:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">scatter</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Set3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_scatter2.png" src="_images/quick_scatter2.png" />
+</div>
+<div class="section" id="area">
+<span id="quick-area"></span><h2>Area<a class="headerlink" href="#area" title="Permalink to this headline">¶</a></h2>
+<p>Area charts take similar data to Line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">area</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Area</span><span class="p">(</span><span class="n">list_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_area1.png" src="_images/quick_area1.png" />
+</div>
+<div class="section" id="stacked-area">
+<span id="quick-stackedarea"></span><h2>Stacked Area<a class="headerlink" href="#stacked-area" title="Permalink to this headline">¶</a></h2>
+<p>Stacked areas allow you to visualize multiple categories with one chart:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stacked</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedArea</span><span class="p">(</span><span class="n">multi_iter1</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_stackarea1.png" src="_images/quick_stackarea1.png" />
+<p>More categories, more colors:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stacked</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedArea</span><span class="p">(</span><span class="n">df_1</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Spectral&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_stackarea2.png" src="_images/quick_stackarea2.png" />
+<p>Stocks data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stacked</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedArea</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Date&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Price&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Tech Stocks&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Accent&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_stackarea3.png" src="_images/quick_stackarea3.png" />
+</div>
+<div class="section" id="stacked-bar">
+<span id="quick-stackedbar"></span><h2>Stacked Bar<a class="headerlink" href="#stacked-bar" title="Permalink to this headline">¶</a></h2>
+<p>Similar to stacked areas, stacked bars let you visualize multiple ordinal categories and groups:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stack</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedBar</span><span class="p">(</span><span class="n">df_2</span><span class="p">)</span>
+<span class="n">stack</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_stackbar1.png" src="_images/quick_stackbar1.png" />
+<p>Adding some bar padding is often helpful:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stack</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedBar</span><span class="p">(</span><span class="n">df_farm</span><span class="p">)</span>
+<span class="n">stack</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Total Produce&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Farms&#39;</span><span class="p">)</span>
+<span class="n">stack</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Produce Types&#39;</span><span class="p">)</span>
+<span class="n">stack</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">stack</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Pastel1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_stackbar2.png" src="_images/quick_stackbar2.png" />
+</div>
+<div class="section" id="grouped-bar">
+<span id="quick-groupedbar"></span><h2>Grouped Bar<a class="headerlink" href="#grouped-bar" title="Permalink to this headline">¶</a></h2>
+<p>Grouped bars are another way to view grouped ordinal data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">group</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">GroupedBar</span><span class="p">(</span><span class="n">df_2</span><span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Spectral&#39;</span><span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="mi">750</span>
+</pre></div>
+</div>
+<img alt="_images/quick_grouped1.png" src="_images/quick_grouped1.png" />
+<p>Farm data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">group</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">GroupedBar</span><span class="p">(</span><span class="n">df_farm</span><span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Total Produce&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Farms&#39;</span><span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Produce Types&#39;</span><span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Set1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/quick_grouped2.png" src="_images/quick_grouped2.png" />
+</div>
+<div class="section" id="output">
+<span id="id2"></span><h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>To write the Vega spec to JSON, use the <tt class="docutils literal"><span class="pre">to_json</span></tt> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">bar</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="s">&#39;bar.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no path is included, it writes it as a string to the REPL:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;bar.to_json()</span>
+<span class="go">#Really long string of JSON</span>
+</pre></div>
+</div>
+<p>A simple HTML template to read and display the chart is built-in to Vincent, and can be output along with the JSON:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;bar.to_json(&#39;bar.json&#39;, html_out=True, html_path=&#39;bar_template.html&#39;)</span>
+</pre></div>
+</div>
+<p>The HTML will need to be served somehow- luckily, Python makes this easy. Start a simple HTTP Server, then point your browser to localhost:8000:</p>
+<div class="highlight-python"><pre>$python -m SimpleHTTPServer 8000</pre>
+</div>
+</div>
+<div class="section" id="data">
+<span id="quick-data"></span><h2>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h2>
+<p>These are the datasets used in the <a class="reference internal" href="#quickstart"><em>Quickstart</em></a> charts above:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c">#Iterable</span>
+<span class="n">list_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span>
+
+<span class="c">#Dicts of iterables</span>
+<span class="n">cat_1</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;y1&#39;</span><span class="p">,</span> <span class="s">&#39;y2&#39;</span><span class="p">,</span> <span class="s">&#39;y3&#39;</span><span class="p">,</span> <span class="s">&#39;y4&#39;</span><span class="p">]</span>
+<span class="n">index_1</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">multi_iter1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;index&#39;</span><span class="p">:</span> <span class="n">index_1</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cat_1</span><span class="p">:</span>
+    <span class="n">multi_iter1</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index_1</span><span class="p">]</span>
+
+<span class="n">cat_2</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;y&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">index_2</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">multi_iter2</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;index&#39;</span><span class="p">:</span> <span class="n">index_2</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cat_2</span><span class="p">:</span>
+    <span class="n">multi_iter2</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index_2</span><span class="p">]</span>
+
+<span class="c">#Pandas</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">farm_1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">}</span>
+<span class="n">farm_2</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">}</span>
+<span class="n">farm_3</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+<span class="n">farm_4</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">}</span>
+
+<span class="n">farm_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm_1</span><span class="p">,</span> <span class="n">farm_2</span><span class="p">,</span> <span class="n">farm_3</span><span class="p">,</span> <span class="n">farm_4</span><span class="p">]</span>
+<span class="n">farm_index</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Farm 1&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 2&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 3&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 4&#39;</span><span class="p">]</span>
+<span class="n">df_farm</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">farm_data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">farm_index</span><span class="p">)</span>
+
+<span class="c">#As DataFrames</span>
+<span class="n">index_3</span> <span class="o">=</span> <span class="n">multi_iter2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">df_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">multi_iter2</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index_3</span><span class="p">)</span>
+<span class="n">df_1</span> <span class="o">=</span> <span class="n">df_1</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">df_1</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+
+<span class="n">cat_4</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Metric_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">index_4</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Data 1&#39;</span><span class="p">,</span> <span class="s">&#39;Data 2&#39;</span><span class="p">,</span> <span class="s">&#39;Data 3&#39;</span><span class="p">,</span> <span class="s">&#39;Data 4&#39;</span><span class="p">]</span>
+<span class="n">data_3</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cat_4</span><span class="p">:</span>
+    <span class="n">data_3</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index_4</span><span class="p">]</span>
+<span class="n">df_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_3</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index_4</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">pandas.io.data</span> <span class="kn">as</span> <span class="nn">web</span>
+<span class="n">all_data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;AAPL&#39;</span><span class="p">,</span> <span class="s">&#39;GOOG&#39;</span><span class="p">,</span> <span class="s">&#39;IBM&#39;</span><span class="p">,</span> <span class="s">&#39;YHOO&#39;</span><span class="p">,</span> <span class="s">&#39;MSFT&#39;</span><span class="p">]:</span>
+    <span class="n">all_data</span><span class="p">[</span><span class="n">ticker</span><span class="p">]</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">get_data_yahoo</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="s">&#39;1/1/2010&#39;</span><span class="p">,</span> <span class="s">&#39;1/1/2013&#39;</span><span class="p">)</span>
+<span class="n">price</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">tic</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;Adj Close&#39;</span><span class="p">]</span>
+                      <span class="k">for</span> <span class="n">tic</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">all_data</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()})</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

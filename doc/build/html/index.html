@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Vincent: A Python to Vega Translator &mdash; vincent 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/2.3.2/spacelab/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="vincent 0.1 documentation" href="#" />
+    <link rel="next" title="Quickstart" href="quickstart.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="brand" href="#">vincent</a>
+        <span class="navbar-text pull-left"><b>0.1</b></span>
+
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a href="#"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#axis-labels">Axis Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#legends">Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#colors">Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#data">Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charts_library.html">Charts Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#chart">Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#grouped-bar">Grouped Bar</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building_vega.html">Building Vega with Vincent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vega_api.html">Vega API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#scale">Scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#dataref">DataRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#valueref">ValueRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#mark">Mark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#propertyset">PropertySet</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Vincent: A Python to Vega Translator</a><ul>
+<li><a class="reference internal" href="#concept">Concept</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            
+            
+              
+  <li><a href="quickstart.html"
+         title="Next Chapter: Quickstart">Quickstart &raquo;</a></li>
+            
+            
+              <li>
+  <a href="_sources/index.txt"
+     rel="nofollow">Source</a></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-search pull-right" action="search.html" method="get">
+  <input type="text" name="q" class="search-query" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="container">
+  
+  <div class="section" id="vincent-a-python-to-vega-translator">
+<h1>Vincent: A Python to Vega Translator<a class="headerlink" href="#vincent-a-python-to-vega-translator" title="Permalink to this headline">¶</a></h1>
+<p>The folks at Trifacta are making it easy to build visualizations on top of D3 with Vega. Vincent makes it easy to build Vega with Python.</p>
+<div class="section" id="concept">
+<h2>Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
+<p>The data capabilities of Python. The visualization capabilities of JavaScript.</p>
+<p>Vincent allows you to build Vega specifications in a Pythonic way, and performs type-checking to help ensure that your specifications are correct. It also has a number of convenience chart-building methods that quickly turn Python data structures into Vega visualization grammar, enabling graphical exploration. It allows for quick iteration of visualization designs via getters and setters on grammar elements, and outputs the final visualization to JSON.</p>
+<p>Perhaps most importantly, Vincent has Pandas-Fu, and is built specifically to allow for quick plotting of DataFrames and Series.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#axis-labels">Axis Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#legends">Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#colors">Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#data">Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charts_library.html">Charts Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#chart">Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#grouped-bar">Grouped Bar</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building_vega.html">Building Vega with Vincent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vega_api.html">Vega API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#scale">Scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#dataref">DataRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#valueref">ValueRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#mark">Mark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#propertyset">PropertySet</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

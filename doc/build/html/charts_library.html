@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Charts Library &mdash; vincent 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/2.3.2/spacelab/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-2.3.2/css/bootstrap-responsive.min.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="vincent 0.1 documentation" href="index.html" />
+    <link rel="next" title="Building Vega with Vincent" href="building_vega.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="brand" href="index.html">vincent</a>
+        <span class="navbar-text pull-left"><b>0.1</b></span>
+
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a href="index.html"
+     class="dropdown-toggle"
+     data-toggle="dropdown">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+    ><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#axis-labels">Axis Labels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#legends">Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#colors">Colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#data">Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Charts Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#chart">Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bar">Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#line">Line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#area">Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stacked-area">Stacked Area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stacked-bar">Stacked Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#grouped-bar">Grouped Bar</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building_vega.html">Building Vega with Vincent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vega_api.html">Vega API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#scale">Scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#dataref">DataRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#valueref">ValueRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#mark">Mark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#propertyset">PropertySet</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"><ul>
+<li><a class="reference internal" href="#">Charts Library</a><ul>
+<li><a class="reference internal" href="#chart">Chart</a></li>
+<li><a class="reference internal" href="#bar">Bar</a></li>
+<li><a class="reference internal" href="#line">Line</a></li>
+<li><a class="reference internal" href="#scatter">Scatter</a></li>
+<li><a class="reference internal" href="#area">Area</a></li>
+<li><a class="reference internal" href="#stacked-area">Stacked Area</a></li>
+<li><a class="reference internal" href="#stacked-bar">Stacked Bar</a></li>
+<li><a class="reference internal" href="#grouped-bar">Grouped Bar</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+            
+            
+              
+  <li><a href="quickstart.html"
+         title="Previous Chapter: Quickstart">&laquo; Quickstart</a></li>
+  <li><a href="building_vega.html"
+         title="Next Chapter: Building Vega with Vincent">Building Vega wi... &raquo;</a></li>
+            
+            
+              <li>
+  <a href="_sources/charts_library.txt"
+     rel="nofollow">Source</a></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-search pull-right" action="search.html" method="get">
+  <input type="text" name="q" class="search-query" placeholder="Search" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="container">
+  
+  <div class="section" id="charts-library">
+<span id="charts-lib"></span><h1>Charts Library<a class="headerlink" href="#charts-library" title="Permalink to this headline">¶</a></h1>
+<p>Vincent provides a charts library that allows for rapid creation and iteration of different chart types, with data inputs from a number of Python data structures. This library is built using the Vincent API to construct Vega grammar, with some adding conveniences for simple data input.</p>
+<div class="section" id="chart">
+<span id="chart-lib-chart"></span><h2>Chart<a class="headerlink" href="#chart" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">Chart</span></tt> class is a base container for ingesting data and creating a Vega scaffold:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;chart = vincent.Chart([10, 20, 30, 40, 50])</span>
+<span class="go">&gt;&gt;&gt;chart.grammar()</span>
+<span class="go">{u&#39;axes&#39;: [],</span>
+<span class="go"> u&#39;data&#39;: [{u&#39;name&#39;: u&#39;table&#39;,</span>
+<span class="go">   u&#39;values&#39;: [{u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 0, u&#39;val&#39;: 10},</span>
+<span class="go">    {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 1, u&#39;val&#39;: 20},</span>
+<span class="go">    {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 2, u&#39;val&#39;: 30},</span>
+<span class="go">    {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 3, u&#39;val&#39;: 40},</span>
+<span class="go">    {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 4, u&#39;val&#39;: 50}]}],</span>
+<span class="go"> u&#39;height&#39;: 300,</span>
+<span class="go"> u&#39;legends&#39;: [],</span>
+<span class="go"> u&#39;marks&#39;: [],</span>
+<span class="go"> u&#39;padding&#39;: {u&#39;bottom&#39;: 50, u&#39;left&#39;: 50, u&#39;right&#39;: 100, u&#39;top&#39;: 10},</span>
+<span class="go"> u&#39;scales&#39;: [],</span>
+<span class="go"> u&#39;width&#39;: 500}</span>
+</pre></div>
+</div>
+<p>Note the use of <tt class="docutils literal"><span class="pre">chart.grammar()</span></tt> to output the specification to Python data structures. If at any point you wish to view the current specification, use the <tt class="docutils literal"><span class="pre">grammar()</span></tt> call. This works at almost any level of nesting depth as well:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;chart.data[0].grammar()</span>
+<span class="go">{u&#39;name&#39;: u&#39;table&#39;,</span>
+<span class="go"> u&#39;values&#39;: [{u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 0, u&#39;val&#39;: 10},</span>
+<span class="go">  {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 1, u&#39;val&#39;: 20},</span>
+<span class="go">  {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 2, u&#39;val&#39;: 30},</span>
+<span class="go">  {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 3, u&#39;val&#39;: 40},</span>
+<span class="go">  {u&#39;col&#39;: u&#39;data&#39;, u&#39;idx&#39;: 4, u&#39;val&#39;: 50}]}</span>
+</pre></div>
+</div>
+<p>Charts will take a number of different data sources. All of the following produce equivalent data output:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">list_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="n">dict_of_iters</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]}</span>
+<span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]})</span>
+<span class="c">#All of the following are equivalent</span>
+<span class="n">chart</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">list_data</span><span class="p">)</span>
+<span class="n">chart</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dict_of_iters</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">chart</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+<span class="n">chart</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">vincent.Chart</span></tt> is the abstract base class on which all other chart types are built.</p>
+</div>
+<div class="section" id="bar">
+<span id="chart-lib-bar"></span><h2>Bar<a class="headerlink" href="#bar" title="Permalink to this headline">¶</a></h2>
+<p>A subclass of chart:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">bar</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Bar</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">])</span>
+</pre></div>
+</div>
+<img alt="_images/bar1.png" src="_images/bar1.png" />
+</div>
+<div class="section" id="line">
+<span id="chart-lib-line"></span><h2>Line<a class="headerlink" href="#line" title="Permalink to this headline">¶</a></h2>
+<p>Similar to bar, you can plot just one line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">line</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">])</span>
+</pre></div>
+</div>
+<img alt="_images/line1.png" src="_images/line1.png" />
+<p>Multiple lines can also be plotted easily:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;y1&#39;</span><span class="p">,</span> <span class="s">&#39;y2&#39;</span><span class="p">,</span> <span class="s">&#39;y3&#39;</span><span class="p">,</span> <span class="s">&#39;y4&#39;</span><span class="p">]</span>
+<span class="n">index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">multi_iter1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
+    <span class="n">multi_iter1</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">lines</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+<span class="n">lines</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Data Value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/line2.png" src="_images/line2.png" />
+</div>
+<div class="section" id="scatter">
+<span id="chart-lib-scatter"></span><h2>Scatter<a class="headerlink" href="#scatter" title="Permalink to this headline">¶</a></h2>
+<p>Using the same data from above, with some different color choices:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">scatter</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">scatter</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Data Value&#39;</span><span class="p">)</span>
+<span class="n">scatter</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+<span class="n">scatter</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Set2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/scatter1.png" src="_images/scatter1.png" />
+</div>
+<div class="section" id="area">
+<span id="chart-lib-area"></span><h2>Area<a class="headerlink" href="#area" title="Permalink to this headline">¶</a></h2>
+<p>Area charts are basically an extension of Line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">area</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Area</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">45</span><span class="p">])</span>
+</pre></div>
+</div>
+<img alt="_images/area1.png" src="_images/area1.png" />
+</div>
+<div class="section" id="stacked-area">
+<span id="chart-lib-stackedarea"></span><h2>Stacked Area<a class="headerlink" href="#stacked-area" title="Permalink to this headline">¶</a></h2>
+<p>Stacked areas allow you to visualize multiple pieces of data with an area-type chart. Lets look at a large number of categories:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;y&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
+<span class="n">stacked</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedArea</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Data Value&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Spectral&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/stacked_area1.png" src="_images/stacked_area1.png" />
+</div>
+<div class="section" id="stacked-bar">
+<span id="chart-lib-stackedbar"></span><h2>Stacked Bar<a class="headerlink" href="#stacked-bar" title="Permalink to this headline">¶</a></h2>
+<p>A variation that allows you to stack bars similar to areas for ordinal quantities. Using the data from above:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stacked</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">StackedBar</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Data Value&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Set3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/stacked_bar1.png" src="_images/stacked_bar1.png" />
+<p>For bar charts with large numbers of bars, its often useful to pad each bar:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stacked</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">stacked</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Paired&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/stacked_bar2.png" src="_images/stacked_bar2.png" />
+</div>
+<div class="section" id="grouped-bar">
+<span id="chart-lib-groupedbar"></span><h2>Grouped Bar<a class="headerlink" href="#grouped-bar" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s often useful to plot bars with quantities associated with different groups. For example, produce output at different farms:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">farm_1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">}</span>
+<span class="n">farm_2</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">}</span>
+<span class="n">farm_3</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+<span class="n">farm_4</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;melons&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s">&#39;corn&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">}</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm_1</span><span class="p">,</span> <span class="n">farm_2</span><span class="p">,</span> <span class="n">farm_3</span><span class="p">,</span> <span class="n">farm_4</span><span class="p">]</span>
+<span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Farm 1&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 2&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 3&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 4&#39;</span><span class="p">]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+
+<span class="n">grouped</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">GroupedBar</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Farms&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Produce Count&#39;</span><span class="p">)</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Produce Types&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/grouped_bar1.png" src="_images/grouped_bar1.png" />
+<p>Currently grouped sets only work with Pandas DataFrames, but that should change soon. In the meantime, getting data into a DataFrame is straightforward:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cats</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;y&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Data 1&#39;</span><span class="p">,</span> <span class="s">&#39;Data 2&#39;</span><span class="p">,</span> <span class="s">&#39;Data 3&#39;</span><span class="p">,</span> <span class="s">&#39;Data 4&#39;</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+<span class="n">grouped</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">GroupedBar</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">700</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&#39;Set3&#39;</span><span class="p">)</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+<span class="n">grouped</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Data Category&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/grouped_bar2.png" src="_images/grouped_bar2.png" />
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
