@@ -17,101 +17,129 @@ Vincent takes Python data structures and translates them into [Vega](https://git
 Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intuitive way.
 
 Status
+------
+
+Version 0.2 is a major release for Vincent. It includes many new capabilities, but some regressions- for example, maps are not yet built in as a convenience chart method. Additionally, iPython 1.0 is not yet supported. Both of these are coming soon- please feel free to work on them and submit a pull request.
+
+Docs
+----
+
+[Here.](https://vincent.readthedocs.org/en/latest/)
+
+Quickstart
 ---------------
-This Readme represents the new Vincent syntax, which is gunning for an official release by the beginning of August (there are still a few features missing). If you prefer the old-style Vincent syntax, [release 0.1.7](https://github.com/wrobstory/vincent/releases) is available. Additionally, until the release of 0.2, old Vincent features can be found in ```import vincent.legacy```
 
-Yes, map features will return. Soon.
+Let's start with some varying [data](https://vincent.readthedocs.org/en/latest/quickstart.html#data), and then show some different ways to visualize them with Vincent.
 
-Getting Started
----------------
-
-Let's start with some lists of data, and then show some different ways to visualize them with Vincent.
-
-```python
-import pandas as pd
-
-farm_1 = {'apples': 10, 'berries': 32, 'squash': 21, 'melons': 13, 'corn': 18}
-farm_2 = {'apples': 15, 'berries': 43, 'squash': 17, 'melons': 10, 'corn': 22}
-farm_3 = {'apples': 6, 'berries': 24, 'squash': 22, 'melons': 16, 'corn': 30}
-farm_4 = {'apples': 12, 'berries': 30, 'squash': 15, 'melons': 9, 'corn': 15}
-
-data = [farm_1, farm_2, farm_3, farm_4]
-index = ['Farm 1', 'Farm 2', 'Farm 3', 'Farm 4']
-
-df = pd.DataFrame(data, index=index)
-```
-
-We'll start with a simple bar chart looking at apple production:
+Starting with a simple bar chart:
 
 ```python
 import vincent
-bar = vincent.Bar(df['apples'])
-bar.axis_titles(x='Farms', y='Apples')
+bar = vincent.Bar(multi_iter1['y1'])
+bar.axis_titles(x='Index', y='Value')
 bar.to_json('vega.json')
 ```
 
-![bars](http://farm3.staticflickr.com/2879/9341465882_00020fbe60_o.jpg)
+![bars](http://farm4.staticflickr.com/3720/9388500423_b3493bbba7_o.jpg)
 
-Now let's stack some bars:
-
-```python
-stack = vincent.StackedBar(df)
-stack.axis_titles(x='Farms', y='Fruit')
-stack.legend(title='Fruit Production')
-```
-
-![stackedbars](http://farm4.staticflickr.com/3767/9338692307_849e0d4631_o.jpg)
-
-Nice! What if we want to look at farms on the y-axis, and fruit on the x? Just do a quick data swap:
+Plotting a number of lines:
 
 ```python
-flipped = df.T
-stack.data[0] = vincent.Data.from_pandas(df.T)
-stack.axis_titles(x='Fruit', y='Farms')
+line = vincent.Line(multi_iter1, iter_idx='index')
+line.axis_titles(x='Index', y='Value')
+line.legend(title='Categories')
 ```
 
-![stackedfruit](http://farm3.staticflickr.com/2861/9341465850_dd7db7802f_o.jpg)
+![lines](http://farm6.staticflickr.com/5543/9388500445_0bdf2a22e3_o.jpg)
 
-Let's look at some stocks data:
+Or a real use case, plotting stock data:
 
 ```python
-import pandas.io.data as web
-all_data = {}
-for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:
-    all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2010', '1/1/2013')
-price = pd.DataFrame({tic: data['Adj Close']
-                      for tic, data in all_data.iteritems()})
-
-lines = vincent.Line(price)
-lines.axis_titles(x='Date', y='Price')
-lines.legend(title='Tech Stocks')
+line = vincent.Line(price[['GOOG', 'AAPL']])
+line.axis_titles(x='Date', y='Price')
+line.legend(title='GOOG vs AAPL')
 ```
 
-![stocklines](http://farm8.staticflickr.com/7450/9341465844_5a2fa7eda9_o.jpg)
+![stocks1](http://farm4.staticflickr.com/3774/9391272680_67e323de24_o.jpg)
 
-We can also visualize this as a stacked area:
+Color brewer scales are built-in. For example, plotting a scatter plot with the ```Set3``` colors:
+
+```python
+scatter = vincent.Scatter(multi_iter2, iter_idx='index')
+scatter.axis_titles(x='Index', y='Data Value')
+scatter.legend(title='Categories')
+scatter.colors(brew='Set3')
+```
+
+![scatter](http://farm6.staticflickr.com/5341/9391272876_724d5fca0d_o.jpg)
+
+Area charts:
+
+```python
+area = vincent.Area(list_data)
+```
+
+![area](http://farm3.staticflickr.com/2825/9388500487_b7c1a67771_o.jpg)
+
+Stacked Area Charts from a DataFrame:
+```python
+stacked = vincent.StackedArea(df_1)
+stacked.axis_titles(x='Index', y='Value')
+stacked.legend(title='Categories')
+stacked.colors(brew='Spectral')
+```
+
+![areastack](http://farm4.staticflickr.com/3827/9388500389_88ca0f0e5f_o.jpg)
 
 ```python
 stacked = vincent.StackedArea(price)
 stacked.axis_titles(x='Date', y='Price')
 stacked.legend(title='Tech Stocks')
 ```
+![areastack2](http://farm8.staticflickr.com/7355/9388540267_823111c78d_o.jpg)
 
-![stockstacked](http://farm6.staticflickr.com/5487/9341465834_788f3e68ff_o.jpg)
+Stacked Bar Charts from a DataFrame:
 
-You could also create a scatterplot with a couple of stocks (thought I would not recommend it):
 ```python
-scatter = vincent.Scatter(price[['AAPL', 'GOOG']])
-scatter.axis_titles(x='Date', y='Price')
-scatter.legend(title='Apple vs. Google')
+stack = vincent.StackedBar(df_2)
+stack.legend(title='Categories')
+stack.scales['x'].padding = 0.1
 ```
+![barstack1](http://farm6.staticflickr.com/5528/9391272710_c92d21da11_o.jpg)
 
-![stockscatter](http://farm6.staticflickr.com/5524/9338681017_f5dd1cb23b_o.jpg)
+```python
+stack = vincent.StackedBar(df_farm.T)
+stack.axis_titles(x='Total Produce', y='Farms')
+stack.legend(title='Produce Types')
+stack.colors(brew='Pastel1')
+```
+![barstack2](http://farm4.staticflickr.com/3784/9388530799_623084dbe0_o.jpg)
+
+Grouped Bars from a DataFrame:
+
+```python
+group = vincent.GroupedBar(df_2)
+group.legend(title='Categories')
+group.colors(brew='Spectral')
+group.width=750
+```
+![groupbar1](http://farm6.staticflickr.com/5507/9388500521_1ec446c0e9_o.jpg)
+
+```python
+group = vincent.GroupedBar(df_farm)
+group.axis_titles(x='Total Produce', y='Farms')
+group.legend(title='Produce Types')
+group.colors(brew='Set2')
+```
+![groupbar2](http://farm6.staticflickr.com/5518/9391272912_706055754a_o.jpg)
+
+For more examples, including how to build these from scratch, see the [examples](https://github.com/wrobstory/vincent) directory, or the [docs](https://vincent.readthedocs.org/en/latest/index.html).
+
 
 Built from Scratch
 ------------------
 
-To see how the charts are being built with Vincent -> Vega grammar, see charts.py.
+To see how the charts are being built with Vincent -> Vega grammar, see the ```charts.py``` module.
 
 Building the bar chart from scratch will provide a quick example of building with Vincent:
 
@@ -232,10 +260,34 @@ and deleting of grammar elements:
  u'y2': {u'scale': u'y2', u'value': 0}}
 ```
 
+Contributors
+------------
+Huge thanks to all who have contributed to Vincent development:
+
+ * Rob Story (wrobstory)
+ * Dan Miller (dnmiller)
+ * Peter Lubell-Doughtie (pld)
+ * Damien Garaud (garaud)
+ * Abraham Flaxman (aflaxman)
+ * Mahdi Yusuf (myusuf3)
+ * Richard Maisano (maisano)
+ * Julian Berman (Julian)
+ * Chris Rebert (cvrebert)
 
 
 Dependencies
 ------------
-pandas
+
+ * pandas
+ * numpy
+
+Testing:
+
+ * mock
+ * nose
+
+Pandas and Numpy are both listed as dependencies, but Vincent will run without them. However, Pandas is probably the best way to build more complex data visualizations with Vincent.
+
+
 
 
