@@ -173,6 +173,28 @@ Farm data::
 
 .. image:: /images/quick_grouped2.png
 
+.. _output:
+
+Output
+------
+
+To write the Vega spec to JSON, use the ``to_json`` method::
+
+    bar.to_json('bar.json')
+
+If no path is included, it writes it as a string to the REPL::
+
+    >>>bar.to_json()
+    #Really long string of JSON
+
+A simple HTML template to read and display the chart is built-in to Vincent, and can be output along with the JSON::
+
+    >>>bar.to_json('bar.json', html_out=True, html_path='bar_template.html')
+
+The HTML will need to be served somehow- luckily, Python makes this easy. Start a simple HTTP Server, then point your browser to localhost:8000::
+
+    $python -m SimpleHTTPServer 8000
+
 .. _quick_data:
 
 Data
