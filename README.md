@@ -278,17 +278,14 @@ Huge thanks to all who have contributed to Vincent development:
 Dependencies
 ------------
 
-Optional:
-
  * pandas
- * numpy
 
 Testing:
 
  * mock
  * nose
 
-Pandas and Numpy are both listed as dependencies, but Vincent will run without them. However, Pandas is probably the best way to build more complex data visualizations with Vincent.
+PSA: you can use pieces of Vincent with Pandas, but its tricky. Besides, Pandas is awesome- try it!
 
 
 
