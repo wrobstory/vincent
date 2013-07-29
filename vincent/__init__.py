@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import legacy
 from charts import (Chart, Bar, Line, Area, Scatter, StackedBar, StackedArea,
                     GroupedBar)
 from visualization import Visualization
