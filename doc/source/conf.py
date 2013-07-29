@@ -12,9 +12,8 @@
 # serve to show the default.
 
 # Use a better theme for the docs
-import sphinx_bootstrap_theme
 html_theme = 'bootstrap'
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme_path = ['themes']
 
 # (Optional) Logo. Should be exactly 24x24 px to fit the nav. bar.
 # Path should be relative to the static files directory.
@@ -58,7 +57,7 @@ sys.path.insert(0, os.path.abspath('../../vincent'))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.mathjax', 'numpydoc']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
