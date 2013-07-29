@@ -11,7 +11,7 @@ classifiers = (
     'License :: OSI Approved :: MIT License',
 )
 
-required = ()
+required = ('pandas')
 
 kw = {
     'name': 'vincent',
