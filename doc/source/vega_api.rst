@@ -1,4 +1,6 @@
-.. currentmodule:: vincent.vega
+.. currentmodule:: vincent.visualization
+.. currentmodule:: vincent.data
+.. currentmodule:: vincent.scale
 
 Vega API Reference
 ==================
@@ -12,27 +14,27 @@ Visualization
 
 Field properties for :class:`Visualization`:
 
-.. autofield:: vega.Visualization.name
-.. autofield:: vega.Visualization.width
-.. autofield:: vega.Visualization.height
-.. autofield:: vega.Visualization.viewport
-.. autofield:: vega.Visualization.padding
-.. autofield:: vega.Visualization.data
-.. autofield:: vega.Visualization.scales
-.. autofield:: vega.Visualization.axes
-.. autofield:: vega.Visualization.marks
+.. autofield:: visualization.Visualization.name
+.. autofield:: visualization.Visualization.width
+.. autofield:: visualization.Visualization.height
+.. autofield:: visualization.Visualization.viewport
+.. autofield:: visualization.Visualization.padding
+.. autofield:: visualization.Visualization.data
+.. autofield:: visualization.Visualization.scales
+.. autofield:: visualization.Visualization.axes
+.. autofield:: visualization.Visualization.marks
 
 Data
 ++++
 
 Field properties for :class:`Data`:
 
-.. autofield:: vega.Data.name
-.. autofield:: vega.Data.url
-.. autofield:: vega.Data.values
-.. autofield:: vega.Data.source
-.. autofield:: vega.Data.transform
-.. autofield:: vega.Data.format
+.. autofield:: data.Data.name
+.. autofield:: data.Data.url
+.. autofield:: data.Data.values
+.. autofield:: data.Data.source
+.. autofield:: data.Data.transform
+.. autofield:: data.Data.format
 
 
 Scale
@@ -40,21 +42,21 @@ Scale
 
 Field properties for :class:`Scale`:
 
-.. autofield:: vega.Scale.name
-.. autofield:: vega.Scale.type
-.. autofield:: vega.Scale.domain
-.. autofield:: vega.Scale.domain_min
-.. autofield:: vega.Scale.domain_max
-.. autofield:: vega.Scale.range
-.. autofield:: vega.Scale.range_min
-.. autofield:: vega.Scale.range_max
-.. autofield:: vega.Scale.reverse
-.. autofield:: vega.Scale.round
-.. autofield:: vega.Scale.points
-.. autofield:: vega.Scale.clamp
-.. autofield:: vega.Scale.nice
-.. autofield:: vega.Scale.exponent
-.. autofield:: vega.Scale.zero
+.. autofield:: scales.Scale.name
+.. autofield:: scales.Scale.type
+.. autofield:: scales.Scale.domain
+.. autofield:: scales.Scale.domain_min
+.. autofield:: scales.Scale.domain_max
+.. autofield:: scales.Scale.range
+.. autofield:: scales.Scale.range_min
+.. autofield:: scales.Scale.range_max
+.. autofield:: scales.Scale.reverse
+.. autofield:: scales.Scale.round
+.. autofield:: scales.Scale.points
+.. autofield:: scales.Scale.clamp
+.. autofield:: scales.Scale.nice
+.. autofield:: scales.Scale.exponent
+.. autofield:: scales.Scale.zero
 
 
 DataRef

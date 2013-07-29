@@ -142,7 +142,7 @@ class Data(GrammarClass):
 
     @classmethod
     def from_pandas(cls, data, columns=None, key_on='idx', name=None,
-                    series_key=None, grouped=False, **kwargs):
+                    series_key='data', grouped=False, **kwargs):
         """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters
@@ -159,10 +159,10 @@ class Data(GrammarClass):
             Applies to the ``name`` attribute of the generated class. If
             ``None`` (default), then the ``name`` attribute of ``pd_obj`` is
             used if it exists, or ``'table'`` if it doesn't.
-        series_key : string, default None
+        series_key : string, default 'data'
             Applies only to ``Series``. If ``None`` (default), then defaults to
-            data.name. Otherwise, the data will be indexed by this key. For example, if
-            ``series_key`` is ``'x'``, then the entries of the ``values`` list
+            data.name. For example, if ``series_key`` is ``'x'``, then the
+            entries of the ``values`` list
             will be ``{'idx': ..., 'col': 'x', 'val': ...}``.
         grouped: boolean, default False
             Pass true for an extra grouping parameter

@@ -178,7 +178,7 @@ class Scatter(Line):
         del self.marks[0].marks[0].properties.enter.stroke_width
         self.marks[0].marks[0].properties.enter.fill = ValueRef(scale='color',
                                                                 field='data.col')
-        self.marks[0].marks[0].properties.enter.size = ValueRef(value=10)
+        self.marks[0].marks[0].properties.enter.size = ValueRef(value=100)
 
 
 class Area(Line):

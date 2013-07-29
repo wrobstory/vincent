@@ -215,6 +215,8 @@ class Visualization(GrammarClass):
 
         See the colors here: http://colorbrewer2.org/
 
+        Or here: http://bl.ocks.org/mbostock/5577023
+
         This assumes that a 'color' scale exists on your chart.
 
         Parameters
