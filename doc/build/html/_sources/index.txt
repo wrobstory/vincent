@@ -27,6 +27,6 @@ Contents:
    charts_library
    building_vega
    vega_api
-
+   development
 
 * :ref:`search`

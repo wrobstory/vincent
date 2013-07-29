@@ -92,16 +92,27 @@
 <li class="toctree-l2"><a class="reference internal" href="charts_library.html#grouped-bar">Grouped Bar</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Building Vega with Vincent</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Building Vega with Vincent</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#grammar">Grammar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keyed-list">Keyed List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-importing">Data Importing</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="vega_api.html">Vega API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="vega_api.html#visualization">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vega_api.html#data">Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vega_api.html#scale">Scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vega_api.html#dataref">DataRef</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vega_api.html#valueref">ValueRef</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vega_api.html#mark">Mark</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vega_api.html#properties">Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#mark-properties">Mark Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vega_api.html#propertyset">PropertySet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vega_api.html#transforms">Transforms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#charts-py">Charts.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#transforms-py">Transforms.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#testing">Testing</a></li>
 </ul>
 </li>
 </ul>
@@ -110,7 +121,12 @@
               <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"><ul>
-<li><a class="reference internal" href="#">Building Vega with Vincent</a></li>
+<li><a class="reference internal" href="#">Building Vega with Vincent</a><ul>
+<li><a class="reference internal" href="#grammar">Grammar</a></li>
+<li><a class="reference internal" href="#keyed-list">Keyed List</a></li>
+<li><a class="reference internal" href="#data-importing">Data Importing</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -145,8 +161,11 @@
 <div class="container">
   
   <div class="section" id="building-vega-with-vincent">
-<h1>Building Vega with Vincent<a class="headerlink" href="#building-vega-with-vincent" title="Permalink to this headline">¶</a></h1>
-<p>The Vincent API attempts to map 1:1 to Vega grammar through a set of object relational classes. You can build complex Vega grammar directly with Vincent via simple getters and setters. Here is an example of a simple set of marks for a bar chart in Vega JSON.</p>
+<span id="building-vega"></span><h1>Building Vega with Vincent<a class="headerlink" href="#building-vega-with-vincent" title="Permalink to this headline">¶</a></h1>
+<p>The Vincent API attempts to map 1:1 to Vega grammar through a set of object relational classes. You can build complex Vega grammar directly with Vincent via simple getters and setters.</p>
+<div class="section" id="grammar">
+<span id="build-grammar"></span><h2>Grammar<a class="headerlink" href="#grammar" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example of a simple set of marks for a bar chart in Vega JSON.</p>
 <div class="highlight-json"><div class="highlight"><pre>    <span class="p">{</span>
   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;rect&quot;</span><span class="p">,</span>
   <span class="nt">&quot;from&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;table&quot;</span><span class="p">},</span>
@@ -168,7 +187,9 @@
 </pre></div>
 </div>
 <p>Here&#8217;s the same thing being built with Vincent&#8217;s API:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">enter_props</span> <span class="o">=</span> <span class="n">PropertySet</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.idx&quot;</span><span class="p">),</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">vincent</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">enter_props</span> <span class="o">=</span> <span class="n">PropertySet</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.idx&quot;</span><span class="p">),</span>
                           <span class="n">y</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.val&quot;</span><span class="p">),</span>
                           <span class="n">width</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">band</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
                           <span class="n">y2</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
@@ -179,7 +200,195 @@
             <span class="n">properties</span><span class="o">=</span><span class="n">MarkProperties</span><span class="p">(</span><span class="n">enter</span><span class="o">=</span><span class="n">enter_props</span><span class="p">,</span><span class="n">update</span><span class="o">=</span><span class="n">update_props</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>If you wanted to transform this into a line chart, Vincent makes spec changes simple. Assuming</p>
+<p>If you wanted to transform this into a line chart, Vincent makes spec changes simple. Let&#8217;s change the fill color. Assuming that your Vincent object is named <tt class="docutils literal"><span class="pre">vis</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vis</span><span class="o">.</span><span class="n">marks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">update</span><span class="o">.</span><span class="n">fill</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#39;red&#39;</span>
+</pre></div>
+</div>
+<p>If you want to check on the grammar, you can call <tt class="docutils literal"><span class="pre">grammar()</span></tt> to return a Python data structure representation of the Vega grammar at almost any level of nesting depth:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;vis.marks[0].properties.grammar()</span>
+<span class="go">{u&#39;enter&#39;: {u&#39;width&#39;: {u&#39;band&#39;: True, u&#39;offset&#39;: -1, u&#39;scale&#39;: u&#39;x&#39;},</span>
+<span class="go"> u&#39;x&#39;: {u&#39;field&#39;: u&#39;data.idx&#39;, u&#39;scale&#39;: u&#39;x&#39;},</span>
+<span class="go"> u&#39;y&#39;: {u&#39;field&#39;: u&#39;data.val&#39;, u&#39;scale&#39;: u&#39;y&#39;},</span>
+<span class="go"> u&#39;y2&#39;: {u&#39;scale&#39;: u&#39;y&#39;, u&#39;value&#39;: 0}},</span>
+<span class="go">u&#39;update&#39;: {u&#39;fill&#39;: {u&#39;value&#39;: u&#39;steelblue&#39;}}}</span>
+</pre></div>
+</div>
+<p>Vincent also performs type-checking on grammar elements to try and avoid grammar errors:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;vis.marks[0].properties.enter.y2.scale = 1</span>
+
+<span class="go">ValueError: scale must be str</span>
+</pre></div>
+</div>
+<p>The best way to get an idea of how to build Vega grammar with Vincent is to see the examples in the <a class="reference external" href="https://github.com/wrobstory/vincent/tree/master/examples">Github Repo</a> . Building a bar chart from scratch using the Vincent API looks as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">vincent</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">vis</span> <span class="o">=</span> <span class="n">Visualization</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&#39;ordinal&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="s">&#39;width&#39;</span><span class="p">,</span>
+                        <span class="n">domain</span><span class="o">=</span><span class="n">DataRef</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s">&#39;table&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.idx&quot;</span><span class="p">))</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="n">nice</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                        <span class="n">domain</span><span class="o">=</span><span class="n">DataRef</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s">&#39;table&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.val&quot;</span><span class="p">))</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Axis</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">),</span>
+                 <span class="n">Axis</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">)])</span>
+
+<span class="c">#Marks</span>
+<span class="n">enter_props</span> <span class="o">=</span> <span class="n">PropertySet</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.idx&quot;</span><span class="p">),</span>
+                          <span class="n">y</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&quot;data.val&quot;</span><span class="p">),</span>
+                          <span class="n">width</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">band</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+                          <span class="n">y2</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="n">update_props</span> <span class="o">=</span> <span class="n">PropertySet</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#39;steelblue&#39;</span><span class="p">))</span>
+
+<span class="n">mark</span> <span class="o">=</span> <span class="n">Mark</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;rect&#39;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="n">MarkRef</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s">&#39;table&#39;</span><span class="p">),</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">MarkProperties</span><span class="p">(</span><span class="n">enter</span><span class="o">=</span><span class="n">enter_props</span><span class="p">,</span>
+                                      <span class="n">update</span><span class="o">=</span><span class="n">update_props</span><span class="p">))</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">marks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mark</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_iter</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="c">#Using a Vincent KeyedList here</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;table&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>You&#8217;ll notice two interesting pieces here: <tt class="docutils literal"><span class="pre">Data</span></tt> , and the <tt class="docutils literal"><span class="pre">KeyedList</span></tt></p>
+</div>
+<div class="section" id="keyed-list">
+<span id="build-keyedlist"></span><h2>Keyed List<a class="headerlink" href="#keyed-list" title="Permalink to this headline">¶</a></h2>
+<p>The Vega specification consists of high level attributes such as scales, marks, axes, legends, etc, each with an array containing any number of individual marks, scales, etc. It&#8217;s useful to be able to index these arrays by name, so Vincent has introduced a Python List that can also be
+indexed by a name parameter.</p>
+<p>So, for example, if we want to introduce a new color scale:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">scale</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&#39;ordinal&#39;</span><span class="p">,</span>
+                      <span class="n">domain</span><span class="o">=</span><span class="n">DataRef</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s">&#39;table&#39;</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s">&#39;data.col&#39;</span><span class="p">),</span>
+                      <span class="nb">range</span><span class="o">=</span><span class="s">&#39;category20&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can add it to the scales list and index it by name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vis</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scale</span>
+</pre></div>
+</div>
+<p>Note that the name must match the index you inserting:</p>
+<div class="highlight-python"><pre>vis.scales['newscale'] = scale
+
+ValidationError: key must be equal to 'name' attribute</pre>
+</div>
+</div>
+<div class="section" id="data-importing">
+<h2>Data Importing<a class="headerlink" href="#data-importing" title="Permalink to this headline">¶</a></h2>
+<p>The Vincent Data class has a number of conveniences for import Python data types.</p>
+<p>First, <tt class="docutils literal"><span class="pre">from_iter</span></tt>, which will take lists, tuples, or key/value dicts:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">list_dat</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_iter</span><span class="p">(</span><span class="n">list_dat</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}]</span>
+
+<span class="n">dict_dat</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_iter</span><span class="p">(</span><span class="n">dict_dat</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;z&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>There&#8217;s also a <tt class="docutils literal"><span class="pre">from_mult_iters</span></tt> convenience method, in which you must provide a common index:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">110</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_mult_iters</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">values1</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">values2</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values1&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values1&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values1&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values1&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values1&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values2&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">70</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values2&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">80</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values2&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values2&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;values2&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>This indexing structure allows for faceting on <tt class="docutils literal"><span class="pre">col</span></tt> or <tt class="docutils literal"><span class="pre">idx</span></tt> for charts like stacked or grouped bars.</p>
+<p>The best way to get data into Vincent is with the Pandas Series and DataFrame. These provide built-in indexing and index sorting, and will generally make your charts appear nicer. We&#8217;ll start with Series:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>If the series has a name, this will be your <tt class="docutils literal"><span class="pre">col</span></tt> value:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">series</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;metric&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;metric&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;metric&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;metric&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;metric&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;metric&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>DataFrames are just as simple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">farm_1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">}</span>
+<span class="n">farm_2</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">}</span>
+<span class="n">farm_3</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;apples&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;berries&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s">&#39;squash&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">}</span>
+
+<span class="n">farm_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">farm_1</span><span class="p">,</span> <span class="n">farm_2</span><span class="p">,</span> <span class="n">farm_3</span><span class="p">]</span>
+<span class="n">farm_index</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Farm 1&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 2&#39;</span><span class="p">,</span> <span class="s">&#39;Farm 3&#39;</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">farm_data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">farm_index</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;apples&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 1&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;berries&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 1&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;squash&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 1&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;apples&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 2&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;berries&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 2&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">43</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;squash&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 2&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;apples&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 3&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;berries&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 3&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;squash&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="s">&#39;Farm 3&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>You can also key on a column, rather than the index:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">key_on</span><span class="o">=</span><span class="s">&#39;apples&#39;</span><span class="p">)</span>
+
+<span class="n">data</span><span class="o">.</span><span class="n">values</span>
+<span class="p">[{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;apples&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;berries&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;squash&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;apples&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;berries&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">43</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;squash&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;apples&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;berries&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;col&#39;</span><span class="p">:</span> <span class="s">&#39;squash&#39;</span><span class="p">,</span> <span class="s">&#39;idx&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>Finally, if you turn on <tt class="docutils literal"><span class="pre">grouped</span></tt>, it will add an additional iterative key for Vega grouping that groups on the column values:</p>
+<div class="highlight-python"><pre>data = vincent.Data.from_pandas(df, grouped=True)]
+
+data.values
+[{'col': 'apples', 'group': 0, 'idx': 'Farm 1', 'val': 10},
+ {'col': 'berries', 'group': 1, 'idx': 'Farm 1', 'val': 32},
+ {'col': 'squash', 'group': 2, 'idx': 'Farm 1', 'val': 21},
+ {'col': 'apples', 'group': 0, 'idx': 'Farm 2', 'val': 15},
+ {'col': 'berries', 'group': 1, 'idx': 'Farm 2', 'val': 43},
+ {'col': 'squash', 'group': 2, 'idx': 'Farm 2', 'val': 17},
+ {'col': 'apples', 'group': 0, 'idx': 'Farm 3', 'val': 6},
+ {'col': 'berries', 'group': 1, 'idx': 'Farm 3', 'val': 24},
+ {'col': 'squash', 'group': 2, 'idx': 'Farm 3', 'val': 22}]</pre>
+</div>
+</div>
 </div>
 
 

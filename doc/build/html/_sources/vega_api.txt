@@ -1,16 +1,24 @@
 .. currentmodule:: vincent.visualization
 .. currentmodule:: vincent.data
 .. currentmodule:: vincent.scale
+.. currentmodule:: vincent.axes
+.. currentmodule:: vincent.marks
+.. currentmodule:: vincent.properties
+.. currentmodule:: vincent.transforms
+.. currentmodule:: vincent.values
+
+.. _API_header:
 
 Vega API Reference
 ==================
 
 The full Vega specification is exposed through a set of object-relational
-JSON classes.
+JSON classes. Vincent also pr
 
+.. _API_Visualization:
 
 Visualization
-+++++++++++++
+-------------
 
 Field properties for :class:`Visualization`:
 
@@ -23,9 +31,12 @@ Field properties for :class:`Visualization`:
 .. autofield:: visualization.Visualization.scales
 .. autofield:: visualization.Visualization.axes
 .. autofield:: visualization.Visualization.marks
+.. autofield:: visualization.Visualization.legends
+
+.. _API_Data:
 
 Data
-++++
+----
 
 Field properties for :class:`Data`:
 
@@ -36,9 +47,10 @@ Field properties for :class:`Data`:
 .. autofield:: data.Data.transform
 .. autofield:: data.Data.format
 
+.. _API_Scale:
 
 Scale
-+++++
+-----
 
 Field properties for :class:`Scale`:
 
@@ -57,90 +69,133 @@ Field properties for :class:`Scale`:
 .. autofield:: scales.Scale.nice
 .. autofield:: scales.Scale.exponent
 .. autofield:: scales.Scale.zero
+.. autofield:: scales.Scale.padding
 
+.. _API_DataRef:
 
 DataRef
-+++++++
+--------
 
 Field properties for :class:`DataRef`:
 
-.. autofield:: vega.DataRef.data
-.. autofield:: vega.DataRef.field
+.. autofield:: scales.DataRef.data
+.. autofield:: scales.DataRef.field
 
+.. _API_ValueRef:
 
 ValueRef
 ++++++++
 
 Field properties for :class:`ValueRef`:
 
-.. autofield:: vega.ValueRef.value
-.. autofield:: vega.ValueRef.field
-.. autofield:: vega.ValueRef.scale
-.. autofield:: vega.ValueRef.mult
-.. autofield:: vega.ValueRef.offset
-.. autofield:: vega.ValueRef.band
+.. autofield:: values.ValueRef.value
+.. autofield:: values.ValueRef.field
+.. autofield:: values.ValueRef.scale
+.. autofield:: values.ValueRef.mult
+.. autofield:: values.ValueRef.offset
+.. autofield:: values.ValueRef.band
 
+.. _API_MarkRef:
 
 Mark
-++++
+----
 
 Field properties for :class:`Mark`:
 
-.. autofield:: vega.Mark.name
-.. autofield:: vega.Mark.description
-.. autofield:: vega.Mark.type
-.. autofield:: vega.Mark.from_
-.. autofield:: vega.Mark.properties
-.. autofield:: vega.Mark.key
-.. autofield:: vega.Mark.delay
-.. autofield:: vega.Mark.ease
+.. autofield:: marks.Mark.name
+.. autofield:: marks.Mark.description
+.. autofield:: marks.Mark.type
+.. autofield:: marks.Mark.from_
+.. autofield:: marks.Mark.properties
+.. autofield:: marks.Mark.key
+.. autofield:: marks.Mark.delay
+.. autofield:: marks.Mark.ease
 
+.. _API_MarkPropertyRef:
 
-Properties
-++++++++++
+Mark Properties
+---------------
 
-Field properties for :class:`Properties`:
+Field properties for :class:`MarkProperties`:
 
-.. autofield:: vega.Properties.enter
-.. autofield:: vega.Properties.exit
-.. autofield:: vega.Properties.update
-.. autofield:: vega.Properties.hover
+.. autofield:: marks.MarkProperties.enter
+.. autofield:: marks.MarkProperties.exit
+.. autofield:: marks.MarkProperties.update
+.. autofield:: marks.MarkProperties.hover
 
+.. _API_PropertySet:
 
 PropertySet
-+++++++++++
+-----------
 
 Field properties for :class:`PropertySet`:
 
-.. autofield:: vega.PropertySet.x
-.. autofield:: vega.PropertySet.x2
-.. autofield:: vega.PropertySet.width
-.. autofield:: vega.PropertySet.y
-.. autofield:: vega.PropertySet.y2
-.. autofield:: vega.PropertySet.height
-.. autofield:: vega.PropertySet.opacity
-.. autofield:: vega.PropertySet.fill
-.. autofield:: vega.PropertySet.fill_opacity
-.. autofield:: vega.PropertySet.stroke
-.. autofield:: vega.PropertySet.stroke_width
-.. autofield:: vega.PropertySet.stroke_opacity
-.. autofield:: vega.PropertySet.size
-.. autofield:: vega.PropertySet.shape
-.. autofield:: vega.PropertySet.path
-.. autofield:: vega.PropertySet.inner_radius
-.. autofield:: vega.PropertySet.outer_radius
-.. autofield:: vega.PropertySet.start_angle
-.. autofield:: vega.PropertySet.end_angle
-.. autofield:: vega.PropertySet.interpolate
-.. autofield:: vega.PropertySet.tension
-.. autofield:: vega.PropertySet.url
-.. autofield:: vega.PropertySet.align
-.. autofield:: vega.PropertySet.baseline
-.. autofield:: vega.PropertySet.text
-.. autofield:: vega.PropertySet.dx
-.. autofield:: vega.PropertySet.dy
-.. autofield:: vega.PropertySet.font
-.. autofield:: vega.PropertySet.font_size
-.. autofield:: vega.PropertySet.font_weight
-.. autofield:: vega.PropertySet.font_style
+.. autofield:: properties.PropertySet.x
+.. autofield:: properties.PropertySet.x2
+.. autofield:: properties.PropertySet.width
+.. autofield:: properties.PropertySet.y
+.. autofield:: properties.PropertySet.y2
+.. autofield:: properties.PropertySet.height
+.. autofield:: properties.PropertySet.opacity
+.. autofield:: properties.PropertySet.fill
+.. autofield:: properties.PropertySet.fill_opacity
+.. autofield:: properties.PropertySet.stroke
+.. autofield:: properties.PropertySet.stroke_width
+.. autofield:: properties.PropertySet.stroke_opacity
+.. autofield:: properties.PropertySet.size
+.. autofield:: properties.PropertySet.shape
+.. autofield:: properties.PropertySet.path
+.. autofield:: properties.PropertySet.inner_radius
+.. autofield:: properties.PropertySet.outer_radius
+.. autofield:: properties.PropertySet.start_angle
+.. autofield:: properties.PropertySet.end_angle
+.. autofield:: properties.PropertySet.interpolate
+.. autofield:: properties.PropertySet.tension
+.. autofield:: properties.PropertySet.url
+.. autofield:: properties.PropertySet.align
+.. autofield:: properties.PropertySet.baseline
+.. autofield:: properties.PropertySet.text
+.. autofield:: properties.PropertySet.dx
+.. autofield:: properties.PropertySet.dy
+.. autofield:: properties.PropertySet.font
+.. autofield:: properties.PropertySet.font_size
+.. autofield:: properties.PropertySet.font_weight
+.. autofield:: properties.PropertySet.font_style
+
+.. _API_Transforms:
+
+Transforms
+----------
+
+Field properties for :class:`Transform`:
+
+.. autofield:: transforms.Transform.type
+.. autofield:: transforms.Transform.fields
+.. autofield:: transforms.Transform.from_
+.. autofield:: transforms.Transform.as_
+.. autofield:: transforms.Transform.keys
+.. autofield:: transforms.Transform.sort
+.. autofield:: transforms.Transform.test
+.. autofield:: transforms.Transform.field
+.. autofield:: transforms.Transform.expr
+.. autofield:: transforms.Transform.by
+.. autofield:: transforms.Transform.value
+.. autofield:: transforms.Transform.median
+.. autofield:: transforms.Transform.with_
+.. autofield:: transforms.Transform.key
+.. autofield:: transforms.Transform.with_key
+.. autofield:: transforms.Transform.links
+.. autofield:: transforms.Transform.size
+.. autofield:: transforms.Transform.iterations
+.. autofield:: transforms.Transform.charge
+.. autofield:: transforms.Transform.link_distance
+.. autofield:: transforms.Transform.link_strength
+.. autofield:: transforms.Transform.friction
+.. autofield:: transforms.Transform.theta
+.. autofield:: transforms.Transform.gravity
+.. autofield:: transforms.Transform.alpha
+.. autofield:: transforms.Transform.point
+.. autofield:: transforms.Transform.height
+.. autofield:: transforms.Transform.offset
+.. autofield:: transforms.Transform.order
 
