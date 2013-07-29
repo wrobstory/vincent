@@ -11,4 +11,3 @@ from scales import DataRef, Scale
 from marks import ValueRef, MarkProperties, MarkRef, Mark
 from axes import AxisProperties, Axis
 from factories import (BarFactory)
-from ipynb import init_d3, init_vg, display_vega
