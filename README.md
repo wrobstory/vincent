@@ -21,6 +21,13 @@ Status
 
 Version 0.2 is a major release for Vincent. It includes many new capabilities, but some regressions- for example, maps are not yet built in as a convenience chart method. Additionally, iPython 1.0 is not yet supported. Both of these are coming soon- please feel free to work on them and submit a pull request.
 
+Installation
+------------
+
+```$pip install vincent```
+
+Warning: requires Pandas, which isn't a simple pip install if you don't already have Numpy installed. If you want to go all-pip, I recommend ```$pip install numpy``` then ```$pip install pandas```. Or just use [Anaconda](http://www.continuum.io/downloads).
+
 Docs
 ----
 
