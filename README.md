@@ -292,7 +292,7 @@ Testing:
  * mock
  * nose
 
-PSA: you can use pieces of Vincent with Pandas, but its tricky. Besides, Pandas is awesome- try it!
+PSA: you can use pieces of Vincent without Pandas, but its tricky. Besides, Pandas is awesome- try it!
 
 
 
