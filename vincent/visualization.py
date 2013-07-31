@@ -259,7 +259,7 @@ class Visualization(GrammarClass):
     def display(self):
         """Display visualization inline in IPython notebook"""
 
-        display, HTML, Javascript = initialize_notebook()
+        from IPython.core.display import display, HTML, Javascript
 
         # Copied from vincent.ipynb:
         # HACK: use a randomly chosen unique div id

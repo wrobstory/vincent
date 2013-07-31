@@ -20,7 +20,7 @@ except ImportError:
     np = None
 
 #TODO: Keep local?
-d3_js_url = 'http://trifacta.github.com/vega/d3.v3.min.js'
+d3_js_url = "http://d3js.org/d3.v3.min.js"
 vega_js_url = 'http://trifacta.github.com/vega/vega.js'
 
 
@@ -34,7 +34,6 @@ def initialize_notebook():
     display(HTML('<script src="%s"></script>' % d3_js_url))
     display(HTML('<script src="%s"></script>' % vega_js_url))
 
-    return display, HTML, Javascript
 
 
 def _assert_is_type(name, value, value_type):
