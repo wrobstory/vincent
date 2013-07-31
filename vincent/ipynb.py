@@ -16,7 +16,7 @@ from IPython.core.display import display, HTML, Javascript
 def init_d3():
     '''Display html that loads d3 javascript library.'''
 
-    display(HTML('''<script src="http://trifacta.github.com/vega/d3.v3.min.js"></script>'''))
+    display(HTML('''<script src="http://d3js.org/d3.v3.min.js"></script>'''))
 
 
 def init_vg():
