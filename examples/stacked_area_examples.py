@@ -8,6 +8,7 @@ Vincent Stacked Area Examples
 #Build a Stacked Area Chart from scratch
 
 from vincent import *
+import pandas as pd
 import pandas.io.data as web
 all_data = {}
 for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:

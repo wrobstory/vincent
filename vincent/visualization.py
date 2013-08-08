@@ -86,7 +86,7 @@ class Visualization(GrammarClass):
             if v < 0:
                 raise ValueError('viewport dimensions cannot be negative')
 
-    @grammar((int, dict))
+    @grammar((int, dict, str))
     def padding(value):
         """int or dict : Padding around visualization
 
