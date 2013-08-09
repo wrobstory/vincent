@@ -15,7 +15,7 @@ required = ('pandas')
 
 kw = {
     'name': 'vincent',
-    'version': '0.2',
+    'version': '0.2.1',
     'description': 'A Python to Vega translator',
     'long_description': open('README.rst', 'rt').read(),
     'author': 'Rob Story',
