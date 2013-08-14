@@ -24,7 +24,7 @@ class AxisProperties(GrammarClass):
         """PropertySet : Definition of minor tick marks"""
 
     @grammar(PropertySet)
-    def label(value):
+    def labels(value):
         """PropertySet : Definition of marks for axis labels"""
 
     @grammar(PropertySet)
