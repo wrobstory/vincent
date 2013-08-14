@@ -783,7 +783,7 @@ class TestAxisProperties(object):
 
         grammar_types = [('major_ticks', [PropertySet]),
                          ('minor_ticks', [PropertySet]),
-                         ('label', [PropertySet]),
+                         ('labels', [PropertySet]),
                          ('axis', [PropertySet])]
 
         assert_grammar_typechecking(grammar_types, AxisProperties())
