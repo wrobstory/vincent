@@ -195,6 +195,25 @@ The HTML will need to be served somehow- luckily, Python makes this easy. Start 
 
     $python -m SimpleHTTPServer 8000
 
+.. _IPython_integration:
+
+IPython integration
+-------------------
+
+It is possible to run the above examples inside `IPython notebook <http://ipython.org/notebook.html>`_ by adding a few extra lines::
+
+    import vincent
+    from vincent import ipynb
+    ipynb.init_d3()
+    ipynb.init_vg()
+    
+    bar = vincent.Bar(list_data)
+    
+    ipynb.display_vega(bar)
+
+.. image:: /images/ipynb.png
+
+
 .. _quick_data:
 
 Data
