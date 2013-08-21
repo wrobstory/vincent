@@ -33,5 +33,5 @@ def display_vega(vis):
 
     a = HTML('''<div id="vis%d"></div>''' % id)
     b = Javascript('''vg.parse.spec(%s, function(chart)
-                        { chart({el:"#vis%d"}).update(); });''' % (json.dumps(vis.vega), id))
+                        { chart({el:"#vis%d"}).update(); });''' % (vis.to_json(), id))
     display(a, b)
