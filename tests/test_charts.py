@@ -104,27 +104,27 @@ class TestBar(object):
     def test_init(self):
         bar = Bar([1, 2, 3])
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'range': u'width',
-                   u'type': u'ordinal'},
-                  {u'domain': {u'data': u'table', u'field': u'data.val'},
-                   u'name': u'y',
-                   u'nice': True,
-                   u'range': u'height'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'range': 'width',
+                   'type': 'ordinal'},
+                  {'domain': {'data': 'table', 'field': 'data.val'},
+                   'name': 'y',
+                   'nice': True,
+                   'range': 'height'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        marks = [{u'from': {u'data': u'table'},
-                  u'properties': {u'enter': {u'width': {u'band': True,
-                  u'offset': -1,
-                  u'scale': u'x'},
-                  u'x': {u'field': u'data.idx', u'scale': u'x'},
-                  u'y': {u'field': u'data.val', u'scale': u'y'},
-                  u'y2': {u'scale': u'y', u'value': 0}},
-                  u'update': {u'fill': {u'value': u'steelblue'}}},
-                  u'type': u'rect'}]
+        marks = [{'from': {'data': 'table'},
+                  'properties': {'enter': {'width': {'band': True,
+                  'offset': -1,
+                  'scale': 'x'},
+                  'x': {'field': 'data.idx', 'scale': 'x'},
+                  'y': {'field': 'data.val', 'scale': 'y'},
+                  'y2': {'scale': 'y', 'value': 0}},
+                  'update': {'fill': {'value': 'steelblue'}}},
+                  'type': 'rect'}]
 
         chart_runner(bar, scales, axes, marks)
 
@@ -136,33 +136,33 @@ class TestScatter(object):
 
         scatter = Scatter([1, 2, 3])
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'range': u'width',
-                   u'type': u'linear'},
-                  {u'domain': {u'data': u'table', u'field': u'data.val'},
-                   u'name': u'y',
-                   u'type': u'linear',
-                   u'range': u'height',
-                   u'nice': True},
-                  {u'domain': {u'data': u'table', u'field': u'data.col'},
-                   u'name': u'color',
-                   u'range': u'category20',
-                   u'type': u'ordinal'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'range': 'width',
+                   'type': 'linear'},
+                  {'domain': {'data': 'table', 'field': 'data.val'},
+                   'name': 'y',
+                   'type': 'linear',
+                   'range': 'height',
+                   'nice': True},
+                  {'domain': {'data': 'table', 'field': 'data.col'},
+                   'name': 'color',
+                   'range': 'category20',
+                   'type': 'ordinal'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        marks = [{u'from': {u'data': u'table',
-                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'}]},
-                  u'marks':
-                  [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
-                    u'scale': u'color'},
-                    u'size': {u'value': 100},
-                    u'x': {u'field': u'data.idx', u'scale': u'x'},
-                    u'y': {u'field': u'data.val', u'scale': u'y'}}},
-                    u'type': u'symbol'}],
-                  u'type': u'group'}]
+        marks = [{'from': {'data': 'table',
+                  'transform': [{'keys': ['data.col'], 'type': 'facet'}]},
+                  'marks':
+                  [{'properties': {'enter': {'fill': {'field': 'data.col',
+                    'scale': 'color'},
+                    'size': {'value': 100},
+                    'x': {'field': 'data.idx', 'scale': 'x'},
+                    'y': {'field': 'data.val', 'scale': 'y'}}},
+                    'type': 'symbol'}],
+                  'type': 'group'}]
 
         chart_runner(scatter, scales, axes, marks)
 
@@ -173,33 +173,33 @@ class TestLine(object):
     def test_init(self):
         line = Line([1, 2, 3])
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'range': u'width',
-                   u'type': u'linear'},
-                  {u'domain': {u'data': u'table', u'field': u'data.val'},
-                   u'name': u'y',
-                   u'type': u'linear',
-                   u'nice': True,
-                   u'range': u'height'},
-                  {u'domain': {u'data': u'table', u'field': u'data.col'},
-                   u'name': u'color',
-                   u'range': u'category20',
-                   u'type': u'ordinal'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'range': 'width',
+                   'type': 'linear'},
+                  {'domain': {'data': 'table', 'field': 'data.val'},
+                   'name': 'y',
+                   'type': 'linear',
+                   'nice': True,
+                   'range': 'height'},
+                  {'domain': {'data': 'table', 'field': 'data.col'},
+                   'name': 'color',
+                   'range': 'category20',
+                   'type': 'ordinal'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        marks = [{u'from': {u'data': u'table',
-                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'}]},
-                  u'marks':
-                 [{u'properties': {u'enter': {u'stroke': {u'field': u'data.col',
-                   u'scale': u'color'},
-                   u'strokeWidth': {u'value': 2},
-                   u'x': {u'field': u'data.idx', u'scale': u'x'},
-                   u'y': {u'field': u'data.val', u'scale': u'y'}}},
-                   u'type': u'line'}],
-                 u'type': u'group'}]
+        marks = [{'from': {'data': 'table',
+                  'transform': [{'keys': ['data.col'], 'type': 'facet'}]},
+                  'marks':
+                 [{'properties': {'enter': {'stroke': {'field': 'data.col',
+                   'scale': 'color'},
+                   'strokeWidth': {'value': 2},
+                   'x': {'field': 'data.idx', 'scale': 'x'},
+                   'y': {'field': 'data.val', 'scale': 'y'}}},
+                   'type': 'line'}],
+                 'type': 'group'}]
 
         chart_runner(line, scales, axes, marks)
 
@@ -210,34 +210,34 @@ class TestArea(object):
     def test_init(self):
         area = Area([1, 2, 3])
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'range': u'width',
-                   u'type': u'linear'},
-                  {u'domain': {u'data': u'table', u'field': u'data.val'},
-                   u'name': u'y',
-                   u'nice': True,
-                   u'type': u'linear',
-                   u'range': u'height'},
-                  {u'domain': {u'data': u'table', u'field': u'data.col'},
-                   u'name': u'color',
-                   u'range': u'category20',
-                   u'type': u'ordinal'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'range': 'width',
+                   'type': 'linear'},
+                  {'domain': {'data': 'table', 'field': 'data.val'},
+                   'name': 'y',
+                   'nice': True,
+                   'type': 'linear',
+                   'range': 'height'},
+                  {'domain': {'data': 'table', 'field': 'data.col'},
+                   'name': 'color',
+                   'range': 'category20',
+                   'type': 'ordinal'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        marks = [{u'from': {u'data': u'table',
-                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'}]},
-                  u'marks':
-                  [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
-                    u'scale': u'color'},
-                    u'interpolate': {u'value': u'monotone'},
-                    u'x': {u'field': u'data.idx', u'scale': u'x'},
-                    u'y': {u'field': u'data.val', u'scale': u'y'},
-                    u'y2': {u'scale': u'y', u'value': 0}}},
-                    u'type': u'area'}],
-                 u'type': u'group'}]
+        marks = [{'from': {'data': 'table',
+                  'transform': [{'keys': ['data.col'], 'type': 'facet'}]},
+                  'marks':
+                  [{'properties': {'enter': {'fill': {'field': 'data.col',
+                    'scale': 'color'},
+                    'interpolate': {'value': 'monotone'},
+                    'x': {'field': 'data.idx', 'scale': 'x'},
+                    'y': {'field': 'data.val', 'scale': 'y'},
+                    'y2': {'scale': 'y', 'value': 0}}},
+                    'type': 'area'}],
+                 'type': 'group'}]
 
         chart_runner(area, scales, axes, marks)
 
@@ -250,48 +250,48 @@ class TestStackedArea(object):
         stack = StackedArea({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
                             iter_idx='x')
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'range': u'width',
-                   u'type': u'linear',
-                   u'zero': False},
-                  {u'domain': {u'data': u'stats', u'field': u'sum'},
-                   u'name': u'y',
-                   u'nice': True,
-                   u'range': u'height',
-                   u'type': u'linear'},
-                  {u'domain': {u'data': u'table', u'field': u'data.col'},
-                   u'name': u'color',
-                   u'range': u'category20',
-                   u'type': u'ordinal'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'range': 'width',
+                   'type': 'linear',
+                   'zero': False},
+                  {'domain': {'data': 'stats', 'field': 'sum'},
+                   'name': 'y',
+                   'nice': True,
+                   'range': 'height',
+                   'type': 'linear'},
+                  {'domain': {'data': 'table', 'field': 'data.col'},
+                   'name': 'color',
+                   'range': 'category20',
+                   'type': 'ordinal'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        datas = [{u'name': u'table',
-                 u'values': [{u'col': u'y', u'idx': 1, u'val': 4},
-                  {u'col': u'y', u'idx': 2, u'val': 5},
-                  {u'col': u'y', u'idx': 3, u'val': 6},
-                  {u'col': u'z', u'idx': 1, u'val': 7},
-                  {u'col': u'z', u'idx': 2, u'val': 8},
-                  {u'col': u'z', u'idx': 3, u'val': 9}]},
-                {u'name': u'stats',
-                 u'source': u'table',
-                 u'transform': [{u'keys': [u'data.idx'], u'type': u'facet'},
-                  {u'type': u'stats', u'value': u'data.val'}]}]
+        datas = [{'name': 'table',
+                 'values': [{'col': 'y', 'idx': 1, 'val': 4},
+                  {'col': 'y', 'idx': 2, 'val': 5},
+                  {'col': 'y', 'idx': 3, 'val': 6},
+                  {'col': 'z', 'idx': 1, 'val': 7},
+                  {'col': 'z', 'idx': 2, 'val': 8},
+                  {'col': 'z', 'idx': 3, 'val': 9}]},
+                {'name': 'stats',
+                 'source': 'table',
+                 'transform': [{'keys': ['data.idx'], 'type': 'facet'},
+                  {'type': 'stats', 'value': 'data.val'}]}]
 
-        marks = [{u'from': {u'data': u'table',
-                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'},
-                 {u'height': u'data.val', u'point': u'data.idx', u'type': u'stack'}]},
-                 u'marks':
-                 [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
-                   u'scale': u'color'},
-                   u'interpolate': {u'value': u'monotone'},
-                   u'x': {u'field': u'data.idx', u'scale': u'x'},
-                   u'y': {u'field': u'y', u'scale': u'y'},
-                   u'y2': {u'field': u'y2', u'scale': u'y'}}},
-                   u'type': u'area'}],
-                   u'type': u'group'}]
+        marks = [{'from': {'data': 'table',
+                  'transform': [{'keys': ['data.col'], 'type': 'facet'},
+                 {'height': 'data.val', 'point': 'data.idx', 'type': 'stack'}]},
+                 'marks':
+                 [{'properties': {'enter': {'fill': {'field': 'data.col',
+                   'scale': 'color'},
+                   'interpolate': {'value': 'monotone'},
+                   'x': {'field': 'data.idx', 'scale': 'x'},
+                   'y': {'field': 'y', 'scale': 'y'},
+                   'y2': {'field': 'y2', 'scale': 'y'}}},
+                   'type': 'area'}],
+                   'type': 'group'}]
 
         chart_runner(stack, scales, axes, marks)
 
@@ -307,47 +307,47 @@ class TestStackedBar(object):
         stack = StackedBar({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
                            iter_idx='x')
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'range': u'width',
-                   u'type': u'ordinal'},
-                  {u'domain': {u'data': u'stats', u'field': u'sum'},
-                   u'name': u'y',
-                   u'nice': True,
-                   u'range': u'height',
-                   u'type': u'linear'},
-                  {u'domain': {u'data': u'table', u'field': u'data.col'},
-                   u'name': u'color',
-                   u'range': u'category20',
-                   u'type': u'ordinal'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'range': 'width',
+                   'type': 'ordinal'},
+                  {'domain': {'data': 'stats', 'field': 'sum'},
+                   'name': 'y',
+                   'nice': True,
+                   'range': 'height',
+                   'type': 'linear'},
+                  {'domain': {'data': 'table', 'field': 'data.col'},
+                   'name': 'color',
+                   'range': 'category20',
+                   'type': 'ordinal'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        datas = [{u'name': u'table',
-                 u'values': [{u'col': u'y', u'idx': 1, u'val': 4},
-                  {u'col': u'y', u'idx': 2, u'val': 5},
-                  {u'col': u'y', u'idx': 3, u'val': 6},
-                  {u'col': u'z', u'idx': 1, u'val': 7},
-                  {u'col': u'z', u'idx': 2, u'val': 8},
-                  {u'col': u'z', u'idx': 3, u'val': 9}]},
-                {u'name': u'stats',
-                 u'source': u'table',
-                 u'transform': [{u'keys': [u'data.idx'], u'type': u'facet'},
-                {u'type': u'stats', u'value': u'data.val'}]}]
+        datas = [{'name': 'table',
+                 'values': [{'col': 'y', 'idx': 1, 'val': 4},
+                  {'col': 'y', 'idx': 2, 'val': 5},
+                  {'col': 'y', 'idx': 3, 'val': 6},
+                  {'col': 'z', 'idx': 1, 'val': 7},
+                  {'col': 'z', 'idx': 2, 'val': 8},
+                  {'col': 'z', 'idx': 3, 'val': 9}]},
+                {'name': 'stats',
+                 'source': 'table',
+                 'transform': [{'keys': ['data.idx'], 'type': 'facet'},
+                {'type': 'stats', 'value': 'data.val'}]}]
 
-        marks = [{u'from': {u'data': u'table',
-                  u'transform': [{u'keys': [u'data.col'], u'type': u'facet'},
-                 {u'height': u'data.val', u'point': u'data.idx', u'type': u'stack'}]},
-                 u'marks':
-                 [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
-                   u'scale': u'color'},
-                   u'width': {u'band': True, u'offset': -1, u'scale': u'x'},
-                   u'x': {u'field': u'data.idx', u'scale': u'x'},
-                   u'y': {u'field': u'y', u'scale': u'y'},
-                   u'y2': {u'field': u'y2', u'scale': u'y'}}},
-                   u'type': u'rect'}],
-                   u'type': u'group'}]
+        marks = [{'from': {'data': 'table',
+                  'transform': [{'keys': ['data.col'], 'type': 'facet'},
+                 {'height': 'data.val', 'point': 'data.idx', 'type': 'stack'}]},
+                 'marks':
+                 [{'properties': {'enter': {'fill': {'field': 'data.col',
+                   'scale': 'color'},
+                   'width': {'band': True, 'offset': -1, 'scale': 'x'},
+                   'x': {'field': 'data.idx', 'scale': 'x'},
+                   'y': {'field': 'y', 'scale': 'y'},
+                   'y2': {'field': 'y2', 'scale': 'y'}}},
+                   'type': 'rect'}],
+                   'type': 'group'}]
 
         chart_runner(stack, scales, axes, marks)
 
@@ -368,48 +368,48 @@ class TestGroupedBar(object):
 
         group = GroupedBar(df)
 
-        scales = [{u'domain': {u'data': u'table', u'field': u'data.idx'},
-                   u'name': u'x',
-                   u'padding': 0.2,
-                   u'range': u'width',
-                   u'type': u'ordinal'},
-                  {u'domain': {u'data': u'table', u'field': u'data.val'},
-                   u'name': u'y',
-                   u'nice': True,
-                   u'range': u'height'},
-                  {u'domain': {u'data': u'table', u'field': u'data.col'},
-                   u'name': u'color',
-                   u'range': u'category20',
-                   u'type': u'ordinal'}]
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'x',
+                   'padding': 0.2,
+                   'range': 'width',
+                   'type': 'ordinal'},
+                  {'domain': {'data': 'table', 'field': 'data.val'},
+                   'name': 'y',
+                   'nice': True,
+                   'range': 'height'},
+                  {'domain': {'data': 'table', 'field': 'data.col'},
+                   'name': 'color',
+                   'range': 'category20',
+                   'type': 'ordinal'}]
 
-        axes = [{u'scale': u'x', u'type': u'x'},
-                {u'scale': u'y', u'type': u'y'}]
+        axes = [{'scale': 'x', 'type': 'x'},
+                {'scale': 'y', 'type': 'y'}]
 
-        datas = [{u'name': u'table',
-                  u'values':
-                  [{u'col': u'apples', u'group': 0, u'idx': u'Farm 1', u'val': 10},
-                  {u'col': u'berries', u'group': 1, u'idx': u'Farm 1', u'val': 32},
-                  {u'col': u'squash', u'group': 2, u'idx': u'Farm 1', u'val': 21},
-                  {u'col': u'apples', u'group': 0, u'idx': u'Farm 2', u'val': 15},
-                  {u'col': u'berries', u'group': 1, u'idx': u'Farm 2', u'val': 40},
-                  {u'col': u'squash', u'group': 2, u'idx': u'Farm 2', u'val': 17}]}]
+        datas = [{'name': 'table',
+                  'values':
+                  [{'col': 'apples', 'group': 0, 'idx': 'Farm 1', 'val': 10},
+                  {'col': 'berries', 'group': 1, 'idx': 'Farm 1', 'val': 32},
+                  {'col': 'squash', 'group': 2, 'idx': 'Farm 1', 'val': 21},
+                  {'col': 'apples', 'group': 0, 'idx': 'Farm 2', 'val': 15},
+                  {'col': 'berries', 'group': 1, 'idx': 'Farm 2', 'val': 40},
+                  {'col': 'squash', 'group': 2, 'idx': 'Farm 2', 'val': 17}]}]
 
-        marks = [{u'from': {u'data': u'table',
-                  u'transform': [{u'keys': [u'data.idx'], u'type': u'facet'}]},
-                  u'marks': [{u'properties': {u'enter': {u'fill': {u'field': u'data.col',
-                      u'scale': u'color'},
-                     u'width': {u'band': True, u'offset': -1, u'scale': u'pos'},
-                     u'x': {u'field': u'data.group', u'scale': u'pos'},
-                     u'y': {u'field': u'data.val', u'scale': u'y'},
-                     u'y2': {u'scale': u'y', u'value': 0}}},
-                   u'type': u'rect'}],
-                 u'properties': {u'enter': {u'width': {u'band': True, u'scale': u'x'},
-                   u'x': {u'field': u'key', u'scale': u'x'}}},
-                 u'scales': [{u'domain': {u'field': u'data.group'},
-                   u'name': u'pos',
-                   u'range': u'width',
-                   u'type': u'ordinal'}],
-                 u'type': u'group'}]
+        marks = [{'from': {'data': 'table',
+                  'transform': [{'keys': ['data.idx'], 'type': 'facet'}]},
+                  'marks': [{'properties': {'enter': {'fill': {'field': 'data.col',
+                      'scale': 'color'},
+                     'width': {'band': True, 'offset': -1, 'scale': 'pos'},
+                     'x': {'field': 'data.group', 'scale': 'pos'},
+                     'y': {'field': 'data.val', 'scale': 'y'},
+                     'y2': {'scale': 'y', 'value': 0}}},
+                   'type': 'rect'}],
+                 'properties': {'enter': {'width': {'band': True, 'scale': 'x'},
+                   'x': {'field': 'key', 'scale': 'x'}}},
+                 'scales': [{'domain': {'field': 'data.group'},
+                   'name': 'pos',
+                   'range': 'width',
+                   'type': 'ordinal'}],
+                 'type': 'group'}]
 
         chart_runner(group, scales, axes, marks)
 

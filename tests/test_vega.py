@@ -29,13 +29,13 @@ import numpy as np
 
 sequences = {
     'int': range,
-    'float': lambda l: map(float, range(l)),
-    'char': lambda l: map(chr, range(97, 97 + l)),
+    'float': lambda l: list(map(float, list(range(l)))),
+    'char': lambda l: list(map(chr, list(range(97, 97 + l)))),
     'datetime': lambda l: [datetime.now() + timedelta(days=i)
-                           for i in xrange(l)],
+                           for i in range(l)],
     'Timestamp': lambda l: pd.date_range('1/2/2000', periods=l),
-    'numpy float': lambda l: map(np.float32, range(l)),
-    'numpy int': lambda l: map(np.int32, range(l))}
+    'numpy float': lambda l: list(map(np.float32, list(range(l)))),
+    'numpy int': lambda l: list(map(np.int32, list(range(l))))}
 
 
 def test_keyed_list():
@@ -56,7 +56,7 @@ def test_keyed_list():
     #Bad key
     with nt.assert_raises(KeyError) as err:
         key_list['test_1']
-    nt.assert_equal(err.exception.message, ' "test_1" is an invalid key')
+    nt.assert_equal(err.exception.args[0], ' "test_1" is an invalid key')
 
     #Repeated keys
     test_key_1 = TestKey(name='test')
@@ -507,7 +507,7 @@ class TestData(object):
     def test_numpy_loading(self):
         """Numpy ndarray objects are correctly loaded"""
         test_data = np.random.randn(6, 3)
-        index = xrange(test_data.shape[0])
+        index = range(test_data.shape[0])
         columns = ['a', 'b', 'c']
 
         data = Data.from_numpy(test_data, name='name', columns=columns)
@@ -536,7 +536,7 @@ class TestData(object):
 
         #Bad loads
         with nt.assert_raises(LoadError) as err:
-            Data.from_numpy(test_data, 'test', columns, index=xrange(4))
+            Data.from_numpy(test_data, 'test', columns, index=range(4))
         nt.assert_equal(err.expected, LoadError)
 
         columns = ['a', 'b']

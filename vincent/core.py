@@ -35,7 +35,6 @@ def initialize_notebook():
     display(HTML('<script src="%s"></script>' % vega_js_url))
 
 
-
 def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
     if not isinstance(value, value_type):
@@ -225,7 +224,7 @@ class GrammarClass(object):
         """
         self.grammar = GrammarDict()
 
-        for attr, value in kwargs.iteritems():
+        for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
             else:
@@ -238,7 +237,7 @@ class GrammarClass(object):
         will catch ``ValueError``s raised by the grammar property's setters
         and re-raise them as :class:`ValidationError`.
         """
-        for key, val in self.grammar.iteritems():
+        for key, val in self.grammar.items():
             try:
                 setattr(self, key, val)
             except ValueError as e:
@@ -283,8 +282,8 @@ class GrammarClass(object):
                 return obj.grammar
 
         if html_out:
-            template = Template(resource_string('vincent',
-                                                'vega_template.html'))
+            template = Template(
+                str(resource_string('vincent', 'vega_template.html')))
             with open(html_path, 'w') as f:
                 f.write(template.substitute(path=path))
 

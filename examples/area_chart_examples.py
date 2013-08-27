@@ -13,7 +13,7 @@ all_data = {}
 for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:
     all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2010', '1/1/2013')
 price = pd.DataFrame({tic: data['Adj Close']
-                      for tic, data in all_data.iteritems()})
+                      for tic, data in all_data.items()})
 
 vis = Visualization(width=500, height=300)
 vis.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 100}

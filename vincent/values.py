@@ -4,7 +4,7 @@
 ValueRef: Generally used in a PropertySet class to define a set of values within a property
 
 """
-from core import grammar, GrammarClass
+from .core import grammar, GrammarClass
 
 
 class ValueRef(GrammarClass):

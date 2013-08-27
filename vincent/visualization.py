@@ -6,14 +6,14 @@ Visualization: Top level class for Vega Grammar
 """
 from __future__ import (print_function, division)
 import random
-from core import (initialize_notebook, _assert_is_type, ValidationError,
+from .core import (initialize_notebook, _assert_is_type, ValidationError,
                   KeyedList, grammar, GrammarClass, LoadError)
-from data import Data
-from scales import Scale
-from marks import Mark
-from axes import Axis
-from legends import Legend
-from colors import brews
+from .data import Data
+from .scales import Scale
+from .marks import Mark
+from .axes import Axis
+from .legends import Legend
+from .colors import brews
 
 
 class Visualization(GrammarClass):
