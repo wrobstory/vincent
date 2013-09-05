@@ -1,9 +1,9 @@
 '''
-Vincent iPython notebook
+Vincent IPython notebook
 -------
 
-A module for integrating vincent with the iPython notebook. Huge thanks to
-https://github.com/aflaxman for putting this together. iPython might be seeing
+A module for integrating vincent with the IPython notebook. Huge thanks to
+https://github.com/aflaxman for putting this together. IPython might be seeing
 significant changes with JS handling in the near future- until then, this
 module will allow for embedding on a local server (but not in nbviewer)
 

@@ -22,5 +22,5 @@ $python -m SimpleHTTPServer 8000
 
 Point your webbrowser to http://localhost:8000/vega_template.html to see the visualization. 
 
-For the iPython notebook, you need to host it locally (javascript safety), and use the "Run in Place" command. 
+For the IPython notebook, you need to host it locally (javascript safety), and use the "Run in Place" command. 
 

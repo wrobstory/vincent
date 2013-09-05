@@ -258,14 +258,26 @@ class Visualization(GrammarClass):
 
     def display(self):
         """Display visualization inline in IPython notebook"""
-
         from IPython.core.display import display, HTML, Javascript
 
         # Copied from vincent.ipynb:
         # HACK: use a randomly chosen unique div id
         id = random.randint(0, 2 ** 16)
         a = HTML('<div id="vis%d"></div>' % id)
-        b = Javascript('vg.parse.spec(%s, function(chart) '
-                       '{ chart({el:"#vis%d"}).update(); });' %
-                       (self.to_json(pretty_print=False), id))
+        b = Javascript(_vega_t % (self.to_json(pretty_print=False), id))
         display(a, b)
+
+_vega_t = """
+( function() {
+  var _do_plot = function() {
+    if ( typeof vg == 'undefined' ) {
+      $([IPython.events]).on("vega_loaded.vincent", _do_plot);
+      return;
+    }
+    vg.parse.spec(%s, function(chart) {
+      chart({el: "#vis%d"}).update();
+    });
+  };
+  _do_plot();
+})();
+"""
