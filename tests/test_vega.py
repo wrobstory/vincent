@@ -14,7 +14,6 @@ from vincent.core import (grammar, GrammarClass, GrammarDict, KeyedList,
 from vincent.visualization import Visualization
 from vincent.data import Data
 from vincent.transforms import Transform
-from vincent.values import ValueRef
 from vincent.properties import PropertySet
 from vincent.scales import DataRef, Scale
 from vincent.marks import ValueRef, MarkProperties, MarkRef, Mark
@@ -64,7 +63,7 @@ def test_keyed_list():
     with nt.assert_raises(ValidationError) as err:
         key_list['test']
     nt.assert_equal(err.expected, ValidationError)
-    nt.assert_equal(err.exception.message, 'duplicate keys found')
+    nt.assert_equal(err.exception.args[0], 'duplicate keys found')
 
     #Setting keys
     key_list.pop(-1)
@@ -84,7 +83,7 @@ def test_keyed_list():
     with nt.assert_raises(ValidationError) as err:
         key_list['test_4'] = test_key_3
     nt.assert_equal(err.expected, ValidationError)
-    nt.assert_equal(err.exception.message,
+    nt.assert_equal(err.exception.args[0],
                     "key must be equal to 'name' attribute")
 
     key_list = KeyedList(attr_name='type')
@@ -92,7 +91,7 @@ def test_keyed_list():
     with nt.assert_raises(ValidationError) as err:
         key_list['test_key_4'] = test_key_4
     nt.assert_equal(err.expected, ValidationError)
-    nt.assert_equal(err.exception.message, 'object must have type attribute')
+    nt.assert_equal(err.exception.args[0], 'object must have type attribute')
 
 
 def test_grammar():
@@ -214,7 +213,7 @@ def assert_grammar_validation(grammar_errors, test_obj):
         with nt.assert_raises(error) as err:
             setattr(test_obj, attr, value)
 
-        nt.assert_equal(err.exception.message, message)
+        nt.assert_equal(err.exception.args[0], message)
 
 
 class TestGrammarClass(object):
@@ -230,7 +229,7 @@ class TestGrammarClass(object):
         test.axes.append({'bad axes': 'ShouldRaiseError'})
         with nt.assert_raises(ValidationError) as err:
             test.validate()
-        nt.assert_equal(err.exception.message,
+        nt.assert_equal(err.exception.args[0],
                         'invalid contents: axes[0] must be Axis')
 
 
@@ -287,13 +286,13 @@ class TestVisualization(object):
         test_obj = Visualization()
         with nt.assert_raises(ValidationError) as err:
             test_obj.validate()
-        nt.assert_equal(err.exception.message,
+        nt.assert_equal(err.exception.args[0],
                         'data must be defined for valid visualization')
 
         test_obj.data = [Data(name='test'), Data(name='test')]
         with nt.assert_raises(ValidationError) as err:
             test_obj.validate()
-        nt.assert_equal(err.exception.message,
+        nt.assert_equal(err.exception.args[0],
                         'data has duplicate names')
 
     def test_axis_labeling(self):
@@ -376,7 +375,7 @@ class TestData(object):
         test_obj = BadType()
         with nt.assert_raises(LoadError) as err:
             Data.serialize(test_obj)
-        nt.assert_equals(err.exception.message,
+        nt.assert_equals(err.exception.args[0],
                          'cannot serialize index of type BadType')
 
     def test_pandas_series_loading(self):

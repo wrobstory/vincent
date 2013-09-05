@@ -241,7 +241,7 @@ class GrammarClass(object):
             try:
                 setattr(self, key, val)
             except ValueError as e:
-                raise ValidationError('invalid contents: ' + e.message)
+                raise ValidationError('invalid contents: ' + e.args[0])
 
     def to_json(self, path=None, html_out=False, html_path='vega_template.html',
                 validate=False, pretty_print=True):
