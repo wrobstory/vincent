@@ -4,5 +4,5 @@ May 15 2012 V0.1.7, Dan Miller, dnmiller
 
 May 11 2012 V0.1.6, Rob Story, wrobstory
 
-* iPython functionality no longer required import. Use ```import vincent.ipynb```
+* IPython functionality no longer required import. Use ```import vincent.ipynb```
 
