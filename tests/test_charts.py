@@ -38,8 +38,8 @@ def test_data_type():
              {'col': 'data', 'idx': 3, 'val': 40},
              {'col': 'data', 'idx': 4, 'val': 50}]
     gets2 = [{'col': 'data', 'idx': 'apples', 'val': 10},
-             {'col': 'data', 'idx': 'oranges', 'val': 30},
-             {'col': 'data', 'idx': 'bananas', 'val': 20}]
+             {'col': 'data', 'idx': 'bananas', 'val': 20},
+             {'col': 'data', 'idx': 'oranges', 'val': 30}]
 
     for ins, outs in zip([puts1, puts2], [gets1, gets2]):
         test = data_type(ins)
@@ -415,15 +415,3 @@ class TestGroupedBar(object):
 
         for i, data in enumerate(datas):
             nt.assert_dict_equal(group.data[i].grammar(), data)
-
-
-
-
-
-
-
-
-
-
-
-

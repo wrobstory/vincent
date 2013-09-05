@@ -224,7 +224,7 @@ class GrammarClass(object):
         """
         self.grammar = GrammarDict()
 
-        for attr, value in kwargs.items():
+        for attr, value in sorted(kwargs.items()):
             if hasattr(self, attr):
                 setattr(self, attr, value)
             else:
@@ -237,7 +237,7 @@ class GrammarClass(object):
         will catch ``ValueError``s raised by the grammar property's setters
         and re-raise them as :class:`ValidationError`.
         """
-        for key, val in self.grammar.items():
+        for key, val in sorted(self.grammar.items()):
             try:
                 setattr(self, key, val)
             except ValueError as e:
@@ -289,9 +289,11 @@ class GrammarClass(object):
 
         if path:
             with open(path, 'w') as f:
-                json.dump(self.grammar, f, default=encoder, **dumps_args)
+                json.dump(self.grammar, f, default=encoder, sort_keys=True,
+                          **dumps_args)
         else:
-            return json.dumps(self.grammar, default=encoder, **dumps_args)
+            return json.dumps(self.grammar, default=encoder, sort_keys=True,
+                              **dumps_args)
 
     def from_json(self):
         """Load object from JSON

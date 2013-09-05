@@ -311,7 +311,7 @@ class Data(GrammarClass):
 
         index = kwargs.pop(idx)
         vega_vals = []
-        for k, v in kwargs.items():
+        for k, v in sorted(kwargs.items()):
             for idx, val in zip(index, v):
                 value = {}
                 value['idx'] = idx
@@ -342,7 +342,8 @@ class Data(GrammarClass):
         if isinstance(data, (list, tuple)):
             data = {x: y for x, y in enumerate(data)}
 
-        values = [{'idx': k, 'col': 'data', 'val': v} for k, v in data.items()]
+        values = [{'idx': k, 'col': 'data', 'val': v}
+                  for k, v in sorted(data.items())]
         return cls(name, values=values)
 
     def to_json(self, validate=False, pretty_print=True, data_path=None):

@@ -168,11 +168,13 @@ def test_grammar_dict():
     test = Visualization()
     test_dict = {'axes': [], 'data': [], 'marks': [],
                  'scales': [], 'legends': []}
-    test_str = ('{"marks": [], "axes": [], "data": [],'
-                ' "legends": [], "scales": []}')
+    test_str = ('{"axes": [], "data": [], "legends": [], '
+                '"marks": [], "scales": []}')
 
     nt.assert_equal(test.grammar(), test_dict)
-    nt.assert_equal(str(test.grammar), test_str)
+    print(json.dumps(test.grammar, sort_keys=True))
+    nt.assert_equal(json.dumps(test.grammar, sort_keys=True),
+                    test_str)
     nt.assert_equal(g_dict.encoder(test), test.grammar)
 
 
@@ -573,8 +575,8 @@ class TestData(object):
                 {'col': 'data', 'idx': 1, 'val': 20},
                 {'col': 'data', 'idx': 2, 'val': 30}]
         get2 = [{'col': 'data', 'idx': 'apples', 'val': 10},
-                {'col': 'data', 'idx': 'oranges', 'val': 30},
-                {'col': 'data', 'idx': 'bananas', 'val': 20}]
+                {'col': 'data', 'idx': 'bananas', 'val': 20},
+                {'col': 'data', 'idx': 'oranges', 'val': 30}]
         nt.assert_list_equal(test_list.values, get1)
         nt.assert_list_equal(test_dict.values, get2)
 
@@ -636,7 +638,8 @@ class TestValueRef(object):
             'value': 'test-value',
             'band': True}
         vref = ValueRef(**props)
-        nt.assert_equal(json.dumps(props), vref.to_json(pretty_print=False))
+        nt.assert_equal(json.dumps(props, sort_keys=True),
+                        vref.to_json(pretty_print=False))
 
         props = {
             'value': 'test-value',
@@ -646,7 +649,8 @@ class TestValueRef(object):
             'offset': 4,
             'band': True}
         vref = ValueRef(**props)
-        nt.assert_equal(json.dumps(props), vref.to_json(pretty_print=False))
+        nt.assert_equal(json.dumps(props, sort_keys=True),
+                        vref.to_json(pretty_print=False))
 
 
 class TestPropertySet(object):
