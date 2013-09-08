@@ -7,7 +7,7 @@ Data: Vincent Data Class for data importing and Vega Data type
 from __future__ import (print_function, division)
 import time
 import copy
-from core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
+from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
 
 try:
     import pandas as pd
@@ -253,7 +253,7 @@ class Data(GrammarClass):
         # Integer index if none is provided
         index = index or range(np_obj.shape[0])
         # Explicitly map dict-keys to strings for JSON serializer.
-        columns = map(str, columns)
+        columns = list(map(str, columns))
 
         index_key = index_key or cls._default_index_key
 
@@ -311,7 +311,7 @@ class Data(GrammarClass):
 
         index = kwargs.pop(idx)
         vega_vals = []
-        for k, v in kwargs.iteritems():
+        for k, v in sorted(kwargs.items()):
             for idx, val in zip(index, v):
                 value = {}
                 value['idx'] = idx
@@ -342,7 +342,8 @@ class Data(GrammarClass):
         if isinstance(data, (list, tuple)):
             data = {x: y for x, y in enumerate(data)}
 
-        values = [{'idx': k, 'col': 'data', 'val': v} for k, v in data.iteritems()]
+        values = [{'idx': k, 'col': 'data', 'val': v}
+                  for k, v in sorted(data.items())]
         return cls(name, values=values)
 
     def to_json(self, validate=False, pretty_print=True, data_path=None):

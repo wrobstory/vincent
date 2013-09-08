@@ -5,8 +5,8 @@ PropertySet: Definition of properties for ``Mark`` objects and labels of ``Axis`
 
 """
 
-from core import _assert_is_type, grammar, GrammarClass
-from values import ValueRef
+from .core import _assert_is_type, grammar, GrammarClass
+from .values import ValueRef
 
 
 class PropertySet(GrammarClass):

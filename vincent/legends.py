@@ -5,9 +5,9 @@ Legend: Classes to define Vega Legends
 
 """
 from __future__ import (print_function, division)
-from core import (initialize_notebook, _assert_is_type, ValidationError,
+from .core import (initialize_notebook, _assert_is_type, ValidationError,
                   KeyedList, grammar, GrammarClass, LoadError)
-from values import ValueRef
+from .values import ValueRef
 
 
 class LegendProperties(GrammarClass):

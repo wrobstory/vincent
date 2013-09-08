@@ -69,8 +69,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Vincent'
-copyright = u'2013, Rob Story, Dan Miller, et. al.'
+project = 'Vincent'
+copyright = '2013, Rob Story, Dan Miller, et. al.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -214,8 +214,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'vincent.tex', u'vincent Documentation',
-   u'Rob Story, Dan Miller, et. al.', 'manual'),
+  ('index', 'vincent.tex', 'vincent Documentation',
+   'Rob Story, Dan Miller, et. al.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -244,8 +244,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'vincent', u'vincent Documentation',
-     [u'Rob Story, Dan Miller, et. al.'], 1)
+    ('index', 'vincent', 'vincent Documentation',
+     ['Rob Story, Dan Miller, et. al.'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -258,8 +258,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'vincent', u'vincent Documentation',
-   u'Rob Story, Dan Miller, et. al.', 'vincent', 'One line description of project.',
+  ('index', 'vincent', 'vincent Documentation',
+   'Rob Story, Dan Miller, et. al.', 'vincent', 'One line description of project.',
    'Miscellaneous'),
 ]
 

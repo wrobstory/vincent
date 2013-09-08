@@ -1,13 +1,13 @@
 from copy import deepcopy
 
-from visualization import Visualization
-from data import Data
-from transforms import Transform
-from values import ValueRef
-from properties import PropertySet
-from scales import DataRef, Scale
-from marks import ValueRef, MarkProperties, MarkRef, Mark
-from axes import AxisProperties, Axis
+from .visualization import Visualization
+from .data import Data
+from .transforms import Transform
+from .values import ValueRef
+from .properties import PropertySet
+from .scales import DataRef, Scale
+from .marks import ValueRef, MarkProperties, MarkRef, Mark
+from .axes import AxisProperties, Axis
 
 try:
     import pandas as pd

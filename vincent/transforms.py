@@ -5,7 +5,7 @@ Transforms: Vincent Data Class for Vega Transform types
 
 """
 from __future__ import (print_function, division)
-from core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
+from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
 
 
 class Transform(GrammarClass):
