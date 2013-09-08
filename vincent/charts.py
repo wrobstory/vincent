@@ -5,15 +5,15 @@ Charts: Constructors for different chart types in Vega grammar.
 
 """
 import copy
-from core import KeyedList
-from visualization import Visualization
-from data import Data
-from transforms import Transform
-from values import ValueRef
-from properties import PropertySet
-from scales import DataRef, Scale
-from marks import ValueRef, MarkProperties, MarkRef, Mark
-from axes import AxisProperties, Axis
+from .core import KeyedList
+from .visualization import Visualization
+from .data import Data
+from .transforms import Transform
+from .values import ValueRef
+from .properties import PropertySet
+from .scales import DataRef, Scale
+from .marks import ValueRef, MarkProperties, MarkRef, Mark
+from .axes import AxisProperties, Axis
 
 try:
     import pandas as pd

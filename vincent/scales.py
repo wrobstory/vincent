@@ -4,7 +4,7 @@
 Scales: Classes to define Vega scales
 
 """
-from core import grammar, GrammarClass
+from .core import grammar, GrammarClass
 
 
 class DataRef(GrammarClass):

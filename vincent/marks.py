@@ -4,9 +4,9 @@
 Marks: Classes to define Vega Marks
 
 """
-from core import grammar, GrammarClass, KeyedList
-from values import ValueRef
-from properties import PropertySet
+from .core import grammar, GrammarClass, KeyedList
+from .values import ValueRef
+from .properties import PropertySet
 
 
 class MarkProperties(GrammarClass):

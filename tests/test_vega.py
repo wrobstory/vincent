@@ -14,7 +14,6 @@ from vincent.core import (grammar, GrammarClass, GrammarDict, KeyedList,
 from vincent.visualization import Visualization
 from vincent.data import Data
 from vincent.transforms import Transform
-from vincent.values import ValueRef
 from vincent.properties import PropertySet
 from vincent.scales import DataRef, Scale
 from vincent.marks import ValueRef, MarkProperties, MarkRef, Mark
@@ -29,13 +28,13 @@ import numpy as np
 
 sequences = {
     'int': range,
-    'float': lambda l: map(float, range(l)),
-    'char': lambda l: map(chr, range(97, 97 + l)),
+    'float': lambda l: list(map(float, list(range(l)))),
+    'char': lambda l: list(map(chr, list(range(97, 97 + l)))),
     'datetime': lambda l: [datetime.now() + timedelta(days=i)
-                           for i in xrange(l)],
+                           for i in range(l)],
     'Timestamp': lambda l: pd.date_range('1/2/2000', periods=l),
-    'numpy float': lambda l: map(np.float32, range(l)),
-    'numpy int': lambda l: map(np.int32, range(l))}
+    'numpy float': lambda l: list(map(np.float32, list(range(l)))),
+    'numpy int': lambda l: list(map(np.int32, list(range(l))))}
 
 
 def test_keyed_list():
@@ -56,7 +55,7 @@ def test_keyed_list():
     #Bad key
     with nt.assert_raises(KeyError) as err:
         key_list['test_1']
-    nt.assert_equal(err.exception.message, ' "test_1" is an invalid key')
+    nt.assert_equal(err.exception.args[0], ' "test_1" is an invalid key')
 
     #Repeated keys
     test_key_1 = TestKey(name='test')
@@ -64,7 +63,7 @@ def test_keyed_list():
     with nt.assert_raises(ValidationError) as err:
         key_list['test']
     nt.assert_equal(err.expected, ValidationError)
-    nt.assert_equal(err.exception.message, 'duplicate keys found')
+    nt.assert_equal(err.exception.args[0], 'duplicate keys found')
 
     #Setting keys
     key_list.pop(-1)
@@ -84,7 +83,7 @@ def test_keyed_list():
     with nt.assert_raises(ValidationError) as err:
         key_list['test_4'] = test_key_3
     nt.assert_equal(err.expected, ValidationError)
-    nt.assert_equal(err.exception.message,
+    nt.assert_equal(err.exception.args[0],
                     "key must be equal to 'name' attribute")
 
     key_list = KeyedList(attr_name='type')
@@ -92,7 +91,7 @@ def test_keyed_list():
     with nt.assert_raises(ValidationError) as err:
         key_list['test_key_4'] = test_key_4
     nt.assert_equal(err.expected, ValidationError)
-    nt.assert_equal(err.exception.message, 'object must have type attribute')
+    nt.assert_equal(err.exception.args[0], 'object must have type attribute')
 
 
 def test_grammar():
@@ -169,11 +168,13 @@ def test_grammar_dict():
     test = Visualization()
     test_dict = {'axes': [], 'data': [], 'marks': [],
                  'scales': [], 'legends': []}
-    test_str = ('{"marks": [], "axes": [], "data": [],'
-                ' "legends": [], "scales": []}')
+    test_str = ('{"axes": [], "data": [], "legends": [], '
+                '"marks": [], "scales": []}')
 
     nt.assert_equal(test.grammar(), test_dict)
-    nt.assert_equal(str(test.grammar), test_str)
+    print(json.dumps(test.grammar, sort_keys=True))
+    nt.assert_equal(json.dumps(test.grammar, sort_keys=True),
+                    test_str)
     nt.assert_equal(g_dict.encoder(test), test.grammar)
 
 
@@ -214,7 +215,7 @@ def assert_grammar_validation(grammar_errors, test_obj):
         with nt.assert_raises(error) as err:
             setattr(test_obj, attr, value)
 
-        nt.assert_equal(err.exception.message, message)
+        nt.assert_equal(err.exception.args[0], message)
 
 
 class TestGrammarClass(object):
@@ -230,7 +231,7 @@ class TestGrammarClass(object):
         test.axes.append({'bad axes': 'ShouldRaiseError'})
         with nt.assert_raises(ValidationError) as err:
             test.validate()
-        nt.assert_equal(err.exception.message,
+        nt.assert_equal(err.exception.args[0],
                         'invalid contents: axes[0] must be Axis')
 
 
@@ -287,13 +288,13 @@ class TestVisualization(object):
         test_obj = Visualization()
         with nt.assert_raises(ValidationError) as err:
             test_obj.validate()
-        nt.assert_equal(err.exception.message,
+        nt.assert_equal(err.exception.args[0],
                         'data must be defined for valid visualization')
 
         test_obj.data = [Data(name='test'), Data(name='test')]
         with nt.assert_raises(ValidationError) as err:
             test_obj.validate()
-        nt.assert_equal(err.exception.message,
+        nt.assert_equal(err.exception.args[0],
                         'data has duplicate names')
 
     def test_axis_labeling(self):
@@ -376,7 +377,7 @@ class TestData(object):
         test_obj = BadType()
         with nt.assert_raises(LoadError) as err:
             Data.serialize(test_obj)
-        nt.assert_equals(err.exception.message,
+        nt.assert_equals(err.exception.args[0],
                          'cannot serialize index of type BadType')
 
     def test_pandas_series_loading(self):
@@ -507,7 +508,7 @@ class TestData(object):
     def test_numpy_loading(self):
         """Numpy ndarray objects are correctly loaded"""
         test_data = np.random.randn(6, 3)
-        index = xrange(test_data.shape[0])
+        index = range(test_data.shape[0])
         columns = ['a', 'b', 'c']
 
         data = Data.from_numpy(test_data, name='name', columns=columns)
@@ -536,7 +537,7 @@ class TestData(object):
 
         #Bad loads
         with nt.assert_raises(LoadError) as err:
-            Data.from_numpy(test_data, 'test', columns, index=xrange(4))
+            Data.from_numpy(test_data, 'test', columns, index=range(4))
         nt.assert_equal(err.expected, LoadError)
 
         columns = ['a', 'b']
@@ -574,8 +575,8 @@ class TestData(object):
                 {'col': 'data', 'idx': 1, 'val': 20},
                 {'col': 'data', 'idx': 2, 'val': 30}]
         get2 = [{'col': 'data', 'idx': 'apples', 'val': 10},
-                {'col': 'data', 'idx': 'oranges', 'val': 30},
-                {'col': 'data', 'idx': 'bananas', 'val': 20}]
+                {'col': 'data', 'idx': 'bananas', 'val': 20},
+                {'col': 'data', 'idx': 'oranges', 'val': 30}]
         nt.assert_list_equal(test_list.values, get1)
         nt.assert_list_equal(test_dict.values, get2)
 
@@ -637,7 +638,8 @@ class TestValueRef(object):
             'value': 'test-value',
             'band': True}
         vref = ValueRef(**props)
-        nt.assert_equal(json.dumps(props), vref.to_json(pretty_print=False))
+        nt.assert_equal(json.dumps(props, sort_keys=True),
+                        vref.to_json(pretty_print=False))
 
         props = {
             'value': 'test-value',
@@ -647,7 +649,8 @@ class TestValueRef(object):
             'offset': 4,
             'band': True}
         vref = ValueRef(**props)
-        nt.assert_equal(json.dumps(props), vref.to_json(pretty_print=False))
+        nt.assert_equal(json.dumps(props, sort_keys=True),
+                        vref.to_json(pretty_print=False))
 
 
 class TestPropertySet(object):

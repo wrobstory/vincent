@@ -4,8 +4,8 @@
 Axes: Classes for defining Vega axis properties
 
 """
-from core import grammar, GrammarClass
-from properties import PropertySet
+from .core import grammar, GrammarClass
+from .properties import PropertySet
 
 
 class AxisProperties(GrammarClass):
