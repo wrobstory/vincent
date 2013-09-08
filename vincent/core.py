@@ -25,14 +25,17 @@ vega_js_url = 'http://trifacta.github.com/vega/vega.js'
 
 
 def initialize_notebook():
-    """Initialize the iPython notebook display elements"""
+    """Initialize the IPython notebook display elements"""
     try:
-        from IPython.core.display import display, HTML, Javascript
+        from IPython.core.display import display, Javascript
     except ImportError:
-        print('iPython Notebook could not be loaded.')
-
-    display(HTML('<script src="%s"></script>' % d3_js_url))
-    display(HTML('<script src="%s"></script>' % vega_js_url))
+        print('IPython Notebook could not be loaded.')
+    
+    display(Javascript('''$.getScript("%s", function() {
+        $.getScript("%s", function() {
+            $([IPython.events]).trigger("vega_loaded.vincent");
+        })
+    });''' % (d3_js_url, vega_js_url)))
 
 
 

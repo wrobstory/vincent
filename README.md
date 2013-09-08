@@ -19,7 +19,7 @@ Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intui
 Status
 ------
 
-Version 0.2 is a major release for Vincent. It includes many new capabilities, but some regressions- for example, maps are not yet built in as a convenience chart method. Additionally, iPython 1.0 is not yet supported. Both of these are coming soon- please feel free to work on them and submit a pull request.
+Version 0.2 is a major release for Vincent. It includes many new capabilities, but some regressions- for example, maps are not yet built in as a convenience chart method. Additionally, IPython 1.0 is not yet supported. Both of these are coming soon- please feel free to work on them and submit a pull request.
 
 Installation
 ------------
