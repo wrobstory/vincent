@@ -8,6 +8,7 @@ from __future__ import (print_function, division)
 import time
 import copy
 from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
+from ._compat import str_types
 
 try:
     import pandas as pd
@@ -43,14 +44,14 @@ class Data(GrammarClass):
         super(self.__class__, self).__init__(**kwargs)
         self.name = name if name else 'table'
 
-    @grammar(str)
+    @grammar(str_types)
     def name(value):
         """string : Name of the data
 
         This is used by other components (``Mark``, etc.) for reference.
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def url(value):
         """string : URL from which to load the data
 
@@ -89,7 +90,7 @@ class Data(GrammarClass):
         for row in value:
             _assert_is_type('values row', row, (float, int, dict))
 
-    @grammar(str)
+    @grammar(str_types)
     def source(value):
         """string : ``name`` field of another data set
 
@@ -126,7 +127,7 @@ class Data(GrammarClass):
         This is used by the ``from_pandas`` and ``from_numpy`` functions to
         convert data to JSON-serializable types when loading.
         """
-        if isinstance(obj, str):
+        if isinstance(obj, str_types):
             return obj
         elif hasattr(obj, 'timetuple'):
             return int(time.mktime(obj.timetuple())) * 1000

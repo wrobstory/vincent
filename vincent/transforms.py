@@ -6,7 +6,7 @@ Transforms: Vincent Data Class for Vega Transform types
 """
 from __future__ import (print_function, division)
 from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
-
+from ._compat import str_types
 
 class Transform(GrammarClass):
     """Container to Transforma metrics
@@ -23,7 +23,7 @@ class Transform(GrammarClass):
 
     """
 
-    @grammar(str)
+    @grammar(str_types)
     def type(value):
         """string: property name in which to store the computed transform value.
 
@@ -50,7 +50,7 @@ class Transform(GrammarClass):
 
         """
 
-    @grammar(grammar_type=str, grammar_name='from')
+    @grammar(grammar_type=str_types, grammar_name='from')
     def from_(value):
         """str: The name of the object to copy values from
 
@@ -76,14 +76,14 @@ class Transform(GrammarClass):
         Only used if ``type`` is ``facet``
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def sort(value):
         """string: Optional for sorting facet values
 
         Only used if ``type`` is ``facet``
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def test(value):
         """string: A string containing a javascript filtering expression.
 
@@ -92,7 +92,7 @@ class Transform(GrammarClass):
         Only used if ``type`` is ``filter``
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def field(value):
         """string: Property name to store computed formula value.
 
@@ -101,7 +101,7 @@ class Transform(GrammarClass):
         See: https://github.com/trifacta/vega/wiki/Data-Transforms#-formula
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def expr(value):
         """string: Javascript expression of a formula, referencing the data as d.
 
@@ -110,7 +110,7 @@ class Transform(GrammarClass):
         See: https://github.com/trifacta/vega/wiki/Data-Transforms#-formula
         """
 
-    @grammar((str, list))
+    @grammar(str_types + (list,))
     def by(value):
         """str, list: a field or list of fields to sort. Can prepend with - to
         sort descending.
@@ -118,7 +118,7 @@ class Transform(GrammarClass):
         Only used if ``type`` is ``sort``
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def value(value):
         """str: Field for which to compute statistics.
 
@@ -132,28 +132,28 @@ class Transform(GrammarClass):
         Only used if ``type`` is stats``
         """
 
-    @grammar(grammar_type=str, grammar_name='with')
+    @grammar(grammar_type=str_types, grammar_name='with')
     def with_(value):
         """string: Name of dataset to zip to current dataset
 
         Only used if ``type`` is ``zip``
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def key(value):
         """string: Primary dataset field to match to secondary data
 
         Only used if ``type`` is ``zip``
         """
 
-    @grammar(grammar_type=str, grammar_name='withKey')
+    @grammar(grammar_type=str_types, grammar_name='withKey')
     def with_key(value):
         """string: Field in secondary dataset to match to primary
 
         Only used if ``type`` is ``zip``
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def links(value):
         """string: Name of link (edge) data set.
 
@@ -174,21 +174,21 @@ class Transform(GrammarClass):
         To be used with ``force`` types
         """
 
-    @grammar((int, str))
+    @grammar((int,) + str_types)
     def charge(value):
         """int or string: Strength of the charge each node exerts.
 
         To be used with ``force`` types
         """
 
-    @grammar(grammar_type=(int, str), grammar_name='linkDistance')
+    @grammar(grammar_type=(int,) + str_types, grammar_name='linkDistance')
     def link_distance(value):
         """int or string: Determines lenght of the edges, in pixels.
 
         To be used with ``force`` types
         """
 
-    @grammar(grammar_type=(int, str), grammar_name='linkStrength')
+    @grammar(grammar_type=(int,) + str_types, grammar_name='linkStrength')
     def link_strength(value):
         """int or string: Determines the tension of the edges.
 
@@ -223,7 +223,7 @@ class Transform(GrammarClass):
         To be used with ``force`` types
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def point(value):
         """string: Data field determining the points at which to stack. When stacked
         vertically, these are the x-coords.
@@ -231,14 +231,14 @@ class Transform(GrammarClass):
         To be used with ``stack`` types
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def height(value):
         """string: Data field determining thickness, or height of stacks.
 
         To be used with ``stack`` types
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def offset(value):
         """string: Baseline offset style. Must be one of the following:
 
@@ -250,7 +250,7 @@ class Transform(GrammarClass):
         if value not in offsets:
             raise ValueError('offset must be one of {0}'.format(offsets))
 
-    @grammar(str)
+    @grammar(str_types)
     def order(value):
         """str: The sort order for stack layers. Must be one of the following:
 

@@ -5,7 +5,7 @@ Scales: Classes to define Vega scales
 
 """
 from .core import grammar, GrammarClass
-
+from ._compat import str_types
 
 class DataRef(GrammarClass):
     """Definitions for how data is referenced by scales
@@ -13,11 +13,11 @@ class DataRef(GrammarClass):
     Data can be referenced in multiple ways, and sometimes it makes sense to
     reference multiple data fields at once.
     """
-    @grammar(str)
+    @grammar(str_types)
     def data(value):
         """string : Name of data-set containing the domain values"""
 
-    @grammar((list, str))
+    @grammar((list,) + str_types)
     def field(value):
         """string or list of strings : Reference to desired data field(s)
 
@@ -33,14 +33,14 @@ class Scale(GrammarClass):
     as numbers, time stamps, etc.) to a visual space (length of a line,
     height of a bar, etc.), for both independent and dependent variables.
     """
-    @grammar(str)
+    @grammar(str_types)
     def name(value):
         """string : Unique name for the scale
 
         This is used for referencing by other components (mainly ``Mark``).
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def type(value):
         """string : Type of the scale
 
@@ -80,7 +80,7 @@ class Scale(GrammarClass):
         the maximum of the ``domain`` property.
         """
 
-    @grammar((list, str))
+    @grammar((list,) + str_types)
     def range(value):
         """list or string : Range of the scale
 
@@ -139,7 +139,7 @@ class Scale(GrammarClass):
         Ignored for ordinal scales.
         """
 
-    @grammar((bool, str))
+    @grammar((bool,) + str_types)
     def nice(value):
         """boolean or string : scale the domain to a more human-friendly set
 

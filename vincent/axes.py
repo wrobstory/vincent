@@ -6,6 +6,8 @@ Axes: Classes for defining Vega axis properties
 """
 from .core import grammar, GrammarClass
 from .properties import PropertySet
+from ._compat import str_types
+
 
 
 class AxisProperties(GrammarClass):
@@ -38,13 +40,13 @@ class Axis(GrammarClass):
     Axes are visual cues that the viewer uses to interpret the marks
     representing the data itself.
     """
-    @grammar(str)
+    @grammar(str_types)
     def type(value):
         """string : Type of axis - ``'x'`` or ``'y'``"""
         if value not in ('x', 'y'):
             raise ValueError('Axis.type must be "x" or "y"')
 
-    @grammar(str)
+    @grammar(str_types)
     def title(value):
         """string: Axis title"""
 
@@ -56,18 +58,18 @@ class Axis(GrammarClass):
     def grid(value):
         """bool: If True, gridlines are created"""
 
-    @grammar(str)
+    @grammar(str_types)
     def scale(value):
         """string : Name of scale used for axis"""
 
-    @grammar(str)
+    @grammar(str_types)
     def orient(value):
         """string : Orientation of the axis
 
         Should be one of ``'top'``, ``'bottom'``, ``'left'``, or ``'right'``.
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def format(value):
         """string : Formatting to use for axis labels
 

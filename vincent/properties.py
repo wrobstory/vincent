@@ -7,6 +7,7 @@ PropertySet: Definition of properties for ``Mark`` objects and labels of ``Axis`
 
 from .core import _assert_is_type, grammar, GrammarClass
 from .values import ValueRef
+from ._compat import str_types
 
 
 class PropertySet(GrammarClass):
@@ -81,7 +82,7 @@ class PropertySet(GrammarClass):
         large number of valid values.
         """
         if value.value:
-            _assert_is_type('fill.value', value.value, str)
+            _assert_is_type('fill.value', value.value, str_types)
 
     @grammar(grammar_type=ValueRef, grammar_name='fillOpacity')
     def fill_opacity(value):
@@ -150,7 +151,7 @@ class PropertySet(GrammarClass):
         ``'triangle-down'``. Only used if ``type`` is ``'symbol'``.
         """
         if value.value:
-            _assert_is_type('shape.value', value.value, str)
+            _assert_is_type('shape.value', value.value, str_types)
             if value.value not in PropertySet._valid_shapes:
                 raise ValueError(value.value + ' is not a valid shape')
 
@@ -162,7 +163,7 @@ class PropertySet(GrammarClass):
         path is taken from the data.
         """
         if value.value:
-            _assert_is_type('path.value', value.value, str)
+            _assert_is_type('path.value', value.value, str_types)
 
     @grammar(grammar_type=ValueRef, grammar_name='innerRadius')
     def inner_radius(value):
