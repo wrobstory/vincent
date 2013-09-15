@@ -7,6 +7,7 @@ Marks: Classes to define Vega Marks
 from .core import grammar, GrammarClass, KeyedList
 from .values import ValueRef
 from .properties import PropertySet
+from ._compat import str_types
 
 
 class MarkProperties(GrammarClass):
@@ -44,7 +45,7 @@ class MarkProperties(GrammarClass):
 class MarkRef(GrammarClass):
     """Definitions for Mark source data
     """
-    @grammar(str)
+    @grammar(str_types)
     def data(value):
         """string : Name of the source `Data`"""
 
@@ -63,15 +64,15 @@ class Mark(GrammarClass):
     _valid_type_values = ['rect', 'symbol', 'path', 'arc', 'area', 'line',
                           'image', 'text', 'group']
 
-    @grammar(str)
+    @grammar(str_types)
     def name(value):
         """string : Optional unique name for mark"""
 
-    @grammar(str)
+    @grammar(str_types)
     def description(value):
         """string : Optional description for mark"""
 
-    @grammar(str)
+    @grammar(str_types)
     def type(value):
         """string : Type of mark
 
@@ -96,7 +97,7 @@ class Mark(GrammarClass):
     def properties(value):
         """MarkProperties : Mark property set definitions"""
 
-    @grammar(str)
+    @grammar(str_types)
     def key(value):
         """string : Field to use for data binding
 
@@ -110,7 +111,7 @@ class Mark(GrammarClass):
         """ValueRef, number : Transitional delay in milliseconds.
         """
 
-    @grammar(str)
+    @grammar(str_types)
     def ease(value):
         """string : Type of transition easing
 
