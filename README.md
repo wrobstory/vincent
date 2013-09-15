@@ -286,6 +286,7 @@ Dependencies
 ------------
 
  * pandas
+ * pkgtools
 
 Testing:
 
