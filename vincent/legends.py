@@ -8,6 +8,7 @@ from __future__ import (print_function, division)
 from .core import (initialize_notebook, _assert_is_type, ValidationError,
                   KeyedList, grammar, GrammarClass, LoadError)
 from .values import ValueRef
+from ._compat import str_types
 
 
 class LegendProperties(GrammarClass):
@@ -47,23 +48,23 @@ class Legend(GrammarClass):
 
     """
 
-    @grammar(str)
+    @grammar(str_types)
     def size(value):
         """The name of the scale that determines an item's size"""
 
-    @grammar(str)
+    @grammar(str_types)
     def shape(value):
         """The name of the scale that determines an item's shape"""
 
-    @grammar(str)
+    @grammar(str_types)
     def fill(value):
         """The name of the scale that determines an item's fill color"""
 
-    @grammar(str)
+    @grammar(str_types)
     def stroke(value):
         """The name of the scale that determine's stroke color"""
 
-    @grammar(str)
+    @grammar(str_types)
     def orient(value):
         """The orientation of the legend.
 
@@ -77,11 +78,11 @@ class Legend(GrammarClass):
     def offset(value):
         """Pixel offset from figure"""
 
-    @grammar(str)
+    @grammar(str_types)
     def title(value):
         """The Legend title"""
 
-    @grammar(str)
+    @grammar(str_types)
     def format(value):
         """Optional formatting pattern for legend labels.
 

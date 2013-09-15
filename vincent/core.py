@@ -19,6 +19,8 @@ try:
 except ImportError:
     np = None
 
+from ._compat import str_types
+
 #TODO: Keep local?
 d3_js_url = "http://d3js.org/d3.v3.min.js"
 vega_js_url = 'http://trifacta.github.com/vega/vega.js'
@@ -30,7 +32,7 @@ def initialize_notebook():
         from IPython.core.display import display, Javascript
     except ImportError:
         print('IPython Notebook could not be loaded.')
-    
+
     display(Javascript('''$.getScript("%s", function() {
         $.getScript("%s", function() {
             $([IPython.events]).trigger("vega_loaded.vincent");
@@ -72,7 +74,7 @@ class KeyedList(list):
         return keys
 
     def __getitem__(self, key):
-        if isinstance(key, str):
+        if isinstance(key, str_types):
             keys = self.get_keys()
             if key not in keys:
                 raise KeyError(' "{0}" is an invalid key'.format(key))
@@ -82,7 +84,7 @@ class KeyedList(list):
             return list.__getitem__(self, key)
 
     def __delitem__(self, key):
-        if isinstance(key, str):
+        if isinstance(key, str_types):
             keys = self.get_keys()
             if key not in keys:
                 raise KeyError(' "{0}" is an invalid key'.format(key))
@@ -92,7 +94,7 @@ class KeyedList(list):
             return list.__delitem__(self, key)
 
     def __setitem__(self, key, value):
-        if isinstance(key, str):
+        if isinstance(key, str_types):
             if not hasattr(value, self.attr_name):
                 raise ValidationError(
                     'object must have ' + self.attr_name + ' attribute')
@@ -172,7 +174,7 @@ def grammar(grammar_type=None, grammar_name=None):
             else:
                 return grammar_creator(validator, validator.__name__)
         return grammar_dec
-    elif isinstance(grammar_name, str):
+    elif isinstance(grammar_name, str_types):
         # If grammar_name is a string, use that name and return another
         # decorator.
         def grammar_dec(validator):

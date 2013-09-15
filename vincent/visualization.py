@@ -14,6 +14,7 @@ from .marks import Mark
 from .axes import Axis
 from .legends import Legend
 from .colors import brews
+from ._compat import str_types
 
 
 class Visualization(GrammarClass):
@@ -46,7 +47,7 @@ class Visualization(GrammarClass):
         if not self.legends:
             self.legends = []
 
-    @grammar(str)
+    @grammar(str_types)
     def name(value):
         """string : Name of the visualization (optional)
         """
@@ -86,7 +87,7 @@ class Visualization(GrammarClass):
             if v < 0:
                 raise ValueError('viewport dimensions cannot be negative')
 
-    @grammar((int, dict, str))
+    @grammar((int, dict,) + str_types)
     def padding(value):
         """int or dict : Padding around visualization
 
