@@ -21,7 +21,7 @@ Status
 
 Version 0.2 is a major release for Vincent. It includes many new capabilities, but one major regression: maps are not yet built in as a convenience chart method. I hope to work on them soon. 
 
-Vincent works with IPython 1.0, including the IPython notebook. Please see [Vincent_Examples.ipynb](https://github.com/wrobstory/vincent/blob/master/examples/Vincent_Examples.ipynb) for a demo of all chart types, as well as the new-to-0.2 IPython API. 
+Vincent works with IPython 1.0, including the IPython notebook. Please see [Vincent_Examples.ipynb](https://github.com/wrobstory/vincent/blob/master/examples/Vincent_Examples.ipynb) for a demo of all chart types, as well as the new IPython integration API in Vincent 0.2, using the ```.initialize_notebook()``` and ```.display()``` methods. 
 
 Installation
 ------------
