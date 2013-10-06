@@ -400,10 +400,12 @@ class Data(GrammarClass):
                 raise ValueError('If using index as x-axis, len(columns)'
                                  'cannot be > 1')
             if use_index or len(columns) == 1:
-                values = [{"x": x[0], "y": x[1][columns[0]]}
+                values = [{"x": cls.serialize(x[0]),
+                           "y": cls.serialize(x[1][columns[0]])}
                           for x in data.iterrows()]
             else:
-                values = [{"x": x[1][columns[0]], "y": x[1][columns[1]]}
+                values = [{"x": cls.serialize(x[1][columns[0]]),
+                           "y": cls.serialize(x[1][columns[1]])}
                           for x in data.iterrows()]
 
         #NumPy arrays

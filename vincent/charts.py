@@ -364,13 +364,13 @@ class Map(Chart):
             transforms = []
             if data is not None and map_key.keys()[0] == dat['name']:
                 get_brewer = True
+                if not data_key or not data_bind:
+                    raise ValueError(
+                        'If passing data, you must pass data cols to key/bind on'
+                        )
                 self.data['table'] = Data.keypairs(
                     data, columns=[data_key, data_bind]
                     )
-                if not data_key and not map_key:
-                    raise ValueError(
-                        'If passing data, you must pass values to key on'
-                        )
                 key_join = '.'.join(['data', map_key[dat['name']]])
                 data_transform = Transform(
                     type='zip', key=key_join, with_='table',
@@ -399,7 +399,7 @@ class Map(Chart):
 
             #Marks
 
-            geo_from = MarkRef(data=dat['name'], transform=[geo_transform])
+            geo_from = MarkRef(data=dat['name'])
 
             enter_props = PropertySet(
                 stroke=ValueRef(value='#000000'),
@@ -410,7 +410,8 @@ class Map(Chart):
                 update_props = PropertySet(
                     fill=ValueRef(scale='color', field='value.data.y')
                     )
-                domain = [data[data_bind].min(), data[data_bind].quantile(0.95)]
+                domain = [Data.serialize(data[data_bind].min()),
+                          Data.serialize(data[data_bind].quantile(0.95))]
                 scale = Scale(name='color', type='quantize', domain=domain,
                               range=brews[brew])
                 self.scales['color'] = scale
@@ -437,8 +438,8 @@ class Map(Chart):
         self.data['table'] = Data.keypairs(
                     self.raw_data, columns=[self.data_key, column]
                     )
-        domain = [self.raw_data[column].min(),
-                  self.raw_data[column].quantile(0.95)]
+        domain = [Data.serialize(self.raw_data[column].min()),
+                  Data.serialize(self.raw_data[column].quantile(0.95))]
         scale = Scale(name='color', type='quantize', domain=domain,
                       range=brews[brew])
         self.scales['color'] = scale
