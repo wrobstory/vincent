@@ -44,10 +44,11 @@ class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
-                 grouped=False, width=500, height=300, *args, **kwargs):
+                 width=960, height=500, grouped=False, no_data=False,
+                 *args, **kwargs):
         """Create a Vega Chart
 
-        Parameters:
+        Parameters
         -----------
         data: Tuples, List, Dict, Pandas Series, or Pandas DataFrame
             Input data. Tuple of paired tuples, List of single values,
@@ -66,12 +67,16 @@ class Chart(Visualization):
         grouped: boolean, default False
             Pass true for grouped charts. Currently only enabled for Pandas
             DataFrames
+        no_data: boolean, default False
+            Pass true to indicate that data is not being passed. For example,
+            this is used for the Map class, where geodata is passed as a
+            separate attibute
 
-        Output:
+        Returns
         -------
         Vega Chart
 
-        Example:
+        Example
         -------
         >>>vis = vincent.Chart([10, 20, 30, 40, 50], width=200, height=100)
 
@@ -85,19 +90,22 @@ class Chart(Visualization):
         self._is_datetime = False
 
         #Data
-        if data is None:
+        if data is None and not no_data:
             raise ValueError('Please initialize the chart with data.')
 
-        if isinstance(data, (list, tuple, dict)):
-            if not data:
-                raise ValueError('The data structure is empty.')
-        if isinstance(data, (pd.Series, pd.DataFrame)):
-            if isinstance(data.index, pd.DatetimeIndex):
-                self._is_datetime = True
+        if not no_data:
+            if isinstance(data, (list, tuple, dict)):
+                if not data:
+                    raise ValueError('The data structure is empty.')
+            if isinstance(data, (pd.Series, pd.DataFrame)):
+                if isinstance(data.index, pd.DatetimeIndex):
+                    self._is_datetime = True
 
-        #Using a vincent KeyedList here
-        self.data['table'] = (data_type(data, grouped=grouped, columns=columns,
-                              key_on=key_on, iter_idx=iter_idx))
+            #Using a vincent KeyedList here
+            self.data['table'] = (
+                data_type(data, grouped=grouped, columns=columns,
+                          key_on=key_on, iter_idx=iter_idx)
+                )
 
 
 class Bar(Chart):
@@ -275,3 +283,99 @@ class GroupedBar(StackedBar):
 
         del self.marks[0].marks[0].properties.enter.y2.field
         self.marks[0].marks[0].properties.enter.y2.value = 0
+
+class Map(Chart):
+    """Vega Simple Map"""
+
+    def __init__(self, data=None, geo_data=None, projection="winkel3",
+                 center=None, translate=None, scale=None, rotate=None,
+                 *args, **kwargs):
+        """Create a Vega Map. Takes standard Chart class parameters.
+
+        `geo_data` needs to be passed as a list of dicts with the following
+        format:
+        {
+            name: data name
+            url: path_to_data,
+            feature: TopoJSON object set (ex: 'countries')
+        }
+
+        Parameters
+        ----------
+        data: Tuples, List, Dict, Pandas Series, or Pandas DataFrame
+            Input data. Tuple of paired tuples, List of single values,
+            dict of key/value pairs, Pandas Series/DataFrame, Numpy ndarray.
+            Used to bind to map for choropleth mapping.
+        geo_data: list, default None
+            List of dicts
+        projection: string, default "winkel3"
+            Map projection
+        center: list, default None
+            Two element list with projection center
+        translate: list, default None
+            Two element list with projection translation
+        scale: integer, default None
+            Projection scale
+        rotate: integer, default None
+            Projection rotation
+
+        Returns
+        -------
+        Vega Chart
+
+        """
+
+        if data:
+            no_data = False
+        else:
+            no_data = True
+
+        super(Map, self).__init__(data=data, no_data=no_data, *args, **kwargs)
+
+        #Don't want to pass None to property setters
+        geo_kwargs = {}
+        for param in [('projection', projection), ('center', center),
+                      ('translate', translate), ('scale', scale),
+                      ('rotate', rotate)]:
+            if param[1]:
+                geo_kwargs[param[0]] = param[1]
+
+        if not translate:
+            geo_kwargs['translate'] = [self.width/2, self.height/2]
+
+
+        #Add Data
+        for dat in geo_data:
+            #Data
+            self.data[dat['name']] = Data(
+                name=dat['name'], url=dat['url']
+                )
+            if dat.get('feature'):
+                self.data[dat['name']].format = {
+                    'type': "topojson",
+                    'feature': dat['feature']
+                    }
+
+            #Marks
+            geo_transform = Transform(
+                type='geopath', value="data", **geo_kwargs
+                )
+
+            geo_from = MarkRef(data=dat['name'], transform=[geo_transform])
+
+            enter_props = PropertySet(
+                stroke=ValueRef(value='#000000'),
+                path=ValueRef(field='path')
+                )
+
+            update_props = PropertySet(fill=ValueRef(value='steelblue'))
+
+            mark_props = MarkProperties(enter=enter_props, update=update_props)
+
+            self.marks.append(
+                Mark(type='path', from_=geo_from, properties=mark_props)
+                )
+
+
+
+

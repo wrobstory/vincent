@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .charts import (Chart, Bar, Line, Area, Scatter, StackedBar, StackedArea,
-                    GroupedBar)
+                    GroupedBar, Map)
 from .visualization import Visualization
 from .data import Data
 from .transforms import Transform
