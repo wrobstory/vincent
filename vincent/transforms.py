@@ -58,7 +58,7 @@ class Transform(GrammarClass):
 
         """
 
-    @grammar(grammar_type=list, grammar_name='as')
+    @grammar(grammar_type=(list,) + str_types, grammar_name='as')
     def as_(value):
         """list: The field names to copy the values to.
 
@@ -152,6 +152,11 @@ class Transform(GrammarClass):
 
         Only used if ``type`` is ``zip``
         """
+
+    @grammar((int, float,) + str_types)
+    def default(value):
+        """Default value to use if no matching key value is found for zip
+        transformation"""
 
     @grammar(str_types)
     def links(value):

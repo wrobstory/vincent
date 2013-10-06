@@ -347,6 +347,103 @@ class Data(GrammarClass):
                   for k, v in sorted(data.items())]
         return cls(name, values=values)
 
+    @classmethod
+    def keypairs(cls, data, columns=None, use_index=False, name=None):
+        """This will format the data as Key: Value pairs, rather than the
+        idx/col/val style. This is useful for some transforms, and to
+        key choropleth map data
+
+        Standard Data Types:
+            List: [0, 10, 20, 30, 40]
+            Paired Tuples: ((0, 1), (0, 2), (0, 3))
+            Dict: {'A': 10, 'B': 20, 'C': 30, 'D': 40, 'E': 50}
+
+        Plus Pandas DataFrame and Series, and Numpy ndarray
+
+        Parameters
+        ----------
+        data:
+            List, Tuple, Dict, Pandas Series/DataFrame, Numpy ndarray
+        columns: list, default None
+            If passing Pandas DataFrame, you must pass at least one column
+            name.If one column is passed, x-values will default to the index
+            values.If two column names are passed, x-values are columns[0],
+            y-values columns[1].
+        use_index: boolean, default False
+            Use the DataFrame index for your x-values
+
+        """
+        if not name:
+            name = 'table'
+        cls.raw_data = data
+
+        def default_range(data_len, append):
+            start, end = 0, data_len
+            return xrange(start, end + 1, 1)
+
+        #Tuples
+        if isinstance(data, tuple):
+            values = [{"x": x[0], "y": x[1]} for x in data]
+
+        #Lists
+        elif isinstance(data, list):
+            values = [{"x": x, "y": y}
+                      for x, y in zip(default_range(len(data), append), data)]
+
+        #Dicts
+        elif isinstance(data, dict) or isinstance(data, pd.Series):
+            values = [{"x": x, "y": y} for x, y in sorted(data.items())]
+
+        #Dataframes
+        elif isinstance(data, pd.DataFrame):
+            if len(columns) > 1 and use_index:
+                raise ValueError('If using index as x-axis, len(columns)'
+                                 'cannot be > 1')
+            if use_index or len(columns) == 1:
+                values = [{"x": x[0], "y": x[1][columns[0]]}
+                          for x in data.iterrows()]
+            else:
+                values = [{"x": x[1][columns[0]], "y": x[1][columns[1]]}
+                          for x in data.iterrows()]
+
+        #NumPy arrays
+        elif isinstance(data, np.ndarray):
+            values = cls._numpy_to_values(data, default_range, append)
+        else:
+            raise TypeError('unknown data type %s' % type(data))
+
+        return cls(name, values=values)
+
+    @staticmethod
+    def _numpy_to_values(data, default_range, append):
+        '''Convert a NumPy array to values attribute'''
+        def to_list_no_index(xvals, yvals):
+            return [{"x": x, "y": np.asscalar(y)}
+                    for x, y in zip(xvals, yvals)]
+
+        if len(data.shape) == 1 or data.shape[1] == 1:
+            xvals = default_range(data.shape[0], append)
+            values = to_list_no_index(xvals, data)
+        elif len(data.shape) == 2:
+            if data.shape[1] == 2:
+                # NumPy arrays and matrices have different iteration rules.
+                if isinstance(data, np.matrix):
+                    xidx = (0, 0)
+                    yidx = (0, 1)
+                else:
+                    xidx = 0
+                    yidx = 1
+
+                xvals = [np.asscalar(row[xidx]) for row in data]
+                yvals = [np.asscalar(row[yidx]) for row in data]
+                values = [{"x": x, "y": y} for x, y in zip(xvals, yvals)]
+            else:
+                raise ValueError('arrays with > 2 columns not supported')
+        else:
+            raise ValueError('invalid dimensions for ndarray')
+
+        return values
+
     def to_json(self, validate=False, pretty_print=True, data_path=None):
         """Convert data to JSON
 

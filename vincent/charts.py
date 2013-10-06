@@ -14,6 +14,7 @@ from .properties import PropertySet
 from .scales import DataRef, Scale
 from .marks import ValueRef, MarkProperties, MarkRef, Mark
 from .axes import AxisProperties, Axis
+from .colors import brews
 
 try:
     import pandas as pd
@@ -289,8 +290,11 @@ class Map(Chart):
 
     def __init__(self, data=None, geo_data=None, projection="winkel3",
                  center=None, translate=None, scale=None, rotate=None,
-                 *args, **kwargs):
+                 data_bind=None, data_key=None, map_key=None,
+                 brew='GnBu', *args, **kwargs):
         """Create a Vega Map. Takes standard Chart class parameters.
+
+        Note: Data binding only works with Pandas DataFrames right now.
 
         `geo_data` needs to be passed as a list of dicts with the following
         format:
@@ -318,6 +322,18 @@ class Map(Chart):
             Projection scale
         rotate: integer, default None
             Projection rotation
+        data_bind:str, default None
+            Column you want to visualize. E.g. the data value you are binding
+            to the map
+        data_key: str, default None
+            If passing data to bind to the map, data field to key-on. For a
+            Pandas DataFrame, this would be the column name.
+        map_key: dict, default None
+            Key: The geo-data you are keying to. Value: The map property that
+            you are keying your data on. This can be nested with dot notation.
+            Ex: 'properties.name'
+        brew: str, default GnBu
+            Color brewer abbreviation. See colors.py
 
         Returns
         -------
@@ -325,12 +341,10 @@ class Map(Chart):
 
         """
 
-        if data:
-            no_data = False
-        else:
-            no_data = True
+        self.raw_data = data
+        self.data_key = data_key
 
-        super(Map, self).__init__(data=data, no_data=no_data, *args, **kwargs)
+        super(Map, self).__init__(no_data=True, *args, **kwargs)
 
         #Don't want to pass None to property setters
         geo_kwargs = {}
@@ -347,8 +361,35 @@ class Map(Chart):
         #Add Data
         for dat in geo_data:
             #Data
+            transforms = []
+            if data is not None and map_key.keys()[0] == dat['name']:
+                get_brewer = True
+                self.data['table'] = Data.keypairs(
+                    data, columns=[data_key, data_bind]
+                    )
+                if not data_key and not map_key:
+                    raise ValueError(
+                        'If passing data, you must pass values to key on'
+                        )
+                key_join = '.'.join(['data', map_key[dat['name']]])
+                data_transform = Transform(
+                    type='zip', key=key_join, with_='table',
+                    with_key='data.x', as_='value', default='noval'
+                    )
+                transforms.append(data_transform)
+                null_trans = Transform(
+                    type='filter', test="d.path!='noval' && d.value!='noval'"
+                    )
+                transforms.append(null_trans)
+            else:
+                get_brewer = False
+
+            geo_transform = Transform(
+                type='geopath', value="data", **geo_kwargs
+                )
+            transforms.append(geo_transform)
             self.data[dat['name']] = Data(
-                name=dat['name'], url=dat['url']
+                name=dat['name'], url=dat['url'], transform=transforms
                 )
             if dat.get('feature'):
                 self.data[dat['name']].format = {
@@ -357,9 +398,6 @@ class Map(Chart):
                     }
 
             #Marks
-            geo_transform = Transform(
-                type='geopath', value="data", **geo_kwargs
-                )
 
             geo_from = MarkRef(data=dat['name'], transform=[geo_transform])
 
@@ -368,13 +406,42 @@ class Map(Chart):
                 path=ValueRef(field='path')
                 )
 
-            update_props = PropertySet(fill=ValueRef(value='steelblue'))
+            if get_brewer:
+                update_props = PropertySet(
+                    fill=ValueRef(scale='color', field='value.data.y')
+                    )
+                domain = [data[data_bind].min(), data[data_bind].quantile(0.95)]
+                scale = Scale(name='color', type='quantize', domain=domain,
+                              range=brews[brew])
+                self.scales['color'] = scale
+            else:
+                update_props = PropertySet(fill=ValueRef(value='steelblue'))
 
             mark_props = MarkProperties(enter=enter_props, update=update_props)
 
             self.marks.append(
                 Mark(type='path', from_=geo_from, properties=mark_props)
                 )
+
+    def rebind(self, column=None, brew='GnBu'):
+        """Bind a new column to the data map
+
+        Parameters
+        ----------
+        column: str, default None
+            Pandas DataFrame column name
+        brew: str, default None
+            Color brewer abbreviation. See colors.py
+
+        """
+        self.data['table'] = Data.keypairs(
+                    self.raw_data, columns=[self.data_key, column]
+                    )
+        domain = [self.raw_data[column].min(),
+                  self.raw_data[column].quantile(0.95)]
+        scale = Scale(name='color', type='quantize', domain=domain,
+                      range=brews[brew])
+        self.scales['color'] = scale
 
 
 
