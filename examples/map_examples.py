@@ -12,7 +12,7 @@ from vincent import *
 vis = Visualization(width=960, height=500)
 vis.data['countries'] = Data(
     name='countries',
-    url='world-countries.topo.json',
+    url='data/world-countries.topo.json',
     format={'type': 'topojson', 'feature': 'world-countries'}
     )
 
@@ -41,7 +41,7 @@ vis.to_json('vega.json')
 #Convenience Method
 
 geo_data = [{'name': 'countries',
-             'url': 'world-countries.topo.json',
+             'url': 'data/world-countries.topo.json',
              'feature': 'world-countries'}]
 
 vis = Map(geo_data=geo_data, scale=200)
@@ -69,7 +69,7 @@ import json
 import pandas as pd
 #Map the county codes we have in our geometry to those in the
 #county_data file, which contains additional rows we don't need
-with open('us-counties.json', 'r') as f:
+with open('data/us-counties.json', 'r') as f:
     get_id = json.load(f)
 
 #Grab the FIPS codes and load them into a dataframe
@@ -77,7 +77,7 @@ county_codes = [x['id'] for x in get_id['features']]
 county_df = pd.DataFrame({'FIPS_Code': county_codes}, dtype=str)
 
 #Read into Dataframe, cast to string for consistency
-df = pd.read_csv('us_county_data.csv', na_values=[' '])
+df = pd.read_csv('data/us_county_data.csv', na_values=[' '])
 df['FIPS_Code'] = df['FIPS_Code'].astype(str)
 
 #Perform an inner join, pad NA's with data from nearest county
@@ -85,7 +85,7 @@ merged = pd.merge(df, county_df, on='FIPS_Code', how='inner')
 merged = merged.fillna(method='pad')
 
 geo_data = [{'name': 'counties',
-             'url': 'us-counties.topo.json',
+             'url': 'data/us-counties.topo.json',
              'feature': 'us-counties'}]
 
 vis = Map(data=merged, geo_data=geo_data, scale=1000, projection='albersUsa',

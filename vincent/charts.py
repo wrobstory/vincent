@@ -362,7 +362,7 @@ class Map(Chart):
         for dat in geo_data:
             #Data
             transforms = []
-            if data is not None and map_key.copy().keys()[0] == dat['name']:
+            if data is not None and list(map_key.keys())[0] == dat['name']:
                 get_brewer = True
                 if not data_key or not data_bind:
                     raise ValueError(
