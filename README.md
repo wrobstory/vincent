@@ -340,6 +340,10 @@ Huge thanks to all who have contributed to Vincent development:
  * Richard Maisano (maisano)
  * Julian Berman (Julian)
  * Chris Rebert (cvrebert)
+ * Lx Yu (lxyu)
+ * Min RK (minrk)
+ * Drazen Lucanin (kermit666)
+ * tlukasiak
 
 
 Dependencies
