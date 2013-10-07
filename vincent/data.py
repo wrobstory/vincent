@@ -133,10 +133,13 @@ class Data(GrammarClass):
             return int(time.mktime(obj.timetuple())) * 1000
         elif hasattr(obj, 'item'):
             return obj.item()
+        elif hasattr(obj, '__float__'):
+            if isinstance(obj, int):
+                return int(obj)
+            else:
+                return float(obj)
         elif hasattr(obj, '__int__'):
             return int(obj)
-        elif hasattr(obj, '__float__'):
-            return float(obj)
         else:
             raise LoadError('cannot serialize index of type '
                             + type(obj).__name__)

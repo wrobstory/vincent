@@ -11,6 +11,7 @@ from vincent import *
 
 world_topo = r'world-countries.topo.json'
 state_topo = r'us_states.topo.json'
+lake_topo = r'lakes_50m.topo.json'
 county_geo = r'us_counties.geo.json'
 county_topo = r'us_counties.topo.json'
 or_topo = r'or_counties.topo.json'
@@ -125,3 +126,52 @@ vis.to_json('vega.json')
 
 vis.rebind(column='Median_Household_Income_2011', brew='RdPu')
 vis.to_json('vega.json')
+
+#Mapping US State Level Data
+
+state_data = pd.read_csv('data/US_Unemployment_Oct2012.csv')
+geo_data = [{'name': 'states',
+             'url': state_topo,
+             'feature': 'us_states.geo'}]
+vis = Map(data=state_data, geo_data=geo_data, scale=1000,
+          projection='albersUsa', data_bind='Unemployment', data_key='NAME',
+          map_key={'states': 'properties.NAME'})
+vis.to_json('vega.json')
+
+#Oregon County-level population data
+or_data = pd.read_table('data/OR_County_Data.txt', delim_whitespace=True)
+or_data['July_2012_Pop']= or_data['July_2012_Pop'].astype(int)
+#Standardize keys
+with open('or_counties.topo.json', 'r') as f:
+    counties = json.load(f)
+
+def split_county(name):
+    parts = name.split(' ')
+    parts.pop(-1)
+    return ''.join(parts).upper()
+
+#A little FIPS code munging
+new_geoms = []
+for geom in counties['objects']['or_counties.geo']['geometries']:
+    geom['properties']['COUNTY'] = split_county(geom['properties']['COUNTY'])
+    new_geoms.append(geom)
+
+counties['objects']['or_counties.geo']['geometries'] = new_geoms
+
+with open('or_counties.topo.json', 'w') as f:
+    json.dump(counties, f)
+
+geo_data = [{'name': 'states',
+             'url': state_topo,
+             'feature': 'us_states.geo'},
+            {'name': 'or_counties',
+             'url': or_topo,
+             'feature': 'or_counties.geo'}]
+
+vis = Map(data=or_data, geo_data=geo_data, scale=3700,
+          translate=[1480, 830],
+          projection='albersUsa', data_bind='July_2012_Pop', data_key='NAME',
+          map_key={'or_counties': 'properties.COUNTY'})
+vis.marks[0].properties.update.fill.value = '#c2c2c2'
+vis.to_json('vega.json')
+
