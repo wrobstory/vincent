@@ -206,9 +206,9 @@ It is possible to run the above examples inside `IPython notebook <http://ipytho
     from vincent import ipynb
     ipynb.init_d3()
     ipynb.init_vg()
-    
+
     bar = vincent.Bar(list_data)
-    
+
     ipynb.display_vega(bar)
 
 .. image:: /images/ipynb.png

@@ -133,10 +133,10 @@ class Data(GrammarClass):
             return int(time.mktime(obj.timetuple())) * 1000
         elif hasattr(obj, 'item'):
             return obj.item()
-        elif hasattr(obj, '__float__'):
-            return float(obj)
         elif hasattr(obj, '__int__'):
             return int(obj)
+        elif hasattr(obj, '__float__'):
+            return float(obj)
         else:
             raise LoadError('cannot serialize index of type '
                             + type(obj).__name__)
@@ -404,6 +404,7 @@ class Data(GrammarClass):
                            "y": cls.serialize(x[1][columns[0]])}
                           for x in data.iterrows()]
             else:
+
                 values = [{"x": cls.serialize(x[1][columns[0]]),
                            "y": cls.serialize(x[1][columns[1]])}
                           for x in data.iterrows()]
