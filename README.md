@@ -19,9 +19,9 @@ Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intui
 Status
 ------
 
-Version 0.2 is a major release for Vincent. It includes many new capabilities, but one major regression: maps are not yet built in as a convenience chart method. I hope to work on them soon. 
+Version 0.2 is a major release for Vincent, with major syntax changes. All of the Vincent 0.1 features have been ported.
 
-Vincent works with IPython 1.0, including the IPython notebook. Please see [Vincent_Examples.ipynb](https://github.com/wrobstory/vincent/blob/master/examples/Vincent_Examples.ipynb) for a demo of all chart types, as well as the new IPython integration API in Vincent 0.2, using the ```.initialize_notebook()``` and ```.display()``` methods. 
+Vincent works with IPython 1.0, including the IPython notebook. Please see [Vincent_Examples.ipynb](https://github.com/wrobstory/vincent/blob/master/examples/Vincent_Examples.ipynb) for a demo of all chart types, as well as the new IPython integration API in Vincent 0.2, using the ```.initialize_notebook()``` and ```.display()``` methods.
 
 Installation
 ------------
@@ -141,6 +141,64 @@ group.legend(title='Produce Types')
 group.colors(brew='Set2')
 ```
 ![groupbar2](http://farm6.staticflickr.com/5518/9391272912_706055754a_o.jpg)
+
+Simple maps can be built quickly (all data can be found in the [vincent_map_data](https://github.com/wrobstory/vincent_map_data)) repo:
+
+```python
+world_topo = r'world-countries.topo.json'
+geo_data = [{'name': 'countries',
+             'url': world_topo,
+             'feature': 'world-countries'}]
+
+vis = Map(geo_data=geo_data, scale=200)
+```
+
+![simplemap](http://farm3.staticflickr.com/2852/10140081393_fa46545724_c.jpg)
+
+Also with multiple map layers:
+
+```python
+geo_data = [{'name': 'counties',
+             'url': county_topo,
+             'feature': 'us_counties.geo'},
+            {'name': 'states',
+             'url': state_topo,
+             'feature': 'us_states.geo'}]
+
+vis = Map(geo_data=geo_data, scale=1000, projection='albersUsa')
+del vis.marks[1].properties.update
+vis.marks[0].properties.update.fill.value = '#084081'
+vis.marks[1].properties.enter.stroke.value = '#fff'
+vis.marks[0].properties.enter.stroke.value = '#7bccc4'
+
+```
+
+![multiplelayer](http://farm4.staticflickr.com/3797/10140037456_8256fbd32d_c.jpg)
+
+Maps can be bound with data to Pandas DataFrames for choropleth visualizations (see [here](https://vincent.readthedocs.org/en/latest/quickstart.html#data) for map data munging):
+
+```python
+geo_data = [{'name': 'counties',
+             'url': county_topo,
+             'feature': 'us_counties.geo'}]
+
+vis = Map(data=merged, geo_data=geo_data, scale=1100, projection='albersUsa',
+          data_bind='Unemployment_rate_2011', data_key='FIPS',
+          map_key={'counties': 'properties.FIPS'})
+vis.marks[0].properties.enter.stroke_opacity = ValueRef(value=0.5)
+vis.to_json('vega.json')
+```
+
+![binding1](http://farm8.staticflickr.com/7414/10139958645_681c6dd006_c.jpg)
+
+It can be rebound on the fly with new data and color brewer scales:
+
+```python
+vis.rebind(column='Median_Household_Income_2011', brew='YlGnBu')
+```
+
+![binding2](http://farm3.staticflickr.com/2833/10140081893_4f5fa762c5_c.jpg)
+
 
 For more examples, including how to build these from scratch, see the [examples](https://github.com/wrobstory/vincent) directory, or the [docs](https://vincent.readthedocs.org/en/latest/index.html).
 

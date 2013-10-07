@@ -58,7 +58,7 @@ class Transform(GrammarClass):
 
         """
 
-    @grammar(grammar_type=list, grammar_name='as')
+    @grammar(grammar_type=(list,) + str_types, grammar_name='as')
     def as_(value):
         """list: The field names to copy the values to.
 
@@ -152,6 +152,11 @@ class Transform(GrammarClass):
 
         Only used if ``type`` is ``zip``
         """
+
+    @grammar((int, float,) + str_types)
+    def default(value):
+        """Default value to use if no matching key value is found for zip
+        transformation"""
 
     @grammar(str_types)
     def links(value):
@@ -261,3 +266,41 @@ class Transform(GrammarClass):
         orders = ['default', 'reverse', 'inside-out']
         if value not in orders:
             raise ValueError('order must be one of {0}'.format(orders))
+
+    @grammar(str_types)
+    def projection(value):
+        """str: Cartographic projection. Accepts any projection supported by the
+        D3 projection plug-in:
+
+        https://github.com/mbostock/d3/wiki/Geo-Projections
+        """
+
+    @grammar(list)
+    def center(value):
+        """Center of the projection. Should be length=2"""
+
+        if len(value) != 2:
+            raise ValueError('len(center) must = 2')
+
+    @grammar(list)
+    def translate(value):
+        """Translation of the projection. Should be length=2"""
+
+        if len(value) != 2:
+            raise ValueError('len(center) must = 2')
+
+    @grammar(int)
+    def scale(value):
+        """The scale of the projection"""
+
+        if value < 0:
+            raise ValueError('Scale cannot be negative.')
+
+    @grammar(int)
+    def rotate(value):
+        """The rotation of the projection"""
+
+        if value < 0:
+            raise ValueError('The rotation cannot be negative.')
+
+
