@@ -97,7 +97,7 @@ county_df = county_df.astype(int)
 
 #Read into Dataframe, cast to string for consistency
 df = pd.read_csv('data/us_county_data.csv', na_values=[' '])
-df['FIPS_Code'] = df['FIPS'].astype(str)
+df['FIPS'] = df['FIPS'].astype(int)
 
 #Perform an inner join, pad NA's with data from nearest county
 merged = pd.merge(df, county_df, on='FIPS', how='inner')
