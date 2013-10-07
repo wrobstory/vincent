@@ -71,12 +71,6 @@ vis.marks[0].properties.enter.stroke.value = '#7bccc4'
 vis.to_json('vega.json')
 
 #Choropleth
-world_topo = r'world-countries.topo.json'
-state_topo = r'us_states.topo.json'
-county_geo = r'us_counties.geo.json'
-county_topo = r'us_counties.topo.json'
-or_topo = r'or_counties.topo.json'
-from vincent import *
 import json
 import pandas as pd
 #Map the county codes we have in our geometry to those in the
