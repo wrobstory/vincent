@@ -341,6 +341,7 @@ Huge thanks to all who have contributed to Vincent development:
  * Julian Berman (Julian)
  * Chris Rebert (cvrebert)
  * Lx Yu (lxyu)
+ * Wojciech Bederski (wuub)
  * Min RK (minrk)
  * Drazen Lucanin (kermit666)
  * tlukasiak
