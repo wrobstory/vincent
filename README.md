@@ -142,7 +142,7 @@ group.colors(brew='Set2')
 ```
 ![groupbar2](http://farm6.staticflickr.com/5518/9391272912_706055754a_o.jpg)
 
-Simple maps can be built quickly (all data can be found in the [vincent_map_data](https://github.com/wrobstory/vincent_map_data)) repo:
+Simple maps can be built quickly (all data can be found in the [vincent_map_data](https://github.com/wrobstory/vincent_map_data) repo):
 
 ```python
 world_topo = r'world-countries.topo.json'
