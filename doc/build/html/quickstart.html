@@ -322,7 +322,7 @@
              <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="n">world_topo</span><span class="p">,</span>
              <span class="s">&#39;feature&#39;</span><span class="p">:</span> <span class="s">&#39;world-countries&#39;</span><span class="p">}]</span>
 
-<span class="n">vis</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="n">geo_data</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">vis</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">geo_data</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="_images/world_map.png" src="_images/world_map.png" />
@@ -334,7 +334,7 @@
              <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="n">state_topo</span><span class="p">,</span>
              <span class="s">&#39;feature&#39;</span><span class="p">:</span> <span class="s">&#39;us_states.geo&#39;</span><span class="p">}]</span>
 
-<span class="n">vis</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="n">geo_data</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;albersUsa&#39;</span><span class="p">)</span>
+<span class="n">vis</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">geo_data</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;albersUsa&#39;</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">vis</span><span class="o">.</span><span class="n">marks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">update</span>
 <span class="n">vis</span><span class="o">.</span><span class="n">marks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">update</span><span class="o">.</span><span class="n">fill</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#39;#084081&#39;</span>
 <span class="n">vis</span><span class="o">.</span><span class="n">marks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">enter</span><span class="o">.</span><span class="n">stroke</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#39;#fff&#39;</span>
@@ -350,7 +350,7 @@
              <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="n">county_topo</span><span class="p">,</span>
              <span class="s">&#39;feature&#39;</span><span class="p">:</span> <span class="s">&#39;us_counties.geo&#39;</span><span class="p">}]</span>
 
-<span class="n">vis</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">merged</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1100</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;albersUsa&#39;</span><span class="p">,</span>
+<span class="n">vis</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">merged</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1100</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;albersUsa&#39;</span><span class="p">,</span>
           <span class="n">data_bind</span><span class="o">=</span><span class="s">&#39;Employed_2011&#39;</span><span class="p">,</span> <span class="n">data_key</span><span class="o">=</span><span class="s">&#39;FIPS&#39;</span><span class="p">,</span>
           <span class="n">map_key</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;counties&#39;</span><span class="p">:</span> <span class="s">&#39;properties.FIPS&#39;</span><span class="p">})</span>
 <span class="n">vis</span><span class="o">.</span><span class="n">marks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">enter</span><span class="o">.</span><span class="n">stroke_opacity</span> <span class="o">=</span> <span class="n">ValueRef</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -497,7 +497,7 @@
     </p>
     <p>
         &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b2.<br/>
     </p>
   </div>
 </footer>

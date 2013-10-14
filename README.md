@@ -150,7 +150,7 @@ geo_data = [{'name': 'countries',
              'url': world_topo,
              'feature': 'world-countries'}]
 
-vis = Map(geo_data=geo_data, scale=200)
+vis = vincent.Map(geo_data=geo_data, scale=200)
 ```
 
 ![simplemap](http://farm3.staticflickr.com/2852/10140081393_fa46545724_c.jpg)
@@ -165,7 +165,7 @@ geo_data = [{'name': 'counties',
              'url': state_topo,
              'feature': 'us_states.geo'}]
 
-vis = Map(geo_data=geo_data, scale=1000, projection='albersUsa')
+vis = vincent.Map(geo_data=geo_data, scale=1000, projection='albersUsa')
 del vis.marks[1].properties.update
 vis.marks[0].properties.update.fill.value = '#084081'
 vis.marks[1].properties.enter.stroke.value = '#fff'
@@ -182,7 +182,7 @@ geo_data = [{'name': 'counties',
              'url': county_topo,
              'feature': 'us_counties.geo'}]
 
-vis = Map(data=merged, geo_data=geo_data, scale=1100, projection='albersUsa',
+vis = vincent.Map(data=merged, geo_data=geo_data, scale=1100, projection='albersUsa',
           data_bind='Unemployment_rate_2011', data_key='FIPS',
           map_key={'counties': 'properties.FIPS'})
 vis.marks[0].properties.enter.stroke_opacity = ValueRef(value=0.5)
