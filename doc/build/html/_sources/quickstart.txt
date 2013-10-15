@@ -187,7 +187,7 @@ A simple world map::
                  'url': world_topo,
                  'feature': 'world-countries'}]
 
-    vis = Map(geo_data=geo_data, scale=200)
+    vis = vincent.Map(geo_data=geo_data, scale=200)
 
 .. image:: /images/world_map.png
 
@@ -200,7 +200,7 @@ You can also pass multiple map layers::
                  'url': state_topo,
                  'feature': 'us_states.geo'}]
 
-    vis = Map(geo_data=geo_data, scale=1000, projection='albersUsa')
+    vis = vincent.Map(geo_data=geo_data, scale=1000, projection='albersUsa')
     del vis.marks[1].properties.update
     vis.marks[0].properties.update.fill.value = '#084081'
     vis.marks[1].properties.enter.stroke.value = '#fff'
@@ -219,7 +219,7 @@ Maps can be bound to data via Pandas DataFrames to create Choropleths::
                  'url': county_topo,
                  'feature': 'us_counties.geo'}]
 
-    vis = Map(data=merged, geo_data=geo_data, scale=1100, projection='albersUsa',
+    vis = vincent.Map(data=merged, geo_data=geo_data, scale=1100, projection='albersUsa',
               data_bind='Employed_2011', data_key='FIPS',
               map_key={'counties': 'properties.FIPS'})
     vis.marks[0].properties.enter.stroke_opacity = ValueRef(value=0.5)
