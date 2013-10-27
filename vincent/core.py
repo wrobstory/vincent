@@ -23,6 +23,8 @@ from ._compat import str_types
 
 #TODO: Keep local?
 d3_js_url = "http://d3js.org/d3.v3.min.js"
+d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
+topojson_js_url = "http://d3js.org/topojson.v1.min.js"
 vega_js_url = 'http://trifacta.github.com/vega/vega.js'
 
 
@@ -35,9 +37,13 @@ def initialize_notebook():
 
     display(Javascript('''$.getScript("%s", function() {
         $.getScript("%s", function() {
-            $([IPython.events]).trigger("vega_loaded.vincent");
+            $.getScript("%s", function() {
+                $.getScript("%s", function() {
+                    $([IPython.events]).trigger("vega_loaded.vincent");
+                })
+            })
         })
-    });''' % (d3_js_url, vega_js_url)))
+    });''' % (d3_js_url, d3_geo_projection_js_url, topojson_js_url, vega_js_url)))
 
 
 def _assert_is_type(name, value, value_type):
