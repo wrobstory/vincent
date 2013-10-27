@@ -8,6 +8,8 @@ from __future__ import (print_function, division)
 import json
 from string import Template
 from pkg_resources import resource_string
+import os
+import codecs
 
 try:
     import pandas as pd
@@ -21,11 +23,6 @@ except ImportError:
 
 from ._compat import str_types
 
-#TODO: Keep local?
-d3_js_url = "http://d3js.org/d3.v3.min.js"
-vega_js_url = 'http://trifacta.github.com/vega/vega.js'
-
-
 def initialize_notebook():
     """Initialize the IPython notebook display elements"""
     try:
@@ -33,11 +30,10 @@ def initialize_notebook():
     except ImportError:
         print('IPython Notebook could not be loaded.')
 
-    display(Javascript('''$.getScript("%s", function() {
-        $.getScript("%s", function() {
-            $([IPython.events]).trigger("vega_loaded.vincent");
-        })
-    });''' % (d3_js_url, vega_js_url)))
+    resources = ['d3.min.js', 'topojson.js', 'd3.geo.projection.v0.min.js', 'vega.min.js']
+    for resource in resources:
+        display(Javascript(resource_string('vincent', resource).decode('utf-8')))
+    display(Javascript('$([IPython.events]).trigger("vega_loaded.vincent")'))
 
 
 def _assert_is_type(name, value, value_type):
