@@ -96,7 +96,7 @@ county_codes = [x['properties']['FIPS'] for x in geometries]
 county_df = pd.DataFrame({'FIPS': county_codes}, dtype=str)
 county_df = county_df.astype(int)
 
-#Read into Dataframe, cast to string for consistency
+#Read into Dataframe, cast to int for consistency
 df = pd.read_csv('data/us_county_data.csv', na_values=[' '])
 df['FIPS'] = df['FIPS'].astype(int)
 
@@ -112,6 +112,9 @@ vis = Map(data=merged, geo_data=geo_data, scale=1100, projection='albersUsa',
           data_bind='Employed_2011', data_key='FIPS',
           map_key={'counties': 'properties.FIPS'})
 vis.marks[0].properties.enter.stroke_opacity = ValueRef(value=0.5)
+#Change our domain for an even inteager
+vis.scales['color'].domain = [0, 189000]
+vis.legend(title='Number Employed 2011')
 vis.to_json('vega.json')
 
 #Lets look at different stats
@@ -136,7 +139,42 @@ geo_data = [{'name': 'states',
 vis = Map(data=state_data, geo_data=geo_data, scale=1000,
           projection='albersUsa', data_bind='Unemployment', data_key='NAME',
           map_key={'states': 'properties.NAME'})
+vis.legend(title='Unemployment (%)')
 vis.to_json('vega.json')
+
+#Iterating State Level Data
+yoy = pd.read_table('data/State_Unemp_YoY.txt', delim_whitespace=True)
+#Standardize State names to match TopoJSON for keying
+names = []
+for row in yoy.iterrows():
+    pieces = row[1]['NAME'].split('_')
+    together = ' '.join(pieces)
+    names.append(together.title())
+yoy['NAME'] = names
+geo_data = [{'name': 'states',
+             'url': state_topo,
+             'feature': 'us_states.geo'}]
+vis = Map(data=yoy, geo_data=geo_data, scale=1000,
+          projection='albersUsa', data_bind='AUG_2012', data_key='NAME',
+          map_key={'states': 'properties.NAME'}, brew='YlGnBu')
+#Custom threshold scale
+vis.scales[0].type='threshold'
+vis.scales[0].domain = [0, 2, 4, 6, 8, 10, 12]
+vis.legend(title='Unemployment (%)')
+vis.to_json('vega.json')
+
+#Rebind and set our scale again
+vis.rebind(column='AUG_2013', brew='YlGnBu')
+vis.scales[0].type='threshold'
+vis.scales[0].domain = [0, 2, 4, 6, 8, 10, 12]
+vis.to_json('vega.json')
+
+vis.rebind(column='CHANGE', brew='YlGnBu')
+vis.scales[0].type='threshold'
+vis.scales[0].domain = [-1.5, -1.3, -1.1, 0, 0.1, 0.3, 0.5, 0.8]
+vis.legends[0].title = "YoY Change in Unemployment (%)"
+vis.to_json('vega.json')
+
 
 #Oregon County-level population data
 or_data = pd.read_table('data/OR_County_Data.txt', delim_whitespace=True)
