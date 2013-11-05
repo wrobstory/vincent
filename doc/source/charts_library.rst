@@ -82,7 +82,7 @@ Multiple lines can also be plotted easily::
     multi_iter1 = {'index': index}
     for cat in cats:
         multi_iter1[cat] = [random.randint(10, 100) for x in index]
-    lines = vincent.Line(data, iter_idx='index')
+    lines = vincent.Line(multi_iter1, iter_idx='index')
     lines.legend(title='Categories')
     lines.axis_titles(x='Index', y='Data Value')
 
