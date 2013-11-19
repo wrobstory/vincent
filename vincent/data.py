@@ -7,6 +7,7 @@ Data: Vincent Data Class for data importing and Vega Data type
 from __future__ import (print_function, division)
 import time
 import copy
+import json
 from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
 from ._compat import str_types
 
@@ -146,7 +147,7 @@ class Data(GrammarClass):
 
     @classmethod
     def from_pandas(cls, data, columns=None, key_on='idx', name=None,
-                    series_key='data', grouped=False, **kwargs):
+                    series_key='data', grouped=False, records=False, **kwargs):
         """Load values from a pandas ``Series`` or ``DataFrame`` object
 
         Parameters
@@ -170,6 +171,9 @@ class Data(GrammarClass):
             will be ``{'idx': ..., 'col': 'x', 'val': ...}``.
         grouped: boolean, default False
             Pass true for an extra grouping parameter
+        records: boolean, defaule False
+            Requires Pandas 0.12 or greater. Writes the Pandas DataFrame
+            using the df.to_json(orient='records') formatting.
         **kwargs : dict
             Additional arguments passed to the :class:`Data` constructor.
         """
@@ -191,6 +195,10 @@ class Data(GrammarClass):
             pd_obj = data[columns]
         if key_on != 'idx':
             pd_obj.index = data[key_on]
+        if records:
+            #The worst
+            vega_data.values = json.loads(pd_obj.to_json(orient='records'))
+            return vega_data
 
         vega_data.values = []
 
