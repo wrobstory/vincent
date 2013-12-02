@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 
-PropertySet: Definition of properties for ``Mark`` objects and labels of ``Axis``objects
+PropertySet: Definition of properties for ``Mark`` objects and labels of
+``Axis``objects
 
 """
 

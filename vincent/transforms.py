@@ -5,8 +5,9 @@ Transforms: Vincent Data Class for Vega Transform types
 
 """
 from __future__ import (print_function, division)
-from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
+from .core import grammar, GrammarClass
 from ._compat import str_types
+
 
 class Transform(GrammarClass):
     """Container to Transforma metrics
@@ -25,7 +26,8 @@ class Transform(GrammarClass):
 
     @grammar(str_types)
     def type(value):
-        """string: property name in which to store the computed transform value.
+        """string: property name in which to store the computed transform
+        value.
 
         The valid transform types are as follows:
         array, copy, facet, filter, flatten, formula, sort, stats, unique, zip,
@@ -103,7 +105,8 @@ class Transform(GrammarClass):
 
     @grammar(str_types)
     def expr(value):
-        """string: Javascript expression of a formula, referencing the data as d.
+        """string: Javascript expression of a formula, referencing the data as
+        d.
 
         Only used if ``type`` is formula
 
@@ -223,15 +226,16 @@ class Transform(GrammarClass):
 
     @grammar((int, float))
     def alpha(value):
-        """int or float: "temperature" parameter to determine node position adjustment
+        """int or float: "temperature" parameter to determine node position
+        adjustment
 
         To be used with ``force`` types
         """
 
     @grammar(str_types)
     def point(value):
-        """string: Data field determining the points at which to stack. When stacked
-        vertically, these are the x-coords.
+        """string: Data field determining the points at which to stack. When
+        stacked vertically, these are the x-coords.
 
         To be used with ``stack`` types
         """
@@ -269,8 +273,8 @@ class Transform(GrammarClass):
 
     @grammar(str_types)
     def projection(value):
-        """str: Cartographic projection. Accepts any projection supported by the
-        D3 projection plug-in:
+        """str: Cartographic projection. Accepts any projection supported by
+        the D3 projection plug-in:
 
         https://github.com/mbostock/d3/wiki/Geo-Projections
         """
@@ -302,5 +306,3 @@ class Transform(GrammarClass):
 
         if value < 0:
             raise ValueError('The rotation cannot be negative.')
-
-

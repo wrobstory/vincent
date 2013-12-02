@@ -6,9 +6,14 @@ Data: Vincent Data Class for data importing and Vega Data type
 """
 from __future__ import (print_function, division)
 import time
-import copy
 import json
-from .core import _assert_is_type, ValidationError, grammar, GrammarClass, LoadError
+from .core import (
+    _assert_is_type,
+    ValidationError,
+    grammar,
+    GrammarClass,
+    LoadError
+)
 from ._compat import str_types
 
 try:
