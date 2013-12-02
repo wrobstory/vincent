@@ -393,10 +393,6 @@ class Data(GrammarClass):
             name = 'table'
         cls.raw_data = data
 
-        def default_range(data_len, append):
-            start, end = 0, data_len
-            return xrange(start, end + 1, 1)
-
         #Tuples
         if isinstance(data, tuple):
             values = [{"x": x[0], "y": x[1]} for x in data]
@@ -404,7 +400,7 @@ class Data(GrammarClass):
         #Lists
         elif isinstance(data, list):
             values = [{"x": x, "y": y}
-                      for x, y in zip(default_range(len(data), append), data)]
+                      for x, y in zip(range(len(data) + 1), data)]
 
         #Dicts
         elif isinstance(data, dict) or isinstance(data, pd.Series):
@@ -427,21 +423,21 @@ class Data(GrammarClass):
 
         #NumPy arrays
         elif isinstance(data, np.ndarray):
-            values = cls._numpy_to_values(data, default_range, append)
+            values = cls._numpy_to_values(data)
         else:
             raise TypeError('unknown data type %s' % type(data))
 
         return cls(name, values=values)
 
     @staticmethod
-    def _numpy_to_values(data, default_range, append):
+    def _numpy_to_values(data):
         '''Convert a NumPy array to values attribute'''
         def to_list_no_index(xvals, yvals):
             return [{"x": x, "y": np.asscalar(y)}
                     for x, y in zip(xvals, yvals)]
 
         if len(data.shape) == 1 or data.shape[1] == 1:
-            xvals = default_range(data.shape[0], append)
+            xvals = range(data.shape[0] + 1)
             values = to_list_no_index(xvals, data)
         elif len(data.shape) == 2:
             if data.shape[1] == 2:
