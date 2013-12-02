@@ -592,6 +592,11 @@ class TestData(object):
 
         nt.assert_raises(LoadError, Data.serialize, broken)
 
+    def test_keypairs(self):
+        Data.keypairs([0, 10, 20, 30, 40])
+        Data.keypairs(((0, 1), (0, 2), (0, 3)))
+        Data.keypairs({'A': 10, 'B': 20, 'C': 30, 'D': 40, 'E': 50})
+
 
 class TestTransform(object):
     """Test the Transform class"""
