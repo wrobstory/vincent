@@ -8,6 +8,7 @@ virtualenv:
 before_install:
   - sudo apt-get install -qq gfortran libatlas-base-dev python-numpy
 install:
-  - pip install ipython mock pandas --use-mirrors
+  - pip install ipython mock pandas flake8 --use-mirrors
 script:
+  - flake8 --exclude=colors.py,_compat.py vincent
   - nosetests
