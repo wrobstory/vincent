@@ -4,7 +4,6 @@
 Charts: Constructors for different chart types in Vega grammar.
 
 """
-import copy
 from .core import KeyedList
 from .visualization import Visualization
 from .data import Data
@@ -12,8 +11,8 @@ from .transforms import Transform
 from .values import ValueRef
 from .properties import PropertySet
 from .scales import DataRef, Scale
-from .marks import ValueRef, MarkProperties, MarkRef, Mark
-from .axes import AxisProperties, Axis
+from .marks import MarkProperties, MarkRef, Mark
+from .axes import Axis
 from .colors import brews
 
 try:
@@ -119,9 +118,11 @@ class Bar(Chart):
 
         #Scales
         self.scales['x'] = Scale(name='x', type='ordinal', range='width',
-                                 domain=DataRef(data='table', field="data.idx"))
+                                 domain=DataRef(data='table',
+                                                field="data.idx"))
         self.scales['y'] = Scale(name='y', range='height', nice=True,
-                                 domain=DataRef(data='table', field="data.val"))
+                                 domain=DataRef(data='table',
+                                                field="data.val"))
         self.axes.extend([Axis(type='x', scale='x'),
                           Axis(type='y', scale='y')])
 
@@ -156,19 +157,23 @@ class Line(Bar):
             self.scales['x'].type = 'time'
 
         self.scales['color'] = Scale(name='color', type='ordinal',
-                                     domain=DataRef(data='table', field='data.col'),
+                                     domain=DataRef(data='table',
+                                                    field='data.col'),
                                      range='category20')
 
         del self.marks[0]
         transform = MarkRef(data='table',
-                            transform=[Transform(type='facet', keys=['data.col'])])
+                            transform=[Transform(type='facet',
+                                                 keys=['data.col'])])
         enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
                                   y=ValueRef(scale='y', field="data.val"),
-                                  stroke=ValueRef(scale="color", field='data.col'),
+                                  stroke=ValueRef(scale="color",
+                                                  field='data.col'),
                                   stroke_width=ValueRef(value=2))
         new_mark = Mark(type='group', from_=transform,
-                        marks=[Mark(type='line',
-                                    properties=MarkProperties(enter=enter_props))])
+                        marks=[Mark(
+                            type='line',
+                            properties=MarkProperties(enter=enter_props))])
         self.marks.append(new_mark)
 
 
@@ -185,8 +190,8 @@ class Scatter(Line):
         self.marks[0].marks[0].type = 'symbol'
         del self.marks[0].marks[0].properties.enter.stroke
         del self.marks[0].marks[0].properties.enter.stroke_width
-        self.marks[0].marks[0].properties.enter.fill = ValueRef(scale='color',
-                                                                field='data.col')
+        self.marks[0].marks[0].properties.enter.fill = ValueRef(
+            scale='color', field='data.col')
         self.marks[0].marks[0].properties.enter.size = ValueRef(value=100)
 
 
@@ -202,10 +207,12 @@ class Area(Line):
         del self.marks[0].marks[0].properties.enter.stroke_width
 
         self.marks[0].marks[0].type = "area"
-        self.marks[0].marks[0].properties.enter.interpolate = ValueRef(value="monotone")
-        self.marks[0].marks[0].properties.enter.y2 = ValueRef(value=0, scale="y")
-        self.marks[0].marks[0].properties.enter.fill = ValueRef(scale='color',
-                                                                field='data.col')
+        self.marks[0].marks[0].properties.enter.interpolate = ValueRef(
+            value="monotone")
+        self.marks[0].marks[0].properties.enter.y2 = ValueRef(
+            value=0, scale="y")
+        self.marks[0].marks[0].properties.enter.fill = ValueRef(
+            scale='color', field='data.col')
 
 
 class StackedArea(Area):
@@ -218,7 +225,8 @@ class StackedArea(Area):
 
         facets = Transform(type='facet', keys=['data.idx'])
         stats = Transform(type='stats', value='data.val')
-        stat_dat = Data(name='stats', source='table', transform=[facets, stats])
+        stat_dat = Data(name='stats', source='table',
+                        transform=[facets, stats])
         self.data['stats'] = stat_dat
 
         self.scales['x'].zero = False
@@ -284,6 +292,7 @@ class GroupedBar(StackedBar):
 
         del self.marks[0].marks[0].properties.enter.y2.field
         self.marks[0].marks[0].properties.enter.y2.value = 0
+
 
 class Map(Chart):
     """Vega Simple Map"""
@@ -357,7 +366,6 @@ class Map(Chart):
         if not translate:
             geo_kwargs['translate'] = [self.width/2, self.height/2]
 
-
         #Add Data
         for dat in geo_data:
             #Data
@@ -365,9 +373,8 @@ class Map(Chart):
             if data is not None and list(map_key.keys())[0] == dat['name']:
                 get_brewer = True
                 if not data_key or not data_bind:
-                    raise ValueError(
-                        'If passing data, you must pass data cols to key/bind on'
-                        )
+                    raise ValueError('If passing data, '
+                                     'you must pass data cols to key/bind on')
                 self.data['table'] = Data.keypairs(
                     data, columns=[data_key, data_bind]
                     )
@@ -436,14 +443,9 @@ class Map(Chart):
 
         """
         self.data['table'] = Data.keypairs(
-                    self.raw_data, columns=[self.data_key, column]
-                    )
+            self.raw_data, columns=[self.data_key, column])
         domain = [Data.serialize(self.raw_data[column].min()),
                   Data.serialize(self.raw_data[column].quantile(0.95))]
         scale = Scale(name='color', type='quantize', domain=domain,
                       range=brews[brew])
         self.scales['color'] = scale
-
-
-
-

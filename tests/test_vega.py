@@ -179,7 +179,8 @@ def test_grammar_dict():
 
 
 def assert_grammar_typechecking(grammar_types, test_obj):
-    """Assert that the grammar fields of a test object are correctly type-checked.
+    """Assert that the grammar fields of a test object are correctly
+    type-checked.
 
     `grammar_types` should be a list of (name, type) pairs, and `test_obj`
     should be an instance of the object to test.
@@ -453,7 +454,7 @@ class TestData(object):
         #     data.to_json()
 
         #Simple columns/key_on tests
-        df = pd.DataFrame({'one': [1,2,3], 'two': [6,7,8],
+        df = pd.DataFrame({'one': [1, 2, 3], 'two': [6, 7, 8],
                            'three': [11, 12, 13], 'four': [17, 18, 19]})
         get_all = [{'col': 'four', 'idx': 0, 'val': 17},
                    {'col': 'one', 'idx': 0, 'val': 1},
@@ -570,7 +571,8 @@ class TestData(object):
     def test_from_iter(self):
         """Test data from single iterable"""
         test_list = Data.from_iter([10, 20, 30])
-        test_dict = Data.from_iter({'apples': 10, 'bananas': 20, 'oranges': 30})
+        test_dict = Data.from_iter({
+            'apples': 10, 'bananas': 20, 'oranges': 30})
         get1 = [{'col': 'data', 'idx': 0, 'val': 10},
                 {'col': 'data', 'idx': 1, 'val': 20},
                 {'col': 'data', 'idx': 2, 'val': 30}]
@@ -590,23 +592,29 @@ class TestData(object):
 
         nt.assert_raises(LoadError, Data.serialize, broken)
 
+    def test_keypairs(self):
+        Data.keypairs([0, 10, 20, 30, 40])
+        Data.keypairs(((0, 1), (0, 2), (0, 3)))
+        Data.keypairs({'A': 10, 'B': 20, 'C': 30, 'D': 40, 'E': 50})
+
 
 class TestTransform(object):
     """Test the Transform class"""
 
     def test_grammar_typechecking(self):
         """Transform field typechecking"""
-        grammar_types = [('fields', [list]), ('from_', [str]),
-                         ('as_', [list]), ('keys', [list]), ('sort', [str]),
-                         ('test', [str]), ('field', [str]), ('expr', [str]),
-                         ('by', [str, list]), ('value', [str]), ('median', [bool]),
-                         ('with_', [str]), ('key', [str]), ('with_key', [str]),
-                         ('links', [str]), ('size', [list]), ('iterations', [int]),
-                         ('charge', [int, str]), ('link_distance', [int, str]),
-                         ('link_strength', [int, str]), ('friction', [int, float]),
-                         ('theta', [int, float]), ('gravity', [int, float]),
-                         ('alpha', [int, float]), ('point', [str]),
-                         ('height', [str])]
+        grammar_types = [
+            ('fields', [list]), ('from_', [str]),
+            ('as_', [list]), ('keys', [list]), ('sort', [str]),
+            ('test', [str]), ('field', [str]), ('expr', [str]),
+            ('by', [str, list]), ('value', [str]), ('median', [bool]),
+            ('with_', [str]), ('key', [str]), ('with_key', [str]),
+            ('links', [str]), ('size', [list]), ('iterations', [int]),
+            ('charge', [int, str]), ('link_distance', [int, str]),
+            ('link_strength', [int, str]), ('friction', [int, float]),
+            ('theta', [int, float]), ('gravity', [int, float]),
+            ('alpha', [int, float]), ('point', [str]),
+            ('height', [str])]
 
         assert_grammar_typechecking(grammar_types, Transform())
 

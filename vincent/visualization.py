@@ -6,8 +6,8 @@ Visualization: Top level class for Vega Grammar
 """
 from __future__ import (print_function, division)
 import random
-from .core import (initialize_notebook, _assert_is_type, ValidationError,
-                  KeyedList, grammar, GrammarClass, LoadError)
+from .core import (_assert_is_type, ValidationError,
+                   KeyedList, grammar, GrammarClass)
 from .data import Data
 from .scales import Scale
 from .marks import Mark
@@ -190,14 +190,15 @@ class Visualization(GrammarClass):
                 elif key == 'y':
                     self.axes[key].title = y
         else:
-            self.axes.extend([Axis(type='x', title=x), Axis(type='y', title=y)])
+            self.axes.extend([Axis(type='x', title=x),
+                              Axis(type='y', title=y)])
 
     def legend(self, title=None, scale='color'):
         """Convience method for adding a legend to the figure.
 
-        Important: This defaults to the color scale that is generated with Line,
-        Area, Stacked Line, etc charts. For bar charts, the scale ref is usually
-        'y'.
+        Important: This defaults to the color scale that is generated with
+        Line, Area, Stacked Line, etc charts. For bar charts, the scale ref is
+        usually 'y'.
 
         Parameters
         ----------
@@ -226,7 +227,6 @@ class Visualization(GrammarClass):
             Color brewer scheme (BuGn, YlOrRd, etc)
         """
         self.scales['color'].range = brews[brew]
-
 
     def validate(self, require_all=True, scale='colors'):
         """Validate the visualization contents.

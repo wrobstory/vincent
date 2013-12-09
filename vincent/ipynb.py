@@ -1,4 +1,4 @@
-'''
+"""
 Vincent IPython notebook
 -------
 
@@ -7,9 +7,9 @@ https://github.com/aflaxman for putting this together. IPython might be seeing
 significant changes with JS handling in the near future- until then, this
 module will allow for embedding on a local server (but not in nbviewer)
 
-'''
+"""
+
 import random
-import json
 from IPython.core.display import display, HTML, Javascript
 
 
@@ -22,7 +22,8 @@ def init_d3():
 def init_vg():
     '''Display html that loads vega javascript library.'''
 
-    display(HTML('''<script src="http://trifacta.github.com/vega/vega.js"></script>'''))
+    display(HTML('<script src="http://trifacta.github.com/vega/vega.js">'
+                 '</script>'))
 
 
 def display_vega(vis):
@@ -33,5 +34,6 @@ def display_vega(vis):
 
     a = HTML('''<div id="vis%d"></div>''' % id)
     b = Javascript('''vg.parse.spec(%s, function(chart)
-                        { chart({el:"#vis%d"}).update(); });''' % (vis.to_json(), id))
+                        { chart({el:"#vis%d"}).update(); });''' %
+                   (vis.to_json(), id))
     display(a, b)

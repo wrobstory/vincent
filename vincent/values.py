@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 
-ValueRef: Generally used in a PropertySet class to define a set of values within a property
+ValueRef: Generally used in a PropertySet class to define a set of values
+within a property
 
 """
 from .core import grammar, GrammarClass
 from ._compat import str_types
+
 
 class ValueRef(GrammarClass):
     """Container for the value-referencing properties of marks

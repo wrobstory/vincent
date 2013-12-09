@@ -43,7 +43,8 @@ def initialize_notebook():
                 })
             })
         })
-    });''' % (d3_js_url, d3_geo_projection_js_url, topojson_js_url, vega_js_url)))
+    });''' % (d3_js_url, d3_geo_projection_js_url, topojson_js_url,
+              vega_js_url)))
 
 
 def _assert_is_type(name, value, value_type):
@@ -254,8 +255,9 @@ class GrammarClass(object):
             except ValueError as e:
                 raise ValidationError('invalid contents: ' + e.args[0])
 
-    def to_json(self, path=None, html_out=False, html_path='vega_template.html',
-                validate=False, pretty_print=True):
+    def to_json(self, path=None, html_out=False,
+                html_path='vega_template.html', validate=False,
+                pretty_print=True):
         """Convert object to JSON
 
         Parameters

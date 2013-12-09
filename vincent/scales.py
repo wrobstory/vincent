@@ -7,6 +7,7 @@ Scales: Classes to define Vega scales
 from .core import grammar, GrammarClass
 from ._compat import str_types
 
+
 class DataRef(GrammarClass):
     """Definitions for how data is referenced by scales
 

@@ -9,7 +9,6 @@ from .properties import PropertySet
 from ._compat import str_types
 
 
-
 class AxisProperties(GrammarClass):
     """Definitions for the rendering of axes
 
