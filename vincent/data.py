@@ -475,4 +475,5 @@ class Data(GrammarClass):
             Valid Vega JSON.
         """
         #TODO: support writing to separate file
-        return super(self.__class__, self).to_json(validate, pretty_print)
+        return super(self.__class__, self).to_json(validate=validate,
+                                                   pretty_print=pretty_print)
