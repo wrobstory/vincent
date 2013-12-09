@@ -85,7 +85,7 @@ class Chart(Visualization):
         super(Chart, self).__init__(*args, **kwargs)
 
         self.width, self.height = width, height
-        self.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 100}
+        self.padding = "auto"
         self.columns = columns
         self._is_datetime = False
 
