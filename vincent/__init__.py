@@ -5,8 +5,7 @@ __all__ = [
     "Visualization", "Data", "Transform",
     "PropertySet", "ValueRef", "DataRef", "Scale",
     "MarkProperties", "MarkRef", "Mark",
-    "AxisProperties", "Axis",
-    "BarFactory"
+    "AxisProperties", "Axis"
 ]
 
 from .charts import (Chart, Bar, Line, Area, Scatter, StackedBar, StackedArea,
@@ -19,4 +18,3 @@ from .properties import PropertySet
 from .scales import DataRef, Scale
 from .marks import MarkProperties, MarkRef, Mark
 from .axes import AxisProperties, Axis
-from .factories import BarFactory

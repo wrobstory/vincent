@@ -249,7 +249,7 @@ class GrammarClass(object):
         will catch ``ValueError``s raised by the grammar property's setters
         and re-raise them as :class:`ValidationError`.
         """
-        for key, val in sorted(self.grammar.items()):
+        for key, val in self.grammar.items():
             try:
                 setattr(self, key, val)
             except ValueError as e:
