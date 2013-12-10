@@ -10,7 +10,7 @@ Tests for Vincent chart types, which also serve as reference grammar.
 import pandas as pd
 import nose.tools as nt
 from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
-                            StackedArea, StackedBar, GroupedBar, Map)
+                            StackedArea, StackedBar, GroupedBar, Map, Pie)
 
 
 def chart_runner(chart, scales, axes, marks):
@@ -22,8 +22,8 @@ def chart_runner(chart, scales, axes, marks):
     for i, axis in enumerate(axes):
         nt.assert_dict_equal(chart.axes[i].grammar(), axis)
 
-    for i, axis in enumerate(marks):
-        nt.assert_dict_equal(chart.marks[i].grammar(), axis)
+    for i, mark in enumerate(marks):
+        nt.assert_dict_equal(chart.marks[i].grammar(), mark)
 
 
 def test_data_type():
@@ -611,5 +611,29 @@ class TestMaps(object):
       assert map_df.scales['color'].grammar() == new_scale
 
 
+class TestPie(object):
+    """Test Pie Chart"""
 
+    def test_init(self):
+        pie = Pie([12, 23, 34])
 
+        scales, axes = [], []
+        marks = [{
+            "type": "arc",
+            "from": {
+                "data": "table",
+                "transform": [{"type": "pie", "value": "data.val"}]
+            },
+            "properties": {
+                "enter": {
+                    "endAngle": {"field": "endAngle"},
+                    "innerRadius": {"value": 62},
+                    "outerRadius": {"value": 186},
+                    "startAngle": {"field": "startAngle"},
+                    "stroke": {"value": "white"}
+                },
+                "update": {"fill": {"value": "steelblue"}}
+            }
+        }]
+
+        chart_runner(pie, scales, axes, marks)
