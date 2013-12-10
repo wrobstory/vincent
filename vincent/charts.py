@@ -454,14 +454,13 @@ class Map(Chart):
 class Pie(Chart):
     """Vega Pie chart"""
 
-    def __init__(self, data=None, inner_radius=None, outer_radius=None,
+    def __init__(self, data=None, inner_radius=0, outer_radius=None,
                  *args, **kwargs):
         """Create a Vega Pie Chart"""
 
         super(Pie, self).__init__(data, *args, **kwargs)
 
-        inner_radius = inner_radius or int(min(self.width, self.height) / 8)
-        outer_radius = outer_radius or inner_radius * 3
+        outer_radius = outer_radius or min(self.width, self.height) / 2
 
         self.scales["color"] = Scale(
             name="color", type="ordinal", range="category10",
@@ -471,6 +470,8 @@ class Pie(Chart):
             data="table", transform=[Transform(type="pie", value="data.val")])
 
         enter_props = PropertySet(
+            x=ValueRef(group="width", mult=0.5),
+            y=ValueRef(group="height", mult=0.5),
             start_angle=ValueRef(field="startAngle"),
             end_angle=ValueRef(field="endAngle"),
             inner_radius=ValueRef(value=inner_radius),

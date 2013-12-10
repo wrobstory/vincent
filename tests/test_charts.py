@@ -617,7 +617,15 @@ class TestPie(object):
     def test_init(self):
         pie = Pie([12, 23, 34])
 
-        scales, axes = [], []
+        axes = []
+
+        scales = [{
+            "domain": {"data": "table", "field": "data.idx"},
+            "name": "color",
+            "range": "category10",
+            "type": "ordinal"
+        }]
+
         marks = [{
             "type": "arc",
             "from": {
@@ -626,13 +634,15 @@ class TestPie(object):
             },
             "properties": {
                 "enter": {
+                    "x": {"group": "width", "mult": 0.5},
+                    "y": {"group": "height", "mult": 0.5},
                     "endAngle": {"field": "endAngle"},
-                    "innerRadius": {"value": 62},
-                    "outerRadius": {"value": 186},
+                    "innerRadius": {"value": 0},
+                    "outerRadius": {"value": 250},
                     "startAngle": {"field": "startAngle"},
-                    "stroke": {"value": "white"}
-                },
-                "update": {"fill": {"value": "steelblue"}}
+                    "stroke": {"value": "white"},
+                    "fill": {"field": "data.idx", "scale": "color"}
+                }
             }
         }]
 
