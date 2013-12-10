@@ -463,20 +463,22 @@ class Pie(Chart):
         inner_radius = inner_radius or int(min(self.width, self.height) / 8)
         outer_radius = outer_radius or inner_radius * 3
 
+        self.scales["color"] = Scale(
+            name="color", type="ordinal", range="category10",
+            domain=DataRef(data="table", field="data.idx"))
+
         transform = MarkRef(
-            data='table', transform=[Transform(type='pie', value="data.val")])
+            data="table", transform=[Transform(type="pie", value="data.val")])
 
         enter_props = PropertySet(
             start_angle=ValueRef(field="startAngle"),
             end_angle=ValueRef(field="endAngle"),
             inner_radius=ValueRef(value=inner_radius),
             outer_radius=ValueRef(value=outer_radius),
-            stroke=ValueRef(value="white")
-        )
-        update_props = PropertySet(fill=ValueRef(value='steelblue'))
+            stroke=ValueRef(value="white"),
+            fill=ValueRef(scale="color", field="data.idx"))
 
         mark = Mark(type="arc", from_=transform,
-                    properties=MarkProperties(enter=enter_props,
-                                              update=update_props))
+                    properties=MarkProperties(enter=enter_props))
 
         self.marks.append(mark)
