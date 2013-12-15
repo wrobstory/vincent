@@ -58,6 +58,15 @@ class Axis(GrammarClass):
         """bool: If True, gridlines are created"""
 
     @grammar(str_types)
+    def layer(value):
+        """string: A string indicating if the axis (and any gridlines) should
+        be placed above or below the data marks.
+        Can only be "front" (default) or "back".
+        """
+        if value not in ("front", "back"):
+            raise ValueError("Axis.layer must be front or back")
+
+    @grammar(str_types)
     def scale(value):
         """string : Name of scale used for axis"""
 
