@@ -39,6 +39,15 @@ class ValueRef(GrammarClass):
         element is always `data` regardless of the name of the data.
         """
 
+    @grammar((str_types, bool))
+    def group(value):
+        """string, boolean: Similar to field, but references a property of the
+        enclosing group's data, not the current mark.
+
+        If "width" or "height" are specified, the width or height of the
+        enclosing group mark is returned.
+        """
+
     @grammar(str_types)
     def scale(value):
         """string : reference to the name of a ``Scale``

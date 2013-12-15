@@ -449,3 +449,37 @@ class Map(Chart):
         scale = Scale(name='color', type='quantize', domain=domain,
                       range=brews[brew])
         self.scales['color'] = scale
+
+
+class Pie(Chart):
+    """Vega Pie chart"""
+
+    def __init__(self, data=None, inner_radius=0, outer_radius=None,
+                 *args, **kwargs):
+        """Create a Vega Pie Chart"""
+
+        super(Pie, self).__init__(data, *args, **kwargs)
+
+        outer_radius = outer_radius or min(self.width, self.height) / 2
+
+        self.scales["color"] = Scale(
+            name="color", type="ordinal", range="category10",
+            domain=DataRef(data="table", field="data.idx"))
+
+        transform = MarkRef(
+            data="table", transform=[Transform(type="pie", value="data.val")])
+
+        enter_props = PropertySet(
+            x=ValueRef(group="width", mult=0.5),
+            y=ValueRef(group="height", mult=0.5),
+            start_angle=ValueRef(field="startAngle"),
+            end_angle=ValueRef(field="endAngle"),
+            inner_radius=ValueRef(value=inner_radius),
+            outer_radius=ValueRef(value=outer_radius),
+            stroke=ValueRef(value="white"),
+            fill=ValueRef(scale="color", field="data.idx"))
+
+        mark = Mark(type="arc", from_=transform,
+                    properties=MarkProperties(enter=enter_props))
+
+        self.marks.append(mark)

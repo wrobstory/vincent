@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __all__ = [
     "Chart", "Bar", "Line", "Area", "Scatter",
-    "StackedBar", "StackedArea", "GroupedBar", "Map",
+    "StackedBar", "StackedArea", "GroupedBar", "Map", "Pie",
     "Visualization", "Data", "Transform",
     "PropertySet", "ValueRef", "DataRef", "Scale",
     "MarkProperties", "MarkRef", "Mark",
@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 from .charts import (Chart, Bar, Line, Area, Scatter, StackedBar, StackedArea,
-                     GroupedBar, Map)
+                     GroupedBar, Map, Pie)
 from .visualization import Visualization
 from .data import Data
 from .transforms import Transform
