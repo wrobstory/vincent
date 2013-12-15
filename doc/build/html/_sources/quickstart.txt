@@ -29,6 +29,21 @@ Labeling the axes is simple::
 
 .. image:: /images/quick_bar2.png
 
+You can also control aspects of the layout::
+
+    import vincent
+    from vincent import AxisProperties, PropertySet, ValueRef 
+    bar = vincent.Bar(multi_iter1['y1'])
+    bar.axis_titles(x='Index', y='Value')
+    #rotate x axis labels
+    ax = AxisProperties(
+             labels = PropertySet(angle=ValueRef(value=90)))
+    bar.axes[0].properties = ax
+	
+.. image:: /images/quick_bar3.png
+
+
+
 .. _quick_line:
 
 Line

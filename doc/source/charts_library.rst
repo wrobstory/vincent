@@ -197,6 +197,26 @@ Currently grouped sets only work with Pandas DataFrames, but that should change 
 
 .. image:: /images/grouped_bar2.png
 
+.. _chart_lib_pie:
+
+Pie/Donut Chart
+---------------
+
+Pie chart outer radius defaults to 1/2 min(width/height)::
+
+    pie = vincent.Pie(farm_1)
+    pie.legend('Farm 1 Fruit')
+
+.. image:: /images/pie_0.png
+
+Donut charts can be created by passing an inner radius::
+
+    donut = vincent.Pie(farm_1, inner_radius=200)
+    donut.colors(brew="Set2")
+    donut.legend('Farm 1 Fruit')
+
+.. image:: /images/donut_0.png
+
 .. _chart_lib_simple_map:
 
 Simple Map

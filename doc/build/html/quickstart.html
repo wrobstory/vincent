@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-area">Stacked Area</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charts_library.html#stacked-bar">Stacked Bar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charts_library.html#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charts_library.html#pie-donut-chart">Pie/Donut Chart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charts_library.html#simple-map">Simple Map</a></li>
 <li class="toctree-l2"><a class="reference internal" href="charts_library.html#map-data-binding">Map Data Binding</a></li>
 </ul>
@@ -197,6 +198,18 @@
 </pre></div>
 </div>
 <img alt="_images/quick_bar2.png" src="_images/quick_bar2.png" />
+<p>You can also control aspects of the layout:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">vincent</span>
+<span class="kn">from</span> <span class="nn">vincent</span> <span class="kn">import</span> <span class="n">AxisProperties</span><span class="p">,</span> <span class="n">PropertySet</span><span class="p">,</span> <span class="n">ValueRef</span>
+<span class="n">bar</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">multi_iter1</span><span class="p">[</span><span class="s">&#39;y1&#39;</span><span class="p">])</span>
+<span class="n">bar</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Value&#39;</span><span class="p">)</span>
+<span class="c">#rotate x axis labels</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">AxisProperties</span><span class="p">(</span>
+         <span class="n">labels</span> <span class="o">=</span> <span class="n">PropertySet</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="n">ValueRef</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">90</span><span class="p">)))</span>
+<span class="n">bar</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="n">ax</span>
+</pre></div>
+</div>
+<img alt="_images/quick_bar3.png" src="_images/quick_bar3.png" />
 </div>
 <div class="section" id="line">
 <span id="quick-line"></span><h2>Line<a class="headerlink" href="#line" title="Permalink to this headline">¶</a></h2>
@@ -497,7 +510,7 @@
     </p>
     <p>
         &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b2.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
     </p>
   </div>
 </footer>

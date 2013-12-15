@@ -142,6 +142,23 @@ group.colors(brew='Set2')
 ```
 ![groupbar2](http://farm6.staticflickr.com/5518/9391272912_706055754a_o.jpg)
 
+Pie charts:
+
+```python
+vis = vincent.Pie(farm_1)
+vis.legend('Farm 1 Fruit')
+```
+![pie](http://farm4.staticflickr.com/3684/11391908745_2837f1bb9a.jpg)
+
+Donut charts:
+
+```
+vis = vincent.Pie(farm_1, inner_radius=200)
+vis.colors(brew="Set2")
+vis.legend('Farm 1 Fruit')
+```
+![donut](http://farm6.staticflickr.com/5530/11391917226_598fbdf3e2.jpg)
+
 Simple maps can be built quickly (all data can be found in the [vincent_map_data](https://github.com/wrobstory/vincent_map_data) repo):
 
 ```python
@@ -334,13 +351,13 @@ Huge thanks to all who have contributed to Vincent development:
  * Rob Story (wrobstory)
  * Dan Miller (dnmiller)
  * Peter Lubell-Doughtie (pld)
+ * Lx Yu (lxyu)
  * Damien Garaud (garaud)
  * Abraham Flaxman (aflaxman)
  * Mahdi Yusuf (myusuf3)
  * Richard Maisano (maisano)
  * Julian Berman (Julian)
  * Chris Rebert (cvrebert)
- * Lx Yu (lxyu)
  * Wojciech Bederski (wuub)
  * Min RK (minrk)
  * Drazen Lucanin (kermit666)

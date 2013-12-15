@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#stacked-area">Stacked Area</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stacked-bar">Stacked Bar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#grouped-bar">Grouped Bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pie-donut-chart">Pie/Donut Chart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#simple-map">Simple Map</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#map-data-binding">Map Data Binding</a></li>
 </ul>
@@ -135,6 +136,7 @@
 <li><a class="reference internal" href="#stacked-area">Stacked Area</a></li>
 <li><a class="reference internal" href="#stacked-bar">Stacked Bar</a></li>
 <li><a class="reference internal" href="#grouped-bar">Grouped Bar</a></li>
+<li><a class="reference internal" href="#pie-donut-chart">Pie/Donut Chart</a></li>
 <li><a class="reference internal" href="#simple-map">Simple Map</a></li>
 <li><a class="reference internal" href="#map-data-binding">Map Data Binding</a></li>
 </ul>
@@ -240,7 +242,7 @@
 <span class="n">multi_iter1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;index&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">}</span>
 <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cats</span><span class="p">:</span>
     <span class="n">multi_iter1</span><span class="p">[</span><span class="n">cat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
-<span class="n">lines</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">multi_iter1</span><span class="p">,</span> <span class="n">iter_idx</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
 <span class="n">lines</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Categories&#39;</span><span class="p">)</span>
 <span class="n">lines</span><span class="o">.</span><span class="n">axis_titles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&#39;Index&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&#39;Data Value&#39;</span><span class="p">)</span>
 </pre></div>
@@ -336,6 +338,22 @@
 </pre></div>
 </div>
 <img alt="_images/grouped_bar2.png" src="_images/grouped_bar2.png" />
+</div>
+<div class="section" id="pie-donut-chart">
+<span id="chart-lib-pie"></span><h2>Pie/Donut Chart<a class="headerlink" href="#pie-donut-chart" title="Permalink to this headline">¶</a></h2>
+<p>Pie chart outer radius defaults to 1/2 min(width/height):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pie</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Pie</span><span class="p">(</span><span class="n">farm_1</span><span class="p">)</span>
+<span class="n">pie</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="s">&#39;Farm 1 Fruit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/pie_0.png" src="_images/pie_0.png" />
+<p>Donut charts can be created by passing an inner radius:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">donut</span> <span class="o">=</span> <span class="n">vincent</span><span class="o">.</span><span class="n">Pie</span><span class="p">(</span><span class="n">farm_1</span><span class="p">,</span> <span class="n">inner_radius</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">donut</span><span class="o">.</span><span class="n">colors</span><span class="p">(</span><span class="n">brew</span><span class="o">=</span><span class="s">&quot;Set2&quot;</span><span class="p">)</span>
+<span class="n">donut</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="s">&#39;Farm 1 Fruit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/donut_0.png" src="_images/donut_0.png" />
 </div>
 <div class="section" id="simple-map">
 <span id="chart-lib-simple-map"></span><h2>Simple Map<a class="headerlink" href="#simple-map" title="Permalink to this headline">¶</a></h2>
@@ -439,7 +457,7 @@
     </p>
     <p>
         &copy; Copyright 2013, Rob Story, Dan Miller, et. al..<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b2.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.<br/>
     </p>
   </div>
 </footer>
