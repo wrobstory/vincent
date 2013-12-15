@@ -108,9 +108,12 @@ class Visualization(GrammarClass):
                 _assert_is_type('padding: {0}'.format(key), value[key], int)
                 if value[key] < 0:
                     raise ValueError('Padding cannot be negative.')
-        else:
+        elif isinstance(value, int):
             if value < 0:
                 raise ValueError('Padding cannot be negative.')
+        else:
+            if value not in ("auto", "strict"):
+                raise ValueError('Padding can only be auto or strict.')
 
     @grammar((list, KeyedList))
     def data(value):

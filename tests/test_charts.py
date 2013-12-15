@@ -90,8 +90,8 @@ class TestChart(object):
         chart = Chart([0, 1], width=100, height=100)
         nt.assert_equal(chart.width, 100)
         nt.assert_equal(chart.height, 100)
-        padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 100}
-        nt.assert_dict_equal(chart.padding, padding)
+        padding = "auto"
+        nt.assert_equal(chart.padding, padding)
 
         #Data loading errors
         nt.assert_raises(ValueError, Chart)
