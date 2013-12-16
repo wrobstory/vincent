@@ -211,7 +211,7 @@ Pie chart outer radius defaults to 1/2 min(width/height)::
 
 Donut charts can be created by passing an inner radius::
 
-    donut = vincent.Pie(farm_1, inner_radius=500)
+    donut = vincent.Pie(farm_1, inner_radius=200)
     donut.colors(brew="Set2")
     donut.legend('Farm 1 Fruit')
 
