@@ -10,7 +10,7 @@ Tests for Vincent chart types, which also serve as reference grammar.
 import pandas as pd
 import nose.tools as nt
 from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
-                            StackedArea, StackedBar, GroupedBar, Map, Pie)
+                            StackedArea, GroupedBar, Map, Pie)
 
 
 def chart_runner(chart, scales, axes, marks):
@@ -96,37 +96,6 @@ class TestChart(object):
         #Data loading errors
         nt.assert_raises(ValueError, Chart)
         nt.assert_raises(ValueError, Chart, [])
-
-
-class TestBar(object):
-    'Test Bar Chart'
-
-    def test_init(self):
-        bar = Bar([1, 2, 3])
-
-        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
-                   'name': 'x',
-                   'range': 'width',
-                   'type': 'ordinal'},
-                  {'domain': {'data': 'table', 'field': 'data.val'},
-                   'name': 'y',
-                   'nice': True,
-                   'range': 'height'}]
-
-        axes = [{'scale': 'x', 'type': 'x'},
-                {'scale': 'y', 'type': 'y'}]
-
-        marks = [{'from': {'data': 'table'},
-                  'properties': {'enter': {'width': {'band': True,
-                  'offset': -1,
-                  'scale': 'x'},
-                  'x': {'field': 'data.idx', 'scale': 'x'},
-                  'y': {'field': 'data.val', 'scale': 'y'},
-                  'y2': {'scale': 'y', 'value': 0}},
-                  'update': {'fill': {'value': 'steelblue'}}},
-                  'type': 'rect'}]
-
-        chart_runner(bar, scales, axes, marks)
 
 
 class TestScatter(object):
@@ -315,23 +284,43 @@ class TestStackedArea(object):
             nt.assert_dict_equal(stack.data[i].grammar(), data)
 
 
-class TestStackedBar(object):
-    'Test Stacked Bar Chart'
+class TestBar(object):
+    """Test Bar and Stacked Bar Chart"""
 
     def test_init(self):
+        bar = Bar([1, 2, 3])
+        stacked_bar = Bar({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
+                          iter_idx='x')
 
-        stack = StackedBar({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
-                           iter_idx='x')
+        # Test stacked bar data
+        datas = [
+            {'name': 'table',
+             'values': [
+                 {'col': 'y', 'idx': 1, 'val': 4},
+                 {'col': 'y', 'idx': 2, 'val': 5},
+                 {'col': 'y', 'idx': 3, 'val': 6},
+                 {'col': 'z', 'idx': 1, 'val': 7},
+                 {'col': 'z', 'idx': 2, 'val': 8},
+                 {'col': 'z', 'idx': 3, 'val': 9}]},
+            {'name': 'stats',
+             'source': 'table',
+             'transform': [
+                 {'type': 'facet', 'keys': ['data.idx']},
+                 {'type': 'stats', 'value': 'data.val'}]}
+        ]
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(stacked_bar.data[i].grammar(), data)
 
+        # Test bar grammar
         scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
                    'name': 'x',
                    'range': 'width',
+                   'zero': False,
                    'type': 'ordinal'},
                   {'domain': {'data': 'stats', 'field': 'sum'},
                    'name': 'y',
                    'nice': True,
-                   'range': 'height',
-                   'type': 'linear'},
+                   'range': 'height'},
                   {'domain': {'data': 'table', 'field': 'data.col'},
                    'name': 'color',
                    'range': 'category20',
@@ -340,35 +329,31 @@ class TestStackedBar(object):
         axes = [{'scale': 'x', 'type': 'x'},
                 {'scale': 'y', 'type': 'y'}]
 
-        datas = [{'name': 'table',
-                 'values': [{'col': 'y', 'idx': 1, 'val': 4},
-                  {'col': 'y', 'idx': 2, 'val': 5},
-                  {'col': 'y', 'idx': 3, 'val': 6},
-                  {'col': 'z', 'idx': 1, 'val': 7},
-                  {'col': 'z', 'idx': 2, 'val': 8},
-                  {'col': 'z', 'idx': 3, 'val': 9}]},
-                {'name': 'stats',
-                 'source': 'table',
-                 'transform': [{'keys': ['data.idx'], 'type': 'facet'},
-                {'type': 'stats', 'value': 'data.val'}]}]
+        marks = [{
+            'type': 'group',
+            'from': {
+                'data': 'table',
+                'transform': [
+                    {'type': 'facet', 'keys': ['data.col']},
+                    {'type': 'stack', 'height': 'data.val',
+                     'point': 'data.idx'}]
+            },
+            'marks': [{
+                'type': 'rect',
+                'properties': {
+                    'enter': {
+                        'x': {'field': 'data.idx', 'scale': 'x'},
+                        'width': {'band': True, 'offset': -1, 'scale': 'x'},
+                        'y': {'field': 'y', 'scale': 'y'},
+                        'y2': {'field': 'y2', 'scale': 'y'},
+                        'fill': {'field': 'data.col', 'scale': 'color'}
+                    }
+                }
+            }]
+        }]
 
-        marks = [{'from': {'data': 'table',
-                  'transform': [{'keys': ['data.col'], 'type': 'facet'},
-                 {'height': 'data.val', 'point': 'data.idx', 'type': 'stack'}]},
-                 'marks':
-                 [{'properties': {'enter': {'fill': {'field': 'data.col',
-                   'scale': 'color'},
-                   'width': {'band': True, 'offset': -1, 'scale': 'x'},
-                   'x': {'field': 'data.idx', 'scale': 'x'},
-                   'y': {'field': 'y', 'scale': 'y'},
-                   'y2': {'field': 'y2', 'scale': 'y'}}},
-                   'type': 'rect'}],
-                   'type': 'group'}]
-
-        chart_runner(stack, scales, axes, marks)
-
-        for i, data in enumerate(datas):
-            nt.assert_dict_equal(stack.data[i].grammar(), data)
+        chart_runner(bar, scales, axes, marks)
+        chart_runner(stacked_bar, scales, axes, marks)
 
 
 class TestGroupedBar(object):
