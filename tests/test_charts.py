@@ -344,9 +344,24 @@ class TestGroupedBar(object):
         data = [farm_1, farm_2]
         index = ['Farm 1', 'Farm 2']
         df = pd.DataFrame(data, index=index)
-
         group = GroupedBar(df)
 
+        # Test grouped bar data
+        datas = [{
+            'name': 'table',
+            'values': [
+                {'col': 'apples', 'idx': 'Farm 1', 'val': 10},
+                {'col': 'berries', 'idx': 'Farm 1', 'val': 32},
+                {'col': 'squash', 'idx': 'Farm 1', 'val': 21},
+                {'col': 'apples', 'idx': 'Farm 2', 'val': 15},
+                {'col': 'berries', 'idx': 'Farm 2', 'val': 40},
+                {'col': 'squash', 'idx': 'Farm 2', 'val': 17}
+            ]
+        }]
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(group.data[i].grammar(), data)
+
+        # Test grouped bar grammar
         scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
                    'name': 'x',
                    'padding': 0.2,
@@ -364,36 +379,39 @@ class TestGroupedBar(object):
         axes = [{'scale': 'x', 'type': 'x'},
                 {'scale': 'y', 'type': 'y'}]
 
-        datas = [{'name': 'table',
-                  'values':
-                  [{'col': 'apples', 'group': 0, 'idx': 'Farm 1', 'val': 10},
-                  {'col': 'berries', 'group': 1, 'idx': 'Farm 1', 'val': 32},
-                  {'col': 'squash', 'group': 2, 'idx': 'Farm 1', 'val': 21},
-                  {'col': 'apples', 'group': 0, 'idx': 'Farm 2', 'val': 15},
-                  {'col': 'berries', 'group': 1, 'idx': 'Farm 2', 'val': 40},
-                  {'col': 'squash', 'group': 2, 'idx': 'Farm 2', 'val': 17}]}]
-
-        marks = [{'from': {'data': 'table',
-                  'transform': [{'keys': ['data.idx'], 'type': 'facet'}]},
-                  'marks': [{'properties': {'enter': {'fill': {'field': 'data.col',
-                      'scale': 'color'},
-                     'width': {'band': True, 'offset': -1, 'scale': 'pos'},
-                     'x': {'field': 'data.group', 'scale': 'pos'},
-                     'y': {'field': 'data.val', 'scale': 'y'},
-                     'y2': {'scale': 'y', 'value': 0}}},
-                   'type': 'rect'}],
-                 'properties': {'enter': {'width': {'band': True, 'scale': 'x'},
-                   'x': {'field': 'key', 'scale': 'x'}}},
-                 'scales': [{'domain': {'field': 'data.group'},
-                   'name': 'pos',
-                   'range': 'width',
-                   'type': 'ordinal'}],
-                 'type': 'group'}]
+        marks = [{
+            'type': 'group',
+            'from': {
+                'data': 'table',
+                'transform': [{'keys': ['data.idx'], 'type': 'facet'}]
+            },
+            'marks': [{
+                'type': 'rect',
+                'properties': {
+                    'enter': {
+                        'fill': {'field': 'data.col', 'scale': 'color'},
+                        'width': {'band': True, 'offset': -1, 'scale': 'pos'},
+                        'x': {'field': 'data.col', 'scale': 'pos'},
+                        'y': {'field': 'data.val', 'scale': 'y'},
+                        'y2': {'scale': 'y', 'value': 0}}
+                }
+            }],
+            'properties': {
+                'enter': {
+                    'width': {'band': True, 'scale': 'x'},
+                    'x': {'field': 'key', 'scale': 'x'}
+                }
+            },
+            'scales': [{
+                'domain': {'field': 'data.col'},
+                'name': 'pos',
+                'range': 'width',
+                'type': 'ordinal'
+            }]
+        }]
 
         chart_runner(group, scales, axes, marks)
 
-        for i, data in enumerate(datas):
-            nt.assert_dict_equal(group.data[i].grammar(), data)
 
 class TestMaps(object):
   'Test maps, both simple and with data binding'
