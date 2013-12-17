@@ -10,7 +10,7 @@ Tests for Vincent chart types, which also serve as reference grammar.
 import pandas as pd
 import nose.tools as nt
 from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
-                            StackedArea, GroupedBar, Map, Pie)
+                            GroupedBar, Map, Pie)
 
 
 def chart_runner(chart, scales, axes, marks):
@@ -190,19 +190,42 @@ class TestLine(object):
 
 
 class TestArea(object):
-    'Test Area Chart'
+    """Test Area and Stacked Area Chart"""
 
     def test_init(self):
         area = Area([1, 2, 3])
+        stacked_area = Area({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
+                            iter_idx='x')
 
+        # Test stacked area data
+        datas = [
+            {'name': 'table',
+             'values': [
+                 {'col': 'y', 'idx': 1, 'val': 4},
+                 {'col': 'y', 'idx': 2, 'val': 5},
+                 {'col': 'y', 'idx': 3, 'val': 6},
+                 {'col': 'z', 'idx': 1, 'val': 7},
+                 {'col': 'z', 'idx': 2, 'val': 8},
+                 {'col': 'z', 'idx': 3, 'val': 9}]},
+            {'name': 'stats',
+             'source': 'table',
+             'transform': [
+                 {'type': 'facet', 'keys': ['data.idx']},
+                 {'type': 'stats', 'value': 'data.val'}]}
+        ]
+
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(stacked_area.data[i].grammar(), data)
+
+        # Test area grammar
         scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
                    'name': 'x',
                    'range': 'width',
+                   'zero': False,
                    'type': 'linear'},
-                  {'domain': {'data': 'table', 'field': 'data.val'},
+                  {'domain': {'data': 'stats', 'field': 'sum'},
                    'name': 'y',
                    'nice': True,
-                   'type': 'linear',
                    'range': 'height'},
                   {'domain': {'data': 'table', 'field': 'data.col'},
                    'name': 'color',
@@ -212,76 +235,31 @@ class TestArea(object):
         axes = [{'scale': 'x', 'type': 'x'},
                 {'scale': 'y', 'type': 'y'}]
 
-        marks = [{'from': {'data': 'table',
-                  'transform': [{'keys': ['data.col'], 'type': 'facet'}]},
-                  'marks':
-                  [{'properties': {'enter': {'fill': {'field': 'data.col',
-                    'scale': 'color'},
-                    'interpolate': {'value': 'monotone'},
-                    'x': {'field': 'data.idx', 'scale': 'x'},
-                    'y': {'field': 'data.val', 'scale': 'y'},
-                    'y2': {'scale': 'y', 'value': 0}}},
-                    'type': 'area'}],
-                 'type': 'group'}]
+        marks = [{
+            'type': 'group',
+            'from': {
+                'data': 'table',
+                'transform': [
+                    {'type': 'facet', 'keys': ['data.col']},
+                    {'type': 'stack', 'height': 'data.val',
+                     'point': 'data.idx'}]
+            },
+            'marks': [{
+                'type': 'area',
+                'properties': {
+                    'enter': {
+                        'x': {'field': 'data.idx', 'scale': 'x'},
+                        'y': {'field': 'y', 'scale': 'y'},
+                        'y2': {'field': 'y2', 'scale': 'y'},
+                        'fill': {'field': 'data.col', 'scale': 'color'},
+                        'interpolate': {'value': 'monotone'}
+                    }
+                }
+            }]
+        }]
 
         chart_runner(area, scales, axes, marks)
-
-
-class TestStackedArea(object):
-    'Test Stacked Area Chart'
-
-    def test_init(self):
-
-        stack = StackedArea({'x': [1, 2, 3], 'y': [4, 5, 6], 'z': [7, 8, 9]},
-                            iter_idx='x')
-
-        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
-                   'name': 'x',
-                   'range': 'width',
-                   'type': 'linear',
-                   'zero': False},
-                  {'domain': {'data': 'stats', 'field': 'sum'},
-                   'name': 'y',
-                   'nice': True,
-                   'range': 'height',
-                   'type': 'linear'},
-                  {'domain': {'data': 'table', 'field': 'data.col'},
-                   'name': 'color',
-                   'range': 'category20',
-                   'type': 'ordinal'}]
-
-        axes = [{'scale': 'x', 'type': 'x'},
-                {'scale': 'y', 'type': 'y'}]
-
-        datas = [{'name': 'table',
-                 'values': [{'col': 'y', 'idx': 1, 'val': 4},
-                  {'col': 'y', 'idx': 2, 'val': 5},
-                  {'col': 'y', 'idx': 3, 'val': 6},
-                  {'col': 'z', 'idx': 1, 'val': 7},
-                  {'col': 'z', 'idx': 2, 'val': 8},
-                  {'col': 'z', 'idx': 3, 'val': 9}]},
-                {'name': 'stats',
-                 'source': 'table',
-                 'transform': [{'keys': ['data.idx'], 'type': 'facet'},
-                  {'type': 'stats', 'value': 'data.val'}]}]
-
-        marks = [{'from': {'data': 'table',
-                  'transform': [{'keys': ['data.col'], 'type': 'facet'},
-                 {'height': 'data.val', 'point': 'data.idx', 'type': 'stack'}]},
-                 'marks':
-                 [{'properties': {'enter': {'fill': {'field': 'data.col',
-                   'scale': 'color'},
-                   'interpolate': {'value': 'monotone'},
-                   'x': {'field': 'data.idx', 'scale': 'x'},
-                   'y': {'field': 'y', 'scale': 'y'},
-                   'y2': {'field': 'y2', 'scale': 'y'}}},
-                   'type': 'area'}],
-                   'type': 'group'}]
-
-        chart_runner(stack, scales, axes, marks)
-
-        for i, data in enumerate(datas):
-            nt.assert_dict_equal(stack.data[i].grammar(), data)
+        chart_runner(stacked_area, scales, axes, marks)
 
 
 class TestBar(object):

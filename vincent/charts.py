@@ -214,18 +214,18 @@ class Bar(Chart):
                       Axis(type='y', scale='y')]
 
         # Stats Data
-        transform = [Transform(type='facet', keys=['data.idx']),
-                     Transform(type='stats', value='data.val')]
+        stats_transform = [Transform(type='facet', keys=['data.idx']),
+                           Transform(type='stats', value='data.val')]
         stats_data = Data(name='stats', source='table',
-                          transform=transform)
+                          transform=stats_transform)
         self.data.append(stats_data)
 
         # Marks
-        transform = [
+        from_transform = [
             Transform(type='facet', keys=['data.col']),
             Transform(type='stack', point='data.idx', height='data.val')
         ]
-        from_ = MarkRef(data='table', transform=transform)
+        from_ = MarkRef(data='table', transform=from_transform)
         enter_props = PropertySet(
             x=ValueRef(scale='x', field='data.idx'),
             y=ValueRef(scale='y', field='y'),
@@ -239,7 +239,7 @@ class Bar(Chart):
 StackedBar = Bar
 
 
-class Area(Line):
+class Area(Chart):
     """Vega Area Chart"""
 
     def __init__(self, *args, **kwargs):
@@ -247,41 +247,45 @@ class Area(Line):
 
         super(Area, self).__init__(*args, **kwargs)
 
-        del self.marks[0].marks[0].properties.enter.stroke
-        del self.marks[0].marks[0].properties.enter.stroke_width
+        # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
+        self.scales += [
+            Scale(name='x', type=x_type, range='width', zero=False,
+                  domain=DataRef(data='table', field="data.idx")),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='stats', field='sum')),
+            Scale(name='color', type='ordinal', range='category20',
+                  domain=DataRef(data='table', field='data.col'))
+        ]
 
-        self.marks[0].marks[0].type = "area"
-        self.marks[0].marks[0].properties.enter.interpolate = ValueRef(
-            value="monotone")
-        self.marks[0].marks[0].properties.enter.y2 = ValueRef(
-            value=0, scale="y")
-        self.marks[0].marks[0].properties.enter.fill = ValueRef(
-            scale='color', field='data.col')
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
 
+        # Stats Data
+        stats_transform = [Transform(type='facet', keys=['data.idx']),
+                           Transform(type='stats', value='data.val')]
+        stats_data = Data(name='stats', source='table',
+                          transform=stats_transform)
+        self.data.append(stats_data)
 
-class StackedArea(Area):
-    """Vega Stacked Area Chart"""
-
-    def __init__(self, *args, **kwargs):
-        """Create a Vega Stacked Area Chart"""
-
-        super(StackedArea, self).__init__(*args, **kwargs)
-
-        facets = Transform(type='facet', keys=['data.idx'])
-        stats = Transform(type='stats', value='data.val')
-        stat_dat = Data(name='stats', source='table',
-                        transform=[facets, stats])
-        self.data['stats'] = stat_dat
-
-        self.scales['x'].zero = False
-        self.scales['y'].domain = DataRef(field='sum', data='stats')
-
-        stackit = Transform(type='stack', point='data.idx', height='data.val')
-        self.marks[0].from_.transform.append(stackit)
-        self.marks[0].marks[0].properties.enter.y.scale = 'y'
-        self.marks[0].marks[0].properties.enter.y.field = 'y'
-        del self.marks[0].marks[0].properties.enter.y2.value
-        self.marks[0].marks[0].properties.enter.y2.field = 'y2'
+        # Marks
+        from_transform = [
+            Transform(type='facet', keys=['data.col']),
+            Transform(type='stack', point='data.idx', height='data.val')
+        ]
+        from_ = MarkRef(data='table', transform=from_transform)
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field='data.idx'),
+            y=ValueRef(scale='y', field='y'),
+            y2=ValueRef(scale='y', field='y2'),
+            interpolate=ValueRef(value='monotone'),
+            fill=ValueRef(scale='color', field='data.col'))
+        marks = [Mark(type='area',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=from_, marks=marks)
+        self.marks.append(mark_group)
+StackedArea = Area
 
 
 class GroupedBar(StackedBar):
