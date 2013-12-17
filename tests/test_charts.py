@@ -1,11 +1,10 @@
-  # -*- coding: utf-8 -*-
-'''
+# -*- coding: utf-8 -*-
+"""
 Test Vincent.charts
 -------------------
 
 Tests for Vincent chart types, which also serve as reference grammar.
-
-'''
+"""
 
 import pandas as pd
 import nose.tools as nt
@@ -14,7 +13,7 @@ from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
 
 
 def chart_runner(chart, scales, axes, marks):
-    'Iterate through each chart element for check for contents'
+    """Iterate through each chart element for check for contents"""
 
     for i, scale in enumerate(scales):
         nt.assert_dict_equal(chart.scales[i].grammar(), scale)
@@ -27,7 +26,7 @@ def chart_runner(chart, scales, axes, marks):
 
 
 def test_data_type():
-    'Test automatic data type importing'
+    """Test automatic data type importing"""
 
     puts1 = [10, 20, 30, 40, 50]
     puts2 = {'apples': 10, 'bananas': 20, 'oranges': 30}
@@ -84,7 +83,7 @@ def test_data_type():
 
 
 class TestChart(object):
-    'Test Chart ABC'
+    """Test Chart ABC"""
 
     def test_init(self):
         chart = Chart([0, 1], width=100, height=100)
@@ -335,7 +334,7 @@ class TestBar(object):
 
 
 class TestGroupedBar(object):
-    'Test grouped bar chart'
+    """Test grouped bar chart"""
 
     def test_init(self):
 
@@ -413,201 +412,6 @@ class TestGroupedBar(object):
         chart_runner(group, scales, axes, marks)
 
 
-class TestMaps(object):
-  'Test maps, both simple and with data binding'
-
-  def setup(self):
-
-    #Data
-    self.df = pd.DataFrame({'one': [1, 2, 3], 'two': [4, 5, 6],
-                            'three': [7, 8, 9]})
-    self.series = pd.Series([1, 2, 3], name='test')
-
-    self.geo_data = [{
-      'name': 'fake_data',
-      'url': 'mapdata.topo.json',
-      'feature': 'topo_feature'
-    },
-    {
-      'name': 'fake_data_2',
-      'url': 'mapdata2.topo.json',
-      'feature': 'topo_feature'
-    }]
-
-  def test_simple(self):
-
-    map_ = Map(geo_data=[self.geo_data[0]], projection='albersUsa',
-               center=[10, 20], scale=200, rotate=10)
-
-    axes = []
-    scales = []
-
-    datas = [{'name': 'fake_data',
-              'url': 'mapdata.topo.json',
-              'format': {'feature': 'topo_feature', 'type': 'topojson'},
-              'transform': [{
-                  'center': [10, 20],
-                  'projection': 'albersUsa',
-                  'rotate': 10,
-                  'scale': 200,
-                  'translate': [480, 250],
-                  'type': 'geopath',
-                  'value': 'data'
-              }]
-            }]
-
-    marks = [{'type': 'path',
-              'from': {'data': 'fake_data'},
-              'properties': {
-                  'enter': {
-                      'path': {'field': 'path'},
-                      'stroke': {'value': '#000000'}
-                      },
-                  'update': {
-                      'fill': {'value': 'steelblue'}
-                  }
-              }
-            }]
-
-    chart_runner(map_, scales, axes, marks)
-
-    for i, data in enumerate(datas):
-      nt.assert_dict_equal(map_.data[i].grammar(), data)
-
-  def test_binding(self):
-
-      with nt.assert_raises(ValueError) as err:
-        map_df = Map(data=self.df, geo_data=self.geo_data,
-                     projection='albersUsa', center=[10, 20], scale=200,
-                     rotate=10, map_key={'fake_data_2': 'properties.id'})
-      nt.assert_equal(
-          err.exception.args[0],
-          'If passing data, you must pass data cols to key/bind on'
-          )
-
-      map_df = Map(data=self.df, geo_data=self.geo_data, projection='albersUsa',
-                   center=[10, 20], scale=200, rotate=10,
-                   map_key={'fake_data_2': 'properties.id'}, data_key='one',
-                   data_bind='two')
-
-      axes = []
-      scales = [{
-          'name': 'color',
-          'type': 'quantize',
-          'domain': [4.0, 5.9],
-          'range': ['#f7fcf0', '#e0f3db', '#ccebc5', '#a8ddb5', '#7bccc4',
-                    '#4eb3d3', '#2b8cbe', '#0868ac', '#084081']
-          }]
-
-      datas = [{'name': 'fake_data',
-                'url': 'mapdata.topo.json',
-                'format': {'feature': 'topo_feature', 'type': 'topojson'},
-                'transform': [{
-                    'center': [10, 20],
-                    'projection': 'albersUsa',
-                    'rotate': 10,
-                    'scale': 200,
-                    'translate': [480, 250],
-                    'type': 'geopath',
-                    'value': 'data'
-                }],
-               },
-               {'name': 'table',
-                'values': [
-                    {'x': 1, 'y': 4},
-                    {'x': 2, 'y': 5},
-                    {'x': 3, 'y': 6}
-                  ]
-                },
-                {'name': 'fake_data_2',
-                 'url': 'mapdata2.topo.json',
-                 'format': {'feature': 'topo_feature', 'type': 'topojson'},
-                 'transform': [
-                  {
-                     'as': 'value',
-                     'default': 'noval',
-                     'key': 'data.properties.id',
-                     'type': 'zip',
-                     'with': 'table',
-                     'withKey': 'data.x'
-                    },
-                    {
-                     'test': "d.path!='noval' && d.value!='noval'",
-                     'type': 'filter'
-                    },
-                    {
-                     'center': [10, 20],
-                     'projection': 'albersUsa',
-                     'rotate': 10,
-                     'scale': 200,
-                     'translate': [480, 250],
-                     'type': 'geopath',
-                     'value': 'data'
-                  }]
-                }
-              ]
-
-      marks = [{'type': 'path',
-                'from': {'data': 'fake_data'},
-                'properties': {
-                    'enter': {
-                        'path': {'field': 'path'},
-                        'stroke': {'value': '#000000'}
-                        },
-                    'update': {
-                        'fill': {'value': 'steelblue'}
-                    }
-                }
-              },
-              {'type': 'path',
-                'from': {'data': 'fake_data_2'},
-                'properties': {
-                    'enter': {
-                        'path': {'field': 'path'},
-                        'stroke': {'value': '#000000'}
-                        },
-                    'update': {
-                        'fill': {'field': 'value.data.y', 'scale': 'color'}
-                    }
-                }
-              }]
-
-      chart_runner(map_df, scales, axes, marks)
-
-      for i, data in enumerate(datas):
-        nt.assert_dict_equal(map_df.data[i].grammar(), data)
-
-      map_df.rebind(column='three', brew='PuBu')
-
-      rebound = {'name': 'table',
-                'values': [
-                    {'x': 1, 'y': 7},
-                    {'x': 2, 'y': 8},
-                    {'x': 3, 'y': 9}
-                  ]
-                }
-
-      new_scale = {
-          'name': 'color',
-          'type': 'quantize',
-          'domain': [7.0, 8.9],
-          'range': [
-                    "#fff7fb",
-                    "#ece7f2",
-                    "#d0d1e6",
-                    "#a6bddb",
-                    "#74a9cf",
-                    "#3690c0",
-                    "#0570b0",
-                    "#045a8d",
-                    "#023858"
-                   ]
-          }
-
-      assert map_df.data['table'].grammar() == rebound
-      assert map_df.scales['color'].grammar() == new_scale
-
-
 class TestPie(object):
     """Test Pie Chart"""
 
@@ -644,3 +448,199 @@ class TestPie(object):
         }]
 
         chart_runner(pie, scales, axes, marks)
+
+
+class TestMaps(object):
+    """Test maps, both simple and with data binding"""
+
+    def setup(self):
+
+        #Data
+        self.df = pd.DataFrame({'one': [1, 2, 3], 'two': [4, 5, 6],
+                                'three': [7, 8, 9]})
+        self.series = pd.Series([1, 2, 3], name='test')
+
+        self.geo_data = [{
+            'name': 'fake_data',
+            'url': 'mapdata.topo.json',
+            'feature': 'topo_feature'
+        },
+            {
+                'name': 'fake_data_2',
+                'url': 'mapdata2.topo.json',
+                'feature': 'topo_feature'
+            }]
+
+    def test_simple(self):
+
+        map_ = Map(geo_data=[self.geo_data[0]], projection='albersUsa',
+                   center=[10, 20], scale=200, rotate=10)
+
+        axes = []
+        scales = []
+
+        datas = [{'name': 'fake_data',
+                  'url': 'mapdata.topo.json',
+                  'format': {'feature': 'topo_feature', 'type': 'topojson'},
+                  'transform': [{
+                      'center': [10, 20],
+                      'projection': 'albersUsa',
+                      'rotate': 10,
+                      'scale': 200,
+                      'translate': [480, 250],
+                      'type': 'geopath',
+                      'value': 'data'
+                  }]
+                  }]
+
+        marks = [{'type': 'path',
+                  'from': {'data': 'fake_data'},
+                  'properties': {
+                      'enter': {
+                          'path': {'field': 'path'},
+                          'stroke': {'value': '#000000'}
+                      },
+                      'update': {
+                          'fill': {'value': 'steelblue'}
+                      }
+                  }
+                  }]
+
+        chart_runner(map_, scales, axes, marks)
+
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(map_.data[i].grammar(), data)
+
+    def test_binding(self):
+
+        with nt.assert_raises(ValueError) as err:
+            map_df = Map(data=self.df, geo_data=self.geo_data,
+                         projection='albersUsa', center=[10, 20], scale=200,
+                         rotate=10, map_key={'fake_data_2': 'properties.id'})
+            nt.assert_equal(
+                err.exception.args[0],
+                'If passing data, you must pass data cols to key/bind on'
+            )
+
+        map_df = Map(data=self.df, geo_data=self.geo_data,
+                     projection='albersUsa',
+                     center=[10, 20], scale=200, rotate=10,
+                     map_key={'fake_data_2': 'properties.id'}, data_key='one',
+                     data_bind='two')
+
+        axes = []
+        scales = [{
+            'name': 'color',
+            'type': 'quantize',
+            'domain': [4.0, 5.9],
+            'range': ['#f7fcf0', '#e0f3db', '#ccebc5', '#a8ddb5', '#7bccc4',
+                      '#4eb3d3', '#2b8cbe', '#0868ac', '#084081']
+        }]
+
+        datas = [{'name': 'fake_data',
+                  'url': 'mapdata.topo.json',
+                  'format': {'feature': 'topo_feature', 'type': 'topojson'},
+                  'transform': [{
+                      'center': [10, 20],
+                      'projection': 'albersUsa',
+                      'rotate': 10,
+                      'scale': 200,
+                      'translate': [480, 250],
+                      'type': 'geopath',
+                      'value': 'data'
+                  }],
+                  },
+                 {'name': 'table',
+                  'values': [
+                      {'x': 1, 'y': 4},
+                      {'x': 2, 'y': 5},
+                      {'x': 3, 'y': 6}
+                  ]
+                  },
+                 {'name': 'fake_data_2',
+                  'url': 'mapdata2.topo.json',
+                  'format': {'feature': 'topo_feature', 'type': 'topojson'},
+                  'transform': [
+                      {
+                          'as': 'value',
+                          'default': 'noval',
+                          'key': 'data.properties.id',
+                          'type': 'zip',
+                          'with': 'table',
+                          'withKey': 'data.x'
+                      },
+                      {
+                          'test': "d.path!='noval' && d.value!='noval'",
+                          'type': 'filter'
+                      },
+                      {
+                          'center': [10, 20],
+                          'projection': 'albersUsa',
+                          'rotate': 10,
+                          'scale': 200,
+                          'translate': [480, 250],
+                          'type': 'geopath',
+                          'value': 'data'
+                      }]
+                  }
+                 ]
+
+        marks = [{'type': 'path',
+                  'from': {'data': 'fake_data'},
+                  'properties': {
+                      'enter': {
+                          'path': {'field': 'path'},
+                          'stroke': {'value': '#000000'}
+                      },
+                      'update': {
+                          'fill': {'value': 'steelblue'}
+                      }
+                  }
+                  },
+                 {'type': 'path',
+                  'from': {'data': 'fake_data_2'},
+                  'properties': {
+                      'enter': {
+                          'path': {'field': 'path'},
+                          'stroke': {'value': '#000000'}
+                      },
+                      'update': {
+                          'fill': {'field': 'value.data.y', 'scale': 'color'}
+                      }
+                  }
+                  }]
+
+        chart_runner(map_df, scales, axes, marks)
+
+        for i, data in enumerate(datas):
+            nt.assert_dict_equal(map_df.data[i].grammar(), data)
+
+        map_df.rebind(column='three', brew='PuBu')
+
+        rebound = {'name': 'table',
+                   'values': [
+                       {'x': 1, 'y': 7},
+                       {'x': 2, 'y': 8},
+                       {'x': 3, 'y': 9}
+                   ]
+                   }
+
+        new_scale = {
+            'name': 'color',
+            'type': 'quantize',
+            'domain': [7.0, 8.9],
+            'range': [
+                "#fff7fb",
+                "#ece7f2",
+                "#d0d1e6",
+                "#a6bddb",
+                "#74a9cf",
+                "#3690c0",
+                "#0570b0",
+                "#045a8d",
+                "#023858"
+            ]
+        }
+
+        assert map_df.data['table'].grammar() == rebound
+        assert map_df.scales['color'].grammar() == new_scale
