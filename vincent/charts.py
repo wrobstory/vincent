@@ -184,7 +184,7 @@ class Line(Chart):
         self.marks.append(mark_group)
 
 
-class Scatter(Line):
+class Scatter(Chart):
     """Vega Scatter chart"""
 
     def __init__(self, *args, **kwargs):
@@ -192,14 +192,35 @@ class Scatter(Line):
 
         super(Scatter, self).__init__(*args, **kwargs)
 
-        #Scatter updates
+        # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
+        self.scales += [
+            Scale(name='x', type=x_type, range='width',
+                  domain=DataRef(data='table', field="data.idx")),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='table', field="data.val")),
+            Scale(name='color', type='ordinal',
+                  domain=DataRef(data='table', field='data.col'),
+                  range='category20')
+        ]
 
-        self.marks[0].marks[0].type = 'symbol'
-        del self.marks[0].marks[0].properties.enter.stroke
-        del self.marks[0].marks[0].properties.enter.stroke_width
-        self.marks[0].marks[0].properties.enter.fill = ValueRef(
-            scale='color', field='data.col')
-        self.marks[0].marks[0].properties.enter.size = ValueRef(value=100)
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
+
+        # Marks
+        transform = MarkRef(
+            data='table',
+            transform=[Transform(type='facet', keys=['data.col'])])
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field="data.idx"),
+            y=ValueRef(scale='y', field="data.val"),
+            size=ValueRef(value=100),
+            fill=ValueRef(scale="color", field='data.col'))
+        marks = [Mark(type='symbol',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=transform, marks=marks)
+        self.marks.append(mark_group)
 
 
 class Area(Line):

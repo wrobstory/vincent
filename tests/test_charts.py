@@ -130,7 +130,7 @@ class TestBar(object):
 
 
 class TestScatter(object):
-    'Test Scatter Chart'
+    """Test Scatter Chart"""
 
     def test_init(self):
 
@@ -142,7 +142,6 @@ class TestScatter(object):
                    'type': 'linear'},
                   {'domain': {'data': 'table', 'field': 'data.val'},
                    'name': 'y',
-                   'type': 'linear',
                    'range': 'height',
                    'nice': True},
                   {'domain': {'data': 'table', 'field': 'data.col'},
@@ -153,22 +152,30 @@ class TestScatter(object):
         axes = [{'scale': 'x', 'type': 'x'},
                 {'scale': 'y', 'type': 'y'}]
 
-        marks = [{'from': {'data': 'table',
-                  'transform': [{'keys': ['data.col'], 'type': 'facet'}]},
-                  'marks':
-                  [{'properties': {'enter': {'fill': {'field': 'data.col',
-                    'scale': 'color'},
-                    'size': {'value': 100},
-                    'x': {'field': 'data.idx', 'scale': 'x'},
-                    'y': {'field': 'data.val', 'scale': 'y'}}},
-                    'type': 'symbol'}],
-                  'type': 'group'}]
+        marks = [{
+            'type': 'group',
+            'from': {
+                'data': 'table',
+                'transform': [
+                    {'keys': ['data.col'], 'type': 'facet'}
+                ]
+            },
+            'marks': [{
+                'type': 'symbol',
+                'properties': {
+                    'enter': {
+                        'fill': {'field': 'data.col', 'scale': 'color'},
+                        'size': {'value': 100},
+                        'x': {'field': 'data.idx', 'scale': 'x'},
+                        'y': {'field': 'data.val', 'scale': 'y'}}},
+            }]
+        }]
 
         chart_runner(scatter, scales, axes, marks)
 
 
 class TestLine(object):
-    'Test Line Chart'
+    """Test Line Chart"""
 
     def test_init(self):
         line = Line([1, 2, 3])
