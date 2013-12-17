@@ -175,11 +175,10 @@ class TestLine(object):
 
         scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
                    'name': 'x',
-                   'range': 'width',
-                   'type': 'linear'},
+                   'type': 'linear',
+                   'range': 'width'},
                   {'domain': {'data': 'table', 'field': 'data.val'},
                    'name': 'y',
-                   'type': 'linear',
                    'nice': True,
                    'range': 'height'},
                   {'domain': {'data': 'table', 'field': 'data.col'},
@@ -190,16 +189,26 @@ class TestLine(object):
         axes = [{'scale': 'x', 'type': 'x'},
                 {'scale': 'y', 'type': 'y'}]
 
-        marks = [{'from': {'data': 'table',
-                  'transform': [{'keys': ['data.col'], 'type': 'facet'}]},
-                  'marks':
-                 [{'properties': {'enter': {'stroke': {'field': 'data.col',
-                   'scale': 'color'},
-                   'strokeWidth': {'value': 2},
-                   'x': {'field': 'data.idx', 'scale': 'x'},
-                   'y': {'field': 'data.val', 'scale': 'y'}}},
-                   'type': 'line'}],
-                 'type': 'group'}]
+        marks = [{
+            'type': 'group',
+            'from': {
+                'data': 'table',
+                'transform': [
+                    {'keys': ['data.col'], 'type': 'facet'}
+                ]
+            },
+            'marks': [{
+                'type': 'line',
+                'properties': {
+                    'enter': {
+                        'stroke': {'field': 'data.col', 'scale': 'color'},
+                        'strokeWidth': {'value': 2},
+                        'x': {'field': 'data.idx', 'scale': 'x'},
+                        'y': {'field': 'data.val', 'scale': 'y'}
+                    }
+                }
+            }]
+        }]
 
         chart_runner(line, scales, axes, marks)
 

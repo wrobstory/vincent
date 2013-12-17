@@ -142,39 +142,46 @@ class Bar(Chart):
         self.marks.append(mark)
 
 
-class Line(Bar):
-    """Vega Line chart"""
+class Line(Chart):
+    """Vega Line chart
+
+    Support line and multi-lines chart.
+    """
 
     def __init__(self, *args, **kwargs):
         """Create a Vega Line Chart"""
 
         super(Line, self).__init__(*args, **kwargs)
 
-        #Line Updates
-        self.scales['x'].type = 'linear'
-        self.scales['y'].type = 'linear'
-        if self._is_datetime:
-            self.scales['x'].type = 'time'
+        # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
+        self.scales += [
+            Scale(name='x', type=x_type, range='width',
+                  domain=DataRef(data='table', field="data.idx")),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='table', field="data.val")),
+            Scale(name='color', type='ordinal',
+                  domain=DataRef(data='table', field='data.col'),
+                  range='category20')
+        ]
 
-        self.scales['color'] = Scale(name='color', type='ordinal',
-                                     domain=DataRef(data='table',
-                                                    field='data.col'),
-                                     range='category20')
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
 
-        del self.marks[0]
-        transform = MarkRef(data='table',
-                            transform=[Transform(type='facet',
-                                                 keys=['data.col'])])
-        enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
-                                  y=ValueRef(scale='y', field="data.val"),
-                                  stroke=ValueRef(scale="color",
-                                                  field='data.col'),
-                                  stroke_width=ValueRef(value=2))
-        new_mark = Mark(type='group', from_=transform,
-                        marks=[Mark(
-                            type='line',
-                            properties=MarkProperties(enter=enter_props))])
-        self.marks.append(new_mark)
+        # Marks
+        transform = MarkRef(
+            data='table',
+            transform=[Transform(type='facet', keys=['data.col'])])
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field="data.idx"),
+            y=ValueRef(scale='y', field="data.val"),
+            stroke=ValueRef(scale="color", field='data.col'),
+            stroke_width=ValueRef(value=2))
+        marks = [Mark(type='line',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=transform, marks=marks)
+        self.marks.append(mark_group)
 
 
 class Scatter(Line):
