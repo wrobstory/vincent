@@ -524,3 +524,41 @@ class Pie(Chart):
                     properties=MarkProperties(enter=enter_props))
 
         self.marks.append(mark)
+
+
+class Word(Chart):
+    """Vega Word chart"""
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Word Chart"""
+
+        super(Word, self).__init__(*args, **kwargs)
+
+        # Scales
+        self.scales["color"] = Scale(
+            name="color", type="ordinal", range="category10",
+            domain=DataRef(data="table", field="data.idx"))
+
+        # Data transform
+        wordcloud_transform = [
+            Transform(type="wordcloud", text="data.idx",
+                      font="Helvetica Neue", font_size="data.val",
+                      rotate={"random": list(range(-90, 90, 30))})]
+        self.data[0].transform = wordcloud_transform
+
+        # Marks
+        enter_props = PropertySet(
+            x=ValueRef(field="x"),
+            y=ValueRef(field="y"),
+            angle=ValueRef(field="angle"),
+            align=ValueRef(value="center"),
+            baseline=ValueRef(value="alphabetic"),
+            font=ValueRef(field="font"),
+            font_size=ValueRef(field="fontSize"),
+            text=ValueRef(field="data.idx"),
+            fill=ValueRef(scale="color", field="data.idx"))
+
+        mark = Mark(type="text", from_=MarkRef(data="table"),
+                    properties=MarkProperties(enter=enter_props))
+
+        self.marks.append(mark)
