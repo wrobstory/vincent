@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from vincent.charts import Bar
 
+
 def test_unicode_axes():
     """Verify that python2.7 will allow arbitrary unicode strings
        in the same way python 3.2/3.3 does.

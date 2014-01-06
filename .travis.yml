@@ -10,5 +10,5 @@ before_install:
 install:
   - pip install ipython mock pandas flake8 --use-mirrors
 script:
-  - flake8 --exclude=colors.py,_compat.py vincent
+  - flake8 --exclude=colors.py,_compat.py vincent tests
   - nosetests

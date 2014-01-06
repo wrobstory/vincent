@@ -4,7 +4,6 @@
 Charts: Constructors for different chart types in Vega grammar.
 
 """
-from .core import KeyedList
 from .visualization import Visualization
 from .data import Data
 from .transforms import Transform
@@ -108,76 +107,49 @@ class Chart(Visualization):
                 )
 
 
-class Bar(Chart):
-    """Vega Bar chart"""
+class Line(Chart):
+    """Vega Line chart
 
-    def __init__(self, *args, **kwargs):
-        """Create a Vega Bar Chart"""
-
-        super(Bar, self).__init__(*args, **kwargs)
-
-        #Scales
-        self.scales['x'] = Scale(name='x', type='ordinal', range='width',
-                                 domain=DataRef(data='table',
-                                                field="data.idx"))
-        self.scales['y'] = Scale(name='y', range='height', nice=True,
-                                 domain=DataRef(data='table',
-                                                field="data.val"))
-        self.axes.extend([Axis(type='x', scale='x'),
-                          Axis(type='y', scale='y')])
-
-        #Marks
-        enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
-                                  y=ValueRef(scale='y', field="data.val"),
-                                  width=ValueRef(scale='x', band=True,
-                                                 offset=-1),
-                                  y2=ValueRef(scale='y', value=0))
-
-        update_props = PropertySet(fill=ValueRef(value='steelblue'))
-
-        mark = Mark(type='rect', from_=MarkRef(data='table'),
-                    properties=MarkProperties(enter=enter_props,
-                                              update=update_props))
-
-        self.marks.append(mark)
-
-
-class Line(Bar):
-    """Vega Line chart"""
+    Support line and multi-lines chart.
+    """
 
     def __init__(self, *args, **kwargs):
         """Create a Vega Line Chart"""
 
         super(Line, self).__init__(*args, **kwargs)
 
-        #Line Updates
-        self.scales['x'].type = 'linear'
-        self.scales['y'].type = 'linear'
-        if self._is_datetime:
-            self.scales['x'].type = 'time'
+        # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
+        self.scales += [
+            Scale(name='x', type=x_type, range='width',
+                  domain=DataRef(data='table', field="data.idx")),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='table', field="data.val")),
+            Scale(name='color', type='ordinal',
+                  domain=DataRef(data='table', field='data.col'),
+                  range='category20')
+        ]
 
-        self.scales['color'] = Scale(name='color', type='ordinal',
-                                     domain=DataRef(data='table',
-                                                    field='data.col'),
-                                     range='category20')
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
 
-        del self.marks[0]
-        transform = MarkRef(data='table',
-                            transform=[Transform(type='facet',
-                                                 keys=['data.col'])])
-        enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
-                                  y=ValueRef(scale='y', field="data.val"),
-                                  stroke=ValueRef(scale="color",
-                                                  field='data.col'),
-                                  stroke_width=ValueRef(value=2))
-        new_mark = Mark(type='group', from_=transform,
-                        marks=[Mark(
-                            type='line',
-                            properties=MarkProperties(enter=enter_props))])
-        self.marks.append(new_mark)
+        # Marks
+        from_ = MarkRef(
+            data='table',
+            transform=[Transform(type='facet', keys=['data.col'])])
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field="data.idx"),
+            y=ValueRef(scale='y', field="data.val"),
+            stroke=ValueRef(scale="color", field='data.col'),
+            stroke_width=ValueRef(value=2))
+        marks = [Mark(type='line',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=from_, marks=marks)
+        self.marks.append(mark_group)
 
 
-class Scatter(Line):
+class Scatter(Chart):
     """Vega Scatter chart"""
 
     def __init__(self, *args, **kwargs):
@@ -185,17 +157,89 @@ class Scatter(Line):
 
         super(Scatter, self).__init__(*args, **kwargs)
 
-        #Scatter updates
+        # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
+        self.scales += [
+            Scale(name='x', type=x_type, range='width',
+                  domain=DataRef(data='table', field="data.idx")),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='table', field="data.val")),
+            Scale(name='color', type='ordinal',
+                  domain=DataRef(data='table', field='data.col'),
+                  range='category20')
+        ]
 
-        self.marks[0].marks[0].type = 'symbol'
-        del self.marks[0].marks[0].properties.enter.stroke
-        del self.marks[0].marks[0].properties.enter.stroke_width
-        self.marks[0].marks[0].properties.enter.fill = ValueRef(
-            scale='color', field='data.col')
-        self.marks[0].marks[0].properties.enter.size = ValueRef(value=100)
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
+
+        # Marks
+        from_ = MarkRef(
+            data='table',
+            transform=[Transform(type='facet', keys=['data.col'])])
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field="data.idx"),
+            y=ValueRef(scale='y', field="data.val"),
+            size=ValueRef(value=100),
+            fill=ValueRef(scale="color", field='data.col'))
+        marks = [Mark(type='symbol',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=from_, marks=marks)
+        self.marks.append(mark_group)
 
 
-class Area(Line):
+class Bar(Chart):
+    """Vega Bar chart
+
+    Support both bar and stacked bar charts.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Create a Vega Bar Chart"""
+
+        super(Bar, self).__init__(*args, **kwargs)
+
+        # Scales
+        self.scales += [
+            Scale(name='x', type='ordinal', range='width', zero=False,
+                  domain=DataRef(data='table', field='data.idx')),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='stats', field='sum')),
+            Scale(name='color', type='ordinal', range='category20',
+                  domain=DataRef(data='table', field='data.col'))
+        ]
+
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
+
+        # Stats Data
+        stats_transform = [Transform(type='facet', keys=['data.idx']),
+                           Transform(type='stats', value='data.val')]
+        stats_data = Data(name='stats', source='table',
+                          transform=stats_transform)
+        self.data.append(stats_data)
+
+        # Marks
+        from_transform = [
+            Transform(type='facet', keys=['data.col']),
+            Transform(type='stack', point='data.idx', height='data.val')
+        ]
+        from_ = MarkRef(data='table', transform=from_transform)
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field='data.idx'),
+            y=ValueRef(scale='y', field='y'),
+            y2=ValueRef(scale='y', field='y2'),
+            width=ValueRef(scale='x', band=True, offset=-1),
+            fill=ValueRef(scale='color', field='data.col'))
+        marks = [Mark(type='rect',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=from_, marks=marks)
+        self.marks.append(mark_group)
+StackedBar = Bar
+
+
+class Area(Chart):
     """Vega Area Chart"""
 
     def __init__(self, *args, **kwargs):
@@ -203,95 +247,92 @@ class Area(Line):
 
         super(Area, self).__init__(*args, **kwargs)
 
-        del self.marks[0].marks[0].properties.enter.stroke
-        del self.marks[0].marks[0].properties.enter.stroke_width
+        # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
+        self.scales += [
+            Scale(name='x', type=x_type, range='width', zero=False,
+                  domain=DataRef(data='table', field="data.idx")),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='stats', field='sum')),
+            Scale(name='color', type='ordinal', range='category20',
+                  domain=DataRef(data='table', field='data.col'))
+        ]
 
-        self.marks[0].marks[0].type = "area"
-        self.marks[0].marks[0].properties.enter.interpolate = ValueRef(
-            value="monotone")
-        self.marks[0].marks[0].properties.enter.y2 = ValueRef(
-            value=0, scale="y")
-        self.marks[0].marks[0].properties.enter.fill = ValueRef(
-            scale='color', field='data.col')
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
 
+        # Stats Data
+        stats_transform = [Transform(type='facet', keys=['data.idx']),
+                           Transform(type='stats', value='data.val')]
+        stats_data = Data(name='stats', source='table',
+                          transform=stats_transform)
+        self.data.append(stats_data)
 
-class StackedArea(Area):
-    """Vega Stacked Area Chart"""
-
-    def __init__(self, *args, **kwargs):
-        """Create a Vega Stacked Area Chart"""
-
-        super(StackedArea, self).__init__(*args, **kwargs)
-
-        facets = Transform(type='facet', keys=['data.idx'])
-        stats = Transform(type='stats', value='data.val')
-        stat_dat = Data(name='stats', source='table',
-                        transform=[facets, stats])
-        self.data['stats'] = stat_dat
-
-        self.scales['x'].zero = False
-        self.scales['y'].domain = DataRef(field='sum', data='stats')
-
-        stackit = Transform(type='stack', point='data.idx', height='data.val')
-        self.marks[0].from_.transform.append(stackit)
-        self.marks[0].marks[0].properties.enter.y.scale = 'y'
-        self.marks[0].marks[0].properties.enter.y.field = 'y'
-        del self.marks[0].marks[0].properties.enter.y2.value
-        self.marks[0].marks[0].properties.enter.y2.field = 'y2'
-
-
-class StackedBar(StackedArea):
-    """Vega Stacked Bar Chart"""
-
-    def __init__(self, *args, **kwargs):
-        """Create a Vega Stacked Bar Chart"""
-
-        super(StackedBar, self).__init__(*args, **kwargs)
-
-        self.scales['x'].type = 'ordinal'
-        del self.scales['x'].zero
-
-        del self.marks[0].marks[0].properties.enter.interpolate
-        values = ValueRef(scale='x', band=True, offset=-1)
-        self.marks[0].marks[0].properties.enter.width = values
-        self.marks[0].marks[0].type = 'rect'
+        # Marks
+        from_transform = [
+            Transform(type='facet', keys=['data.col']),
+            Transform(type='stack', point='data.idx', height='data.val')
+        ]
+        from_ = MarkRef(data='table', transform=from_transform)
+        enter_props = PropertySet(
+            x=ValueRef(scale='x', field='data.idx'),
+            y=ValueRef(scale='y', field='y'),
+            y2=ValueRef(scale='y', field='y2'),
+            interpolate=ValueRef(value='monotone'),
+            fill=ValueRef(scale='color', field='data.col'))
+        marks = [Mark(type='area',
+                      properties=MarkProperties(enter=enter_props))]
+        mark_group = Mark(type='group', from_=from_, marks=marks)
+        self.marks.append(mark_group)
+StackedArea = Area
 
 
-class GroupedBar(StackedBar):
+class GroupedBar(Chart):
     """Vega Grouped Bar Chart"""
 
     def __init__(self, *args, **kwargs):
         """Create a Vega Grouped Bar Chart"""
 
-        if 'grouped' not in kwargs:
-            kwargs['grouped'] = True
-
         super(GroupedBar, self).__init__(*args, **kwargs)
 
-        del self.data['stats']
+        # Scales
+        self.scales += [
+            Scale(name='x', type='ordinal', range='width', padding=0.2,
+                  domain=DataRef(data='table', field='data.idx')),
+            Scale(name='y', range='height', nice=True,
+                  domain=DataRef(data='table', field="data.val")),
+            Scale(name='color', type='ordinal', range='category20',
+                  domain=DataRef(data='table', field='data.col'))
+        ]
 
-        del self.scales['y'].type
-        self.scales['y'].domain.field = 'data.val'
-        self.scales['y'].domain.data = 'table'
-        self.scales['x'].padding = 0.2
+        # Axes
+        self.axes += [Axis(type='x', scale='x'),
+                      Axis(type='y', scale='y')]
 
-        del self.marks[0].from_.transform[1]
-        self.marks[0].from_.transform[0].keys[0] = 'data.idx'
-        enter_props = PropertySet(x=ValueRef(scale='x', field="key"),
-                                  width=ValueRef(scale='x', band=True))
-        self.marks[0].properties = MarkProperties(enter=enter_props)
-        self.marks[0].scales = KeyedList()
-        self.marks[0].scales['pos'] = Scale(name='pos', type='ordinal',
-                                            range='width',
-                                            domain=DataRef(field='data.group'))
+        # Marks
+        mark_props = MarkProperties(
+            enter=PropertySet(
+                x=ValueRef(scale='pos', field='data.col'),
+                y=ValueRef(scale='y', field='data.val'),
+                y2=ValueRef(scale='y', value=0),
+                width=ValueRef(scale='pos', band=True, offset=-1),
+                fill=ValueRef(scale='color', field='data.col')))
 
-        self.marks[0].marks[0].properties.enter.width.scale = 'pos'
-        self.marks[0].marks[0].properties.enter.y.field = 'data.val'
-        self.marks[0].marks[0].properties.enter.x.field = 'data.group'
-        self.marks[0].marks[0].properties.enter.x.scale = 'pos'
-
-        del self.marks[0].marks[0].properties.enter.y2.field
-        self.marks[0].marks[0].properties.enter.y2.value = 0
+        mark_group_marks = [Mark(type='rect', properties=mark_props)]
+        mark_group_from = MarkRef(
+            data='table',
+            transform=[Transform(type='facet', keys=['data.idx'])])
+        mark_group_props = MarkProperties(
+            enter=PropertySet(x=ValueRef(scale='x', field='key'),
+                              width=ValueRef(scale='x', band=True)))
+        mark_group_scales = [Scale(name="pos", range="width", type="ordinal",
+                             domain=DataRef(field="data.col"))]
+        mark_group = Mark(
+            type='group', from_=mark_group_from,
+            properties=mark_group_props, scales=mark_group_scales,
+            marks=mark_group_marks)
+        self.marks.append(mark_group)
 
 
 class Map(Chart):
