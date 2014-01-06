@@ -35,15 +35,16 @@ class Visualization(GrammarClass):
         defined by the arguments.
         """
         super(Visualization, self).__init__(*args, **kwargs)
+
         for attrib in ('data', 'scales'):
             if not getattr(self, attrib):
                 setattr(self, attrib, KeyedList(attr_name='name'))
-        # The axes get keyed by "type" instead of name.
-        if not self.axes:
-            self.axes = KeyedList(attr_name='type')
-        # Marks and Legends don't get keyed.
-        if not self.marks:
-            self.marks = []
+
+        for attrib in ('axes', 'marks'):
+            if not getattr(self, attrib):
+                setattr(self, attrib, KeyedList(attr_name='type'))
+
+        # Legends don't get keyed.
         if not self.legends:
             self.legends = []
 
