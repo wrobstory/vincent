@@ -9,7 +9,7 @@ Tests for Vincent chart types, which also serve as reference grammar.
 import pandas as pd
 import nose.tools as nt
 from vincent.charts import (data_type, Chart, Bar, Scatter, Line, Area,
-                            GroupedBar, Map, Pie)
+                            GroupedBar, Map, Pie, Word)
 
 
 def chart_runner(chart, scales, axes, marks):
@@ -644,3 +644,40 @@ class TestMaps(object):
 
         assert map_df.data['table'].grammar() == rebound
         assert map_df.scales['color'].grammar() == new_scale
+
+
+class TestWord(object):
+    """Test Pie Chart"""
+
+    def test_init(self):
+        d = {'emop': 32, 'epom': 28, 'meop': 36, 'mepo': 12,
+             'moep': 40, 'mope': 56, 'omep': 20, 'opem': 24,
+             'pemo': 10, 'peom': 44, 'poem': 80, 'pome': 10}
+        word = Word(d)
+
+        axes = []
+
+        scales = [{'domain': {'data': 'table', 'field': 'data.idx'},
+                   'name': 'color',
+                   'range': 'category10',
+                   'type': 'ordinal'}]
+
+        marks = [{
+            'type': 'text',
+            'from': {'data': 'table'},
+            'properties': {
+                'enter': {
+                    'align': {'value': 'center'},
+                    'angle': {'field': 'angle'},
+                    'baseline': {'value': 'alphabetic'},
+                    'fill': {'field': 'data.idx', 'scale': 'color'},
+                    'font': {'field': 'font'},
+                    'fontSize': {'field': 'fontSize'},
+                    'text': {'field': 'data.idx'},
+                    'x': {'field': 'x'},
+                    'y': {'field': 'y'}
+                }
+            }
+        }]
+
+        chart_runner(word, scales, axes, marks)

@@ -300,9 +300,26 @@ class Transform(GrammarClass):
         if value < 0:
             raise ValueError('Scale cannot be negative.')
 
-    @grammar(int)
+    @grammar((int, str_types, dict))
     def rotate(value):
-        """The rotation of the projection"""
+        """The rotation of the projection or rotation define of word cloud
+        """
 
-        if value < 0:
-            raise ValueError('The rotation cannot be negative.')
+        if isinstance(value, int):
+            if value < 0:
+                raise ValueError('The rotation cannot be negative.')
+
+    @grammar(str_types)
+    def font(value):
+        """str: Font of word cloud.
+        """
+
+    @grammar(grammar_type=str_types, grammar_name='fontSize')
+    def font_size(value):
+        """str: The font size field of word cloud.
+        """
+
+    @grammar(str_types)
+    def text(value):
+        """str: The text field of word cloud.
+        """
