@@ -22,7 +22,12 @@ except ImportError:
 from ._compat import str_types
 
 #TODO: Keep local?
-d3_js_url = "http://d3js.org/d3.v3.min.js"
+require_js = '''
+    require.config({paths: {d3: "http://d3js.org/d3.v3.min"}});
+    require(["d3"], function(d3) {
+      window.d3 = d3;
+    });
+    '''
 d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
 d3_layout_cloud_js_url = ("http://wrobstory.github.io/d3-cloud/"
                           "d3.layout.cloud.js")
@@ -37,17 +42,16 @@ def initialize_notebook():
     except ImportError:
         print('IPython Notebook could not be loaded.')
 
+    display(Javascript(require_js))
     display(Javascript('''$.getScript("%s", function() {
         $.getScript("%s", function() {
             $.getScript("%s", function() {
                 $.getScript("%s", function() {
-                    $.getScript("%s", function() {
                         $([IPython.events]).trigger("vega_loaded.vincent");
-                    })
                 })
             })
         })
-    });''' % (d3_js_url, d3_geo_projection_js_url, d3_layout_cloud_js_url,
+    });''' % (d3_geo_projection_js_url, d3_layout_cloud_js_url,
               topojson_js_url, vega_js_url)))
 
 
