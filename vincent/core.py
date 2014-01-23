@@ -25,7 +25,7 @@ from ._compat import str_types
 require_js = '''
     require.config({paths: {d3: "http://d3js.org/d3.v3.min"}});
     require(["d3"], function(d3) {
-      window.d3 = d3;
+        console.log(d3.version);
     });
     '''
 d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
