@@ -22,17 +22,7 @@ except ImportError:
 from ._compat import str_types
 
 #TODO: Keep local?
-require_js = '''
-    require.config({paths: {d3: "http://d3js.org/d3.v3.min"}});
-    require(["d3"], function(d3) {
-      window.d3 = d3;
-    });
-    '''
-d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
-d3_layout_cloud_js_url = ("http://wrobstory.github.io/d3-cloud/"
-                          "d3.layout.cloud.js")
-topojson_js_url = "http://d3js.org/topojson.v1.min.js"
-vega_js_url = 'http://trifacta.github.com/vega/vega.js'
+
 
 
 def initialize_notebook():
@@ -42,8 +32,22 @@ def initialize_notebook():
     except ImportError:
         print('IPython Notebook could not be loaded.')
 
-    display(Javascript(require_js))
-    display(Javascript('''$.getScript("%s", function() {
+    require_js = '''
+    if (window['d3'] === undefined) {{
+        require.config({{ paths: {{d3: "http://d3js.org/d3.v3.min"}} }});
+        require(["d3"], function(d3) {{
+          window.d3 = d3;
+          {0}
+        }});
+    }};
+    '''
+    d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
+    d3_layout_cloud_js_url = ("http://wrobstory.github.io/d3-cloud/"
+                              "d3.layout.cloud.js")
+    topojson_js_url = "http://d3js.org/topojson.v1.min.js"
+    vega_js_url = 'http://trifacta.github.com/vega/vega.js'
+
+    dep_libs = '''$.getScript("%s", function() {
         $.getScript("%s", function() {
             $.getScript("%s", function() {
                 $.getScript("%s", function() {
@@ -52,7 +56,9 @@ def initialize_notebook():
             })
         })
     });''' % (d3_geo_projection_js_url, d3_layout_cloud_js_url,
-              topojson_js_url, vega_js_url)))
+              topojson_js_url, vega_js_url)
+    load_js = require_js.format(dep_libs)
+    display(Javascript(load_js))
 
 
 def _assert_is_type(name, value, value_type):
