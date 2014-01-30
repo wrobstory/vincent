@@ -16,7 +16,9 @@ from IPython.core.display import display, HTML, Javascript
 def init_d3():
     '''Display html that loads d3 javascript library.'''
 
-    display(HTML('''<script src="http://d3js.org/d3.v3.min.js"></script>'''))
+    HTML('''<script type="text/javascript">
+                 require.config({paths: {d3: "http://d3js.org/d3.v3.min"}});
+             </script>''')
 
 
 def init_vg():
@@ -33,7 +35,8 @@ def display_vega(vis):
     id = random.randint(0, 2**16)
 
     a = HTML('''<div id="vis%d"></div>''' % id)
-    b = Javascript('''vg.parse.spec(%s, function(chart)
-                        { chart({el:"#vis%d"}).update(); });''' %
-                   (vis.to_json(), id))
+    b = Javascript('''
+                require(["d3"], function(d3) {
+                  vg.parse.spec(%s, function(chart) { chart({el:"#vis%d"}).update(); });
+                });''' % (vis.to_json(), id))
     display(a, b)
