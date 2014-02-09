@@ -286,7 +286,7 @@ class Visualization(GrammarClass):
 _vega_t = """
 ( function() {
   var _do_plot = function() {
-    if ( typeof vg == 'undefined' ) {
+    if ( (typeof vg == 'undefined') && (typeof IPython != 'undefined')) {
       $([IPython.events]).on("vega_loaded.vincent", _do_plot);
       return;
     }
