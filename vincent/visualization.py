@@ -261,16 +261,27 @@ class Visualization(GrammarClass):
                 raise ValidationError(
                     elem + ' must be defined for valid visualization')
 
-    def display(self):
-        """Display visualization inline in IPython notebook"""
-        from IPython.core.display import display, HTML, Javascript
-
-        # Copied from vincent.ipynb:
-        # HACK: use a randomly chosen unique div id
+    def _repr_html_(self):
+        """Build the HTML representation for IPython."""
         id = random.randint(0, 2 ** 16)
-        a = HTML('<div id="vis%d"></div>' % id)
-        b = Javascript(_vega_t % (self.to_json(pretty_print=False), id))
-        display(a, b)
+        html = '<div id="vis%d"></div>' % id
+        html += '<script>\n'
+        html += _vega_t % (self.to_json(pretty_print=False), id) + '\n'
+        html += '</script>\n'
+        html += '<style>.vega canvas {width: 100%;}</style>'
+        return html
+
+    def display(self):
+        """Display the visualization inline in the IPython notebook.
+        
+        This is deprecated, use the following instead::
+        
+            from IPython.display import display
+            display(viz)
+        """
+        from IPython.core.display import display, HTML
+        display(HTML(self._repr_html_()))
+
 
 _vega_t = """
 ( function() {
