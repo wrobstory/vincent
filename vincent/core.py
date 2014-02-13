@@ -40,6 +40,12 @@ def initialize_notebook():
           {0}
         }});
     }};
+    if (window['topojson'] === undefined) {{
+        require.config({{ paths: {{topojson: "http://d3js.org/topojson.v1.min"}} }});
+        require(["topojson"], function(topojson) {{
+          window.topojson = topojson;
+        }});
+    }};
     '''
     d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
     d3_layout_cloud_js_url = ("http://wrobstory.github.io/d3-cloud/"
