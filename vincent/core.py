@@ -28,7 +28,7 @@ from ._compat import str_types
 def initialize_notebook():
     """Initialize the IPython notebook display elements"""
     try:
-        from IPython.core.display import display, Javascript
+        from IPython.core.display import display, HTML
     except ImportError:
         print('IPython Notebook could not be loaded.')
 
@@ -64,7 +64,8 @@ def initialize_notebook():
     });''' % (d3_geo_projection_js_url, d3_layout_cloud_js_url,
               topojson_js_url, vega_js_url)
     load_js = require_js.format(dep_libs)
-    display(Javascript(load_js))
+    html = '<script>'+load_js+'</script>'
+    display(HTML(html))
 
 
 def _assert_is_type(name, value, value_type):

@@ -8,6 +8,7 @@ __all__ = [
     "AxisProperties", "Axis"
 ]
 
+from .core import initialize_notebook
 from .charts import (Chart, Bar, Line, Area, Scatter, StackedBar, StackedArea,
                      GroupedBar, Map, Pie, Word)
 from .visualization import Visualization
