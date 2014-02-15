@@ -5,7 +5,7 @@ __all__ = [
     "Visualization", "Data", "Transform",
     "PropertySet", "ValueRef", "DataRef", "Scale",
     "MarkProperties", "MarkRef", "Mark",
-    "AxisProperties", "Axis"
+    "AxisProperties", "Axis", "initialize_notebook"
 ]
 
 from .core import initialize_notebook

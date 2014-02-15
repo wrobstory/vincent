@@ -21,9 +21,6 @@ except ImportError:
 
 from ._compat import str_types
 
-#TODO: Keep local?
-
-
 
 def initialize_notebook():
     """Initialize the IPython notebook display elements"""
@@ -41,7 +38,9 @@ def initialize_notebook():
         }});
     }};
     if (window['topojson'] === undefined) {{
-        require.config({{ paths: {{topojson: "http://d3js.org/topojson.v1.min"}} }});
+        require.config(
+            {{ paths: {{topojson: "http://d3js.org/topojson.v1.min"}} }}
+            );
         require(["topojson"], function(topojson) {{
           window.topojson = topojson;
         }});

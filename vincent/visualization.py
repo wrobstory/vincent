@@ -273,9 +273,9 @@ class Visualization(GrammarClass):
 
     def display(self):
         """Display the visualization inline in the IPython notebook.
-        
+
         This is deprecated, use the following instead::
-        
+
             from IPython.display import display
             display(viz)
         """
