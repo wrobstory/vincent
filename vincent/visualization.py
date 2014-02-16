@@ -265,23 +265,23 @@ class Visualization(GrammarClass):
     def _repr_html_(self):
         """Build the HTML representation for IPython."""
         vis_id = str(uuid4()).replace("-", "")
-        html = """<div id="vis{0}"></div>
+        html = """<div id="vis%s"></div>
         <script>
-            ( function() {
-              var _do_plot = function() {
-                if ( (typeof vg == 'undefined') && (typeof IPython != 'undefined')) {
-                  $([IPython.events]).on("vega_loaded.vincent", _do_plot);
-                  return;
-                }
-                vg.parse.spec({1}, function(chart) {
-                  chart({el: "#vis{0}"}).update();
-                });
-              };
-              _do_plot();
-            })();
+           ( function() {
+             var _do_plot = function() {
+               if ( (typeof vg == 'undefined') && (typeof IPython != 'undefined')) {
+                 $([IPython.events]).on("vega_loaded.vincent", _do_plot);
+                 return;
+               }
+               vg.parse.spec(%s, function(chart) {
+                 chart({el: "#vis%s"}).update();
+               });
+             };
+             _do_plot();
+           })();
         </script>
-        <style>.vega canvas {width: 100%;}</style>
-        """.format(vis_id, self.to_json(pretty_print=False))
+        <style>.vega canvas {width: 100%%;}</style>
+        """ % (vis_id, self.to_json(pretty_print=False), vis_id)
         return html
 
     def display(self):

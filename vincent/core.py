@@ -30,8 +30,8 @@ def initialize_notebook():
         print("IPython Notebook could not be loaded.")
     require_js = """
     if (window['{0}'] === undefined) {{
-        require.config({{ paths: {{{0}: '{1}'}} }});
-        require(['{0}'], function({0}) {{
+        require.config({{ paths: {{{0}: "{1}"}} }});
+        require(["{0}"], function({0}) {{
             window.{0} = {0};
             {2}
         }});
@@ -43,9 +43,9 @@ def initialize_notebook():
                 "http://d3js.org/topojson.v1.min.js",
                 "http://trifacta.github.com/vega/vega.js"
                 ]
-    get_script = "$.getScript('%s', function() {%s})"
+    get_script = "$.getScript(\"%s\", function() {%s})"
     load_js = get_script
-    ipy_trigger = "$([IPython.events]).trigger('vega_loaded.vincent');"
+    ipy_trigger = "$([IPython.events]).trigger(\"vega_loaded.vincent\");"
     for elem in lib_urls[:-1]:
         load_js = load_js % (elem, get_script)
     load_js = load_js % (lib_urls[-1], ipy_trigger)
@@ -53,7 +53,7 @@ def initialize_notebook():
     require = require_js.format("d3", "http://d3js.org/d3.v3.min", load_js)
     require += require_js.format("topojson", "http://d3js.org/topojson.v1.min", "")
     html = "<script>%s</script>" % (require,)
-    return html
+    return display(HTML(html))
 
 def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
