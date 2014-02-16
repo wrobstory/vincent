@@ -38,11 +38,11 @@ def initialize_notebook():
     }};
     """
     lib_urls = [
-                "http://d3js.org/d3.geo.projection.v0.min.js",
-                "http://wrobstory.github.io/d3-cloud/d3.layout.cloud.js",
-                "http://d3js.org/topojson.v1.min.js",
-                "http://trifacta.github.com/vega/vega.js"
-                ]
+        "http://d3js.org/d3.geo.projection.v0.min.js",
+        "http://wrobstory.github.io/d3-cloud/d3.layout.cloud.js",
+        "http://d3js.org/topojson.v1.min.js",
+        "http://trifacta.github.com/vega/vega.js"
+    ]
     get_script = "$.getScript(\"%s\", function() {%s})"
     load_js = get_script
     ipy_trigger = "$([IPython.events]).trigger(\"vega_loaded.vincent\");"
@@ -51,9 +51,11 @@ def initialize_notebook():
     load_js = load_js % (lib_urls[-1], ipy_trigger)
     load_js += ";"
     require = require_js.format("d3", "http://d3js.org/d3.v3.min", load_js)
-    require += require_js.format("topojson", "http://d3js.org/topojson.v1.min", "")
+    require += require_js.format("topojson", "http://d3js.org/topojson.v1.min",
+                                 "")
     html = "<script>%s</script>" % (require,)
     return display(HTML(html))
+
 
 def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
