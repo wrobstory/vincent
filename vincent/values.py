@@ -5,6 +5,7 @@ ValueRef: Generally used in a PropertySet class to define a set of values
 within a property
 
 """
+from numbers import Number
 from .core import grammar, GrammarClass
 from ._compat import str_types
 
@@ -21,9 +22,9 @@ class ValueRef(GrammarClass):
     ValueRefs can reference numbers, strings, or arbitrary objects,
     depending on their use.
     """
-    @grammar(str_types + (int, float))
+    @grammar(str_types + (Number,))
     def value(value):
-        """int, float, or string : used for constant values
+        """Number, or string : used for constant values
 
         This is ignored if the ``field`` property is defined.
         """
@@ -55,14 +56,14 @@ class ValueRef(GrammarClass):
         The scale is applied to the ``value`` and ``field`` attributes.
         """
 
-    @grammar((int, float))
+    @grammar(Number)
     def mult(value):
-        """int or float : multiplier applied to the data after any scaling
+        """Number : multiplier applied to the data after any scaling
         """
 
-    @grammar((int, float))
+    @grammar(Number)
     def offset(value):
-        """int or float : additive offset applied to the data after any
+        """Number : additive offset applied to the data after any
         scaling and multipliers
         """
 

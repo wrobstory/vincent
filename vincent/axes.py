@@ -4,6 +4,7 @@
 Axes: Classes for defining Vega axis properties
 
 """
+from numbers import Number
 from .core import grammar, GrammarClass
 from .properties import PropertySet
 from ._compat import str_types
@@ -49,9 +50,11 @@ class Axis(GrammarClass):
     def title(value):
         """string: Axis title"""
 
-    @grammar(grammar_type=int, grammar_name='titleOffset')
+    @grammar(grammar_type=Number, grammar_name='titleOffset')
     def title_offset(value):
-        """int: Offset in pixels from the axis on which to place the title"""
+        """Number: Offset in pixels from the axis on which to place the
+        title.
+        """
 
     @grammar(bool)
     def grid(value):
@@ -84,9 +87,9 @@ class Axis(GrammarClass):
         See d3's formatting documentation for format pattern.
         """
 
-    @grammar(int)
+    @grammar(Number)
     def ticks(value):
-        """int : Number of ticks to use"""
+        """Number : Number of ticks to use"""
 
     @grammar(list)
     def values(value):
@@ -97,36 +100,36 @@ class Axis(GrammarClass):
         be used by setting ``properties``.
         """
 
-    @grammar((int, float))
+    @grammar((Number))
     def subdivide(value):
-        """int or float : Number of minor ticks in between major ticks
+        """Number : Number of minor ticks in between major ticks
 
         Only valid for quantitative scales.
         """
 
-    @grammar(grammar_type=(int), grammar_name='tickPadding')
+    @grammar(grammar_type=(Number), grammar_name='tickPadding')
     def tick_padding(value):
-        """int : Pixels between ticks and text labels"""
+        """Number : Pixels between ticks and text labels"""
 
-    @grammar(grammar_type=(int), grammar_name='tickSize')
+    @grammar(grammar_type=(Number), grammar_name='tickSize')
     def tick_size(value):
-        """int : Size in pixels of all ticks"""
+        """Number : Size in pixels of all ticks"""
 
-    @grammar(grammar_type=(int), grammar_name='tickSizeMajor')
+    @grammar(grammar_type=(Number), grammar_name='tickSizeMajor')
     def tick_size_major(value):
-        """int : Size in pixels of major ticks"""
+        """Number : Size in pixels of major ticks"""
 
-    @grammar(grammar_type=(int), grammar_name='tickSizeMinor')
+    @grammar(grammar_type=(Number), grammar_name='tickSizeMinor')
     def tick_size_minor(value):
-        """int : Size in pixels of minor ticks"""
+        """Number : Size in pixels of minor ticks"""
 
-    @grammar(grammar_type=(int), grammar_name='tickSizeEnd')
+    @grammar(grammar_type=(Number), grammar_name='tickSizeEnd')
     def tick_size_end(value):
-        """int : Size in pixels of end ticks"""
+        """Number : Size in pixels of end ticks"""
 
-    @grammar(int)
+    @grammar(Number)
     def offset(value):
-        """int : Offset in pixels to displace the edge of the axis from the
+        """Number : Offset in pixels to displace the edge of the axis from the
         referenced area
         """
 

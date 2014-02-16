@@ -5,6 +5,7 @@ Legend: Classes to define Vega Legends
 
 """
 from __future__ import (print_function, division)
+from numbers import Number
 from .core import grammar, GrammarClass
 from .values import ValueRef
 from ._compat import str_types
@@ -73,7 +74,7 @@ class Legend(GrammarClass):
         if value not in ('left', 'right'):
             raise ValueError('Value must be one of "left" or "right".')
 
-    @grammar(int)
+    @grammar(Number)
     def offset(value):
         """Pixel offset from figure"""
 

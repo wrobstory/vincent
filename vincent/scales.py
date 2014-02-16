@@ -4,6 +4,7 @@
 Scales: Classes to define Vega scales
 
 """
+from numbers import Number
 from .core import grammar, GrammarClass
 from ._compat import str_types
 
@@ -64,18 +65,18 @@ class Scale(GrammarClass):
         """list or DataRef : Domain of the scale
         """
 
-    @grammar(grammar_type=(float, int, DataRef), grammar_name='domainMin')
+    @grammar(grammar_type=(Number, DataRef), grammar_name='domainMin')
     def domain_min(value):
-        """float, int, or DataRef : Minimum domain value
+        """Number, or DataRef : Minimum domain value
 
         Only used for quantitative/time scales. This takes precedence over
         the minimum of the ``domain`` property.
         """
 
-    @grammar(grammar_type=(float, int, DataRef),
+    @grammar(grammar_type=(Number, DataRef),
              grammar_name='domainMax')
     def domain_max(value):
-        """float, int, or DataRef : Maximum domain value
+        """Number, or DataRef : Maximum domain value
 
         Only used for quantitative/time scales. This takes precedence over
         the maximum of the ``domain`` property.
@@ -99,17 +100,17 @@ class Scale(GrammarClass):
             - ``'category20'`` - A pre-determined 20-color pallet
         """
 
-    @grammar(grammar_type=(float, int, DataRef), grammar_name='rangeMin')
+    @grammar(grammar_type=(Number, DataRef), grammar_name='rangeMin')
     def range_min(value):
-        """float, int, or DataRef : Minimum range value
+        """Number, or DataRef : Minimum range value
 
         Only used for quantitative/time scales. This takes precedence over
         the minimum of the ``range`` property.
         """
 
-    @grammar(grammar_type=(float, int, DataRef), grammar_name='rangeMax')
+    @grammar(grammar_type=(Number, DataRef), grammar_name='rangeMax')
     def range_max(value):
-        """float, int, or DataRef : Maximum range value
+        """Number, or DataRef : Maximum range value
 
         Only used for quantitative/time scales. This takes precedence over
         the maximum of the ``range`` property.
@@ -155,7 +156,7 @@ class Scale(GrammarClass):
         Ignored for ordinal scales.
         """
 
-    @grammar((float, int))
+    @grammar((Number))
     def exponent(value):
         """float or int : Exponent for ``'pow'`` scale types
 
@@ -170,7 +171,7 @@ class Scale(GrammarClass):
         domain is defined as a DataRef that may not include 0 exactly.
         """
 
-    @grammar((float, int))
+    @grammar((Number))
     def padding(value):
         """string: Ordinal element padding
 

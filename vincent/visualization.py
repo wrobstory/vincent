@@ -6,6 +6,7 @@ Visualization: Top level class for Vega Grammar
 """
 from __future__ import (print_function, division)
 import random
+from numbers import Number
 from .core import (_assert_is_type, ValidationError,
                    KeyedList, grammar, GrammarClass)
 from .data import Data
@@ -88,16 +89,16 @@ class Visualization(GrammarClass):
             if v < 0:
                 raise ValueError('viewport dimensions cannot be negative')
 
-    @grammar((int, dict,) + str_types)
+    @grammar((Number, dict,) + str_types)
     def padding(value):
-        """int or dict : Padding around visualization
+        """Number or dict : Padding around visualization
 
         The padding defines the distance between the edge of the
         visualization canvas to the visualization box. It does not count as
         part of the visualization width/height. Values cannot be negative.
 
         If a dict, padding must have all keys ``''top'``, ``'left'``,
-        ``'right'``, and ``'bottom'`` with int values.
+        ``'right'``, and ``'bottom'`` with numeric values.
         """
         if isinstance(value, dict):
             required_keys = ['top', 'left', 'right', 'bottom']
@@ -106,10 +107,10 @@ class Visualization(GrammarClass):
                     error = ('Padding must have keys "{0}".'
                              .format('", "'.join(required_keys)))
                     raise ValueError(error)
-                _assert_is_type('padding: {0}'.format(key), value[key], int)
+                _assert_is_type('padding: {0}'.format(key), value[key], Number)
                 if value[key] < 0:
                     raise ValueError('Padding cannot be negative.')
-        elif isinstance(value, int):
+        elif isinstance(value, Number):
             if value < 0:
                 raise ValueError('Padding cannot be negative.')
         else:

@@ -5,6 +5,7 @@ Transforms: Vincent Data Class for Vega Transform types
 
 """
 from __future__ import (print_function, division)
+from numbers import Number
 from .core import grammar, GrammarClass
 from ._compat import str_types
 
@@ -156,7 +157,7 @@ class Transform(GrammarClass):
         Only used if ``type`` is ``zip``
         """
 
-    @grammar((int, float,) + str_types)
+    @grammar((Number,) + str_types)
     def default(value):
         """Default value to use if no matching key value is found for zip
         transformation"""
@@ -175,58 +176,58 @@ class Transform(GrammarClass):
         To be used with ``force`` types
         """
 
-    @grammar(int)
+    @grammar(Number)
     def iterations(value):
-        """int: Number of iterations to run force directed layout.
+        """Number: Number of iterations to run force directed layout.
 
         To be used with ``force`` types
         """
 
-    @grammar((int,) + str_types)
+    @grammar((Number,) + str_types)
     def charge(value):
-        """int or string: Strength of the charge each node exerts.
+        """Number or string: Strength of the charge each node exerts.
 
         To be used with ``force`` types
         """
 
-    @grammar(grammar_type=(int,) + str_types, grammar_name='linkDistance')
+    @grammar(grammar_type=(Number,) + str_types, grammar_name='linkDistance')
     def link_distance(value):
-        """int or string: Determines lenght of the edges, in pixels.
+        """Number or string: Determines lenght of the edges, in pixels.
 
         To be used with ``force`` types
         """
 
-    @grammar(grammar_type=(int,) + str_types, grammar_name='linkStrength')
+    @grammar(grammar_type=(Number,) + str_types, grammar_name='linkStrength')
     def link_strength(value):
-        """int or string: Determines the tension of the edges.
+        """Number or string: Determines the tension of the edges.
 
         To be used with ``force`` types
         """
 
-    @grammar((int, float))
+    @grammar((Number))
     def friction(value):
-        """int or float: Strength of friction force to stabilize layout
+        """Number: Strength of friction force to stabilize layout
 
         To be used with ``force`` types
         """
 
-    @grammar((int, float))
+    @grammar((Number))
     def theta(value):
-        """int or float: theta parameter for the Barnes-Hut algorithm.
+        """Number: theta parameter for the Barnes-Hut algorithm.
 
         To be used with ``force`` types
         """
 
-    @grammar((int, float))
+    @grammar((Number))
     def gravity(value):
-        """int or float: Strength of pseudo-gravity force
+        """Number: Strength of pseudo-gravity force
 
         To be used with ``force`` types
         """
 
-    @grammar((int, float))
+    @grammar((Number))
     def alpha(value):
-        """int or float: "temperature" parameter to determine node position
+        """Number: "temperature" parameter to determine node position
         adjustment
 
         To be used with ``force`` types
@@ -293,19 +294,19 @@ class Transform(GrammarClass):
         if len(value) != 2:
             raise ValueError('len(center) must = 2')
 
-    @grammar(int)
+    @grammar(Number)
     def scale(value):
         """The scale of the projection"""
 
         if value < 0:
             raise ValueError('Scale cannot be negative.')
 
-    @grammar((int, str_types, dict))
+    @grammar((Number, str_types, dict))
     def rotate(value):
         """The rotation of the projection or rotation define of word cloud
         """
 
-        if isinstance(value, int):
+        if isinstance(value, Number):
             if value < 0:
                 raise ValueError('The rotation cannot be negative.')
 

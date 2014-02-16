@@ -806,19 +806,15 @@ class TestAxis(object):
     def test_grammar_typechecking(self):
         """Test grammar of Axis"""
 
-        grammar_types = [('title', [str]),
-                         ('title_offset', [int]),
-                         ('grid', [bool]),
-                         ('scale', [str]),
-                         ('orient', [str]), ('format', [str]),
-                         ('ticks', [int]), ('values', [list]),
-                         ('subdivide', [int, float]),
-                         ('tick_padding', [int]), ('tick_size', [int]),
-                         ('tick_size_major', [int]),
-                         ('tick_size_minor', [int]),
-                         ('tick_size_end', [int]),
-                         ('offset', [int]),
-                         ('properties', [AxisProperties])]
+        grammar_types = [
+            ('title', [str]), ('title_offset', [int]), ('grid', [bool]),
+            ('scale', [str]), ('orient', [str]), ('format', [str]),
+            ('ticks', [int]), ('values', [list]), ('subdivide', [int, float]),
+            ('tick_padding', [int]), ('tick_size', [int]),
+            ('tick_size_major', [int]), ('tick_size_minor', [int]),
+            ('tick_size_end', [int]), ('offset', [int]),
+            ('properties', [AxisProperties])
+            ]
 
         assert_grammar_typechecking(grammar_types, Axis())
 
