@@ -552,7 +552,7 @@ class Word(Chart):
             y=ValueRef(field="y"),
             angle=ValueRef(field="angle"),
             align=ValueRef(value="center"),
-            baseline=ValueRef(value="alphabetic"),
+            baseline=ValueRef(value="middle"),
             font=ValueRef(field="font"),
             font_size=ValueRef(field="fontSize"),
             text=ValueRef(field="data.idx"),
