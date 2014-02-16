@@ -6,6 +6,7 @@ Visualization: Top level class for Vega Grammar
 """
 from __future__ import (print_function, division)
 import random
+from uuid import uuid4
 from .core import (_assert_is_type, ValidationError,
                    KeyedList, grammar, GrammarClass)
 from .data import Data
@@ -263,12 +264,24 @@ class Visualization(GrammarClass):
 
     def _repr_html_(self):
         """Build the HTML representation for IPython."""
-        id = random.randint(0, 2 ** 16)
-        html = '<div id="vis%d"></div>' % id
-        html += '<script>\n'
-        html += _vega_t % (self.to_json(pretty_print=False), id) + '\n'
-        html += '</script>\n'
-        html += '<style>.vega canvas {width: 100%;}</style>'
+        vis_id = str(uuid4()).replace("-", "")
+        html = """<div id="vis{0}"></div>
+        <script>
+            ( function() {
+              var _do_plot = function() {
+                if ( (typeof vg == 'undefined') && (typeof IPython != 'undefined')) {
+                  $([IPython.events]).on("vega_loaded.vincent", _do_plot);
+                  return;
+                }
+                vg.parse.spec({1}, function(chart) {
+                  chart({el: "#vis{0}"}).update();
+                });
+              };
+              _do_plot();
+            })();
+        </script>
+        <style>.vega canvas {width: 100%;}</style>
+        """.format(vis_id, self.to_json(pretty_print=False))
         return html
 
     def display(self):
@@ -282,18 +295,3 @@ class Visualization(GrammarClass):
         from IPython.core.display import display, HTML
         display(HTML(self._repr_html_()))
 
-
-_vega_t = """
-( function() {
-  var _do_plot = function() {
-    if ( (typeof vg == 'undefined') && (typeof IPython != 'undefined')) {
-      $([IPython.events]).on("vega_loaded.vincent", _do_plot);
-      return;
-    }
-    vg.parse.spec(%s, function(chart) {
-      chart({el: "#vis%d"}).update();
-    });
-  };
-  _do_plot();
-})();
-"""

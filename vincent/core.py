@@ -27,45 +27,33 @@ def initialize_notebook():
     try:
         from IPython.core.display import display, HTML
     except ImportError:
-        print('IPython Notebook could not be loaded.')
-
-    require_js = '''
-    if (window['d3'] === undefined) {{
-        require.config({{ paths: {{d3: "http://d3js.org/d3.v3.min"}} }});
-        require(["d3"], function(d3) {{
-          window.d3 = d3;
-          {0}
+        print("IPython Notebook could not be loaded.")
+    require_js = """
+    if (window['{0}'] === undefined) {{
+        require.config({{ paths: {{{0}: '{1}'}} }});
+        require(['{0}'], function({0}) {{
+            window.{0} = {0};
+            {2}
         }});
     }};
-    if (window['topojson'] === undefined) {{
-        require.config(
-            {{ paths: {{topojson: "http://d3js.org/topojson.v1.min"}} }}
-            );
-        require(["topojson"], function(topojson) {{
-          window.topojson = topojson;
-        }});
-    }};
-    '''
-    d3_geo_projection_js_url = "http://d3js.org/d3.geo.projection.v0.min.js"
-    d3_layout_cloud_js_url = ("http://wrobstory.github.io/d3-cloud/"
-                              "d3.layout.cloud.js")
-    topojson_js_url = "http://d3js.org/topojson.v1.min.js"
-    vega_js_url = 'http://trifacta.github.com/vega/vega.js'
-
-    dep_libs = '''$.getScript("%s", function() {
-        $.getScript("%s", function() {
-            $.getScript("%s", function() {
-                $.getScript("%s", function() {
-                        $([IPython.events]).trigger("vega_loaded.vincent");
-                })
-            })
-        })
-    });''' % (d3_geo_projection_js_url, d3_layout_cloud_js_url,
-              topojson_js_url, vega_js_url)
-    load_js = require_js.format(dep_libs)
-    html = '<script>'+load_js+'</script>'
-    display(HTML(html))
-
+    """
+    lib_urls = [
+                "http://d3js.org/d3.geo.projection.v0.min.js",
+                "http://wrobstory.github.io/d3-cloud/d3.layout.cloud.js",
+                "http://d3js.org/topojson.v1.min.js",
+                "http://trifacta.github.com/vega/vega.js"
+                ]
+    get_script = "$.getScript('%s', function() {%s})"
+    load_js = get_script
+    ipy_trigger = "$([IPython.events]).trigger('vega_loaded.vincent');"
+    for elem in lib_urls[:-1]:
+        load_js = load_js % (elem, get_script)
+    load_js = load_js % (lib_urls[-1], ipy_trigger)
+    load_js += ";"
+    require = require_js.format("d3", "http://d3js.org/d3.v3.min", load_js)
+    require += require_js.format("topojson", "http://d3js.org/topojson.v1.min", "")
+    html = "<script>%s</script>" % (require,)
+    return html
 
 def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
