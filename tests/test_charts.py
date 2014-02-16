@@ -669,7 +669,7 @@ class TestWord(object):
                 'enter': {
                     'align': {'value': 'center'},
                     'angle': {'field': 'angle'},
-                    'baseline': {'value': 'alphabetic'},
+                    'baseline': {'value': 'middle'},
                     'fill': {'field': 'data.idx', 'scale': 'color'},
                     'font': {'field': 'font'},
                     'fontSize': {'field': 'fontSize'},

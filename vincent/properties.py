@@ -140,8 +140,9 @@ class PropertySet(GrammarClass):
             if value.value < 0:
                 raise ValueError('size cannot be negative')
 
-    _valid_shapes = frozenset(["circle", "square", "cross", "diamond",
-                "triangle-up", "triangle-down"])
+    _valid_shapes = frozenset([
+        "circle", "square", "cross", "diamond", "triangle-up", "triangle-down"
+        ])
 
     @grammar(ValueRef)
     def shape(value):
@@ -190,11 +191,15 @@ class PropertySet(GrammarClass):
 
         Only used if ``type`` is ``'arc'``."""
 
-    _area_methods = ["linear", "step-before", "step-after",
-        "basis", "basis-open", "cardinal", "cardinal-open", "monotone"]
-    _line_methods = ["linear", "step-before", "step-after",
-        "basis", "basis-open", "basis-closed", "bundle", "cardinal",
-        "cardinal-open", "cardinal-closed", "monotone"]
+    _area_methods = [
+        "linear", "step-before", "step-after", "basis", "basis-open",
+        "cardinal", "cardinal-open", "monotone"
+        ]
+    _line_methods = [
+        "linear", "step-before", "step-after", "basis", "basis-open",
+        "basis-closed", "bundle", "cardinal", "cardinal-open",
+        "cardinal-closed", "monotone"
+        ]
     _valid_methods = frozenset(_area_methods + _line_methods)
 
     @grammar(ValueRef)

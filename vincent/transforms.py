@@ -37,10 +37,12 @@ class Transform(GrammarClass):
 
         """
 
-        valid_transforms = frozenset(['array', 'copy', 'cross', 'facet', 'filter',
-                'flatten', 'fold', 'formula', 'slice', 'sort', 'stats',
-                'truncate', 'unique', 'window', 'zip', 'force', 'geo', 'geopath',
-                'link', 'pie', 'stack', 'treemap', 'wordcloud'])
+        valid_transforms = frozenset([
+            'array', 'copy', 'cross', 'facet', 'filter',
+            'flatten', 'fold', 'formula', 'slice', 'sort', 'stats',
+            'truncate', 'unique', 'window', 'zip', 'force', 'geo', 'geopath',
+            'link', 'pie', 'stack', 'treemap', 'wordcloud'
+        ])
 
         if value not in valid_transforms:
             raise ValueError('Transform type must be'
@@ -331,7 +333,8 @@ class Transform(GrammarClass):
     @grammar(bool)
     def diagonal(value):
         """True: Elements on diagonal will be included in cross product.
-        False (default): Elements on diagonal will not be included in cross product.
+        False (default): Elements on diagonal will not be included in cross
+        product.
         """
 
     @grammar(bool)
@@ -356,19 +359,20 @@ class Transform(GrammarClass):
 
     @grammar(str_types)
     def ellipsis(value):
-        """str: The text to use as an ellipsis for truncated text. Defaults to "...".
+        """str: The text to use as an ellipsis for truncated text.
+        Defaults to "...".
         """
 
     @grammar(bool)
     def wordbreak(value):
         """bool: If true, the truncation algorithm will truncate along word
-            boundaries.
+        boundaries.
         """
 
     @grammar((int, float))
     def step(value):
-        """Number: The step size (in number of elements) by which to advance the
-            window per frame. Defaults to 1.
+        """Number: The step size (in number of elements) by which to advance
+        the window per frame. Defaults to 1.
         """
 
     @grammar((int, float))
@@ -384,12 +388,15 @@ class Transform(GrammarClass):
     @grammar(str_types)
     def shape(value):
         """str: A string describing the path shape to use. One of
-            "line" (default), "curve", "diagonal", "diagonalX", or "diagonalY".
+        "line" (default), "curve", "diagonal", "diagonalX", or "diagonalY".
         """
-        link_shapes = frozenset(["line", "curve", "diagonal", "diagonalX",
-                "diagonalY"])
+        link_shapes = frozenset([
+            "line", "curve", "diagonal", "diagonalX", "diagonalY"
+            ])
         if value not in link_shapes:
-            raise ValueError('Link shape must be one of %s' % (str(link_shapes),))
+            raise ValueError(
+                'Link shape must be one of %s' % (str(link_shapes),)
+                )
 
     @grammar(grammar_type=str_types, grammar_name='fontWeight')
     def font_weight(value):
@@ -399,8 +406,8 @@ class Transform(GrammarClass):
     @grammar((int, list))
     def padding(value):
         """The padding (in pixels) to provide around text in the word cloud.
-            The padding value can either be a single number or an array of four
-            numbers [top, right, bottom, left]. The default padding is zero pixels.
+        The padding value can either be a single number or an array of four
+        numbers [top, right, bottom, left]. The default padding is zero pixels.
         """
 
     @grammar(str_types)
@@ -415,11 +422,12 @@ class Transform(GrammarClass):
 
     @grammar(str_types)
     def source(value):
-        """string: The data field that references the source node for this link.
+        """string: The data field that references the source node for this
+        link.
         """
 
     @grammar(str_types)
     def target(value):
-        """string: The data field that references the target node for this link.
+        """string: The data field that references the target node for this
+        link.
         """
-

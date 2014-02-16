@@ -62,7 +62,7 @@ class Mark(GrammarClass):
     the marks represent.
     """
     _valid_type_values = frozenset(['rect', 'symbol', 'path', 'arc', 'area',
-            'line', 'image', 'text', 'group'])
+                                    'line', 'image', 'text', 'group'])
 
     @grammar(str_types)
     def name(value):
@@ -133,4 +133,3 @@ class Mark(GrammarClass):
         """list or KeyedList: For grouped marks, you can define a set of scales
         for within the mark groups
         """
-
