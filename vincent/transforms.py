@@ -403,3 +403,23 @@ class Transform(GrammarClass):
             numbers [top, right, bottom, left]. The default padding is zero pixels.
         """
 
+    @grammar(str_types)
+    def lon(value):
+        """string: The input longitude values.
+        """
+
+    @grammar(str_types)
+    def lat(value):
+        """string: The input latitude values.
+        """
+
+    @grammar(str_types)
+    def source(value):
+        """string: The data field that references the source node for this link.
+        """
+
+    @grammar(str_types)
+    def target(value):
+        """string: The data field that references the target node for this link.
+        """
+
