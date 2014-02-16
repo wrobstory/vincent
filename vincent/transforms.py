@@ -30,15 +30,17 @@ class Transform(GrammarClass):
         value.
 
         The valid transform types are as follows:
-        array, copy, facet, filter, flatten, formula, sort, stats, unique, zip,
-        force, geo, geopath, link, pie, stack, treemap, wordcloud
+        'array', 'copy', 'cross', 'facet', 'filter', 'flatten', 'fold',
+        'formula', 'slice', 'sort', 'stats', 'truncate', 'unique', 'window',
+        'zip', 'force', 'geo', 'geopath', 'link', 'pie', 'stack', 'treemap',
+        'wordcloud'
 
         """
 
-        valid_transforms = ['array', 'copy', 'facet', 'filter', 'flatten',
-                            'formula', 'sort', 'stats', 'unique', 'zip',
-                            'force', 'geo', 'geopath', 'link', 'pie', 'stack',
-                            'treemap', 'wordcloud']
+        valid_transforms = frozenset(['array', 'copy', 'cross', 'facet', 'filter',
+                'flatten', 'fold', 'formula', 'slice', 'sort', 'stats',
+                'truncate', 'unique', 'window', 'zip', 'force', 'geo', 'geopath',
+                'link', 'pie', 'stack', 'treemap', 'wordcloud'])
 
         if value not in valid_transforms:
             raise ValueError('Transform type must be'
@@ -168,9 +170,11 @@ class Transform(GrammarClass):
         To be used with ``force`` types
         """
 
-    @grammar(list)
+    @grammar((int, list))
     def size(value):
         """list: Dimensions of force layout
+        Number: The size (in number of elements) of the sliding window.
+            Defaults to 2.
 
         To be used with ``force`` types
         """
@@ -323,3 +327,79 @@ class Transform(GrammarClass):
     def text(value):
         """str: The text field of word cloud.
         """
+
+    @grammar(bool)
+    def diagonal(value):
+        """True: Elements on diagonal will be included in cross product.
+        False (default): Elements on diagonal will not be included in cross product.
+        """
+
+    @grammar(bool)
+    def assign(value):
+        """bool: If true, a stats property will be added to each individual
+        data element. This property references an object containing all the
+        computed statistics. This option is useful if you want construct
+        downstream formulas that reference both individual values and aggregate
+        statistics.
+        """
+
+    @grammar(str_types)
+    def output(value):
+        """str: The name of the field in which to store the truncated value.
+        Defaults to "truncate".
+        """
+
+    @grammar(int)
+    def limit(value):
+        """int: The maximum length of the truncated string.
+        """
+
+    @grammar(str_types)
+    def ellipsis(value):
+        """str: The text to use as an ellipsis for truncated text. Defaults to "...".
+        """
+
+    @grammar(bool)
+    def wordbreak(value):
+        """bool: If true, the truncation algorithm will truncate along word
+            boundaries.
+        """
+
+    @grammar((int, float))
+    def step(value):
+        """Number: The step size (in number of elements) by which to advance the
+            window per frame. Defaults to 1.
+        """
+
+    @grammar((int, float))
+    def precision(value):
+        """Number: The desired precision of the projection.
+        """
+
+    @grammar((int, float), grammar_name='clipAngle')
+    def clip_angle(value):
+        """Number: The clip angle of the projection.
+        """
+
+    @grammar(str_types)
+    def shape(value):
+        """str: A string describing the path shape to use. One of
+            "line" (default), "curve", "diagonal", "diagonalX", or "diagonalY".
+        """
+        link_shapes = frozenset(["line", "curve", "diagonal", "diagonalX",
+                "diagonalY"])
+        if value not in link_shapes:
+            raise ValueError('Link shape must be one of %s' % (str(link_shapes),))
+
+    @grammar(grammar_type=str_types, grammar_name='fontWeight')
+    def font_weight(value):
+        """str: The font weight (e.g., "bold") to use.
+        """
+
+    @grammar((int, list))
+    def padding(value):
+        """The padding (in pixels) to provide around text in the word cloud.
+            The padding value can either be a single number or an array of four
+            numbers [top, right, bottom, left]. The default padding is zero pixels.
+        """
+

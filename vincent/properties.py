@@ -140,8 +140,8 @@ class PropertySet(GrammarClass):
             if value.value < 0:
                 raise ValueError('size cannot be negative')
 
-    _valid_shapes = ('circle', 'square', 'cross', 'diamond', 'triangle-up',
-                     'triangle-down')
+    _valid_shapes = frozenset(["circle", "square", "cross", "diamond",
+                "triangle-up", "triangle-down"])
 
     @grammar(ValueRef)
     def shape(value):
@@ -190,6 +190,13 @@ class PropertySet(GrammarClass):
 
         Only used if ``type`` is ``'arc'``."""
 
+    _area_methods = ["linear", "step-before", "step-after",
+        "basis", "basis-open", "cardinal", "cardinal-open", "monotone"]
+    _line_methods = ["linear", "step-before", "step-after",
+        "basis", "basis-open", "basis-closed", "bundle", "cardinal",
+        "cardinal-open", "cardinal-closed", "monotone"]
+    _valid_methods = frozenset(_area_methods + _line_methods)
+
     @grammar(ValueRef)
     def interpolate(value):
         """ValueRef : string, line interpolation method to use
@@ -202,7 +209,10 @@ class PropertySet(GrammarClass):
 
         Only used if ``type`` is ``'area'`` or ``'line'``.
         """
-        #TODO check values
+        if value.value:
+            _assert_is_type('shape.value', value.value, str_types)
+            if value.value not in PropertySet._valid_methods:
+                raise ValueError(value.value + ' is not a valid method')
 
     @grammar(ValueRef)
     def tension(value):
@@ -218,6 +228,8 @@ class PropertySet(GrammarClass):
         Only used if ``type`` is ``'image'``.
         """
 
+    _valid_align = frozenset(["left", "right", "center"])
+
     @grammar(ValueRef)
     def align(value):
         """ValueRef : string, horizontal alignment of mark
@@ -225,7 +237,12 @@ class PropertySet(GrammarClass):
         Possible values are ``'left'``, ``'right'``, and ``'center'``. Only
         used if ``type`` is ``'image'`` or ``'text'``.
         """
-        #TODO check values
+        if value.value:
+            _assert_is_type('shape.value', value.value, str_types)
+            if value.value not in PropertySet._valid_align:
+                raise ValueError(value.value + ' is not a valid alignment')
+
+    _valid_baseline = frozenset(["top", "middle", "bottom"])
 
     @grammar(ValueRef)
     def baseline(value):
@@ -234,7 +251,10 @@ class PropertySet(GrammarClass):
         Possible values are ``'top'``, ``'middle'``, and ``'bottom'``. Only
         used if ``type`` is ``'image'`` or ``'text'``.
         """
-        #TODO check values
+        if value.value:
+            _assert_is_type('shape.value', value.value, str_types)
+            if value.value not in PropertySet._valid_baseline:
+                raise ValueError(value.value + ' is not a valid baseline')
 
     @grammar(ValueRef)
     def text(value):
