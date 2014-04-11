@@ -61,8 +61,8 @@ class Mark(GrammarClass):
     bar, line etc.. This class defines how the marks appear and what data
     the marks represent.
     """
-    _valid_type_values = ['rect', 'symbol', 'path', 'arc', 'area', 'line',
-                          'image', 'text', 'group']
+    _valid_type_values = frozenset(['rect', 'symbol', 'path', 'arc', 'area',
+                                    'line', 'image', 'text', 'group'])
 
     @grammar(str_types)
     def name(value):
