@@ -1,4 +1,4 @@
-  # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 '''
 Test Vincent.vega
 -----------------
@@ -47,17 +47,17 @@ def test_keyed_list():
 
     key_list = KeyedList(attr_name='name')
 
-    #Basic usage
+    # Basic usage
     test_key = TestKey(name='test')
     key_list.append(test_key)
     nt.assert_equal(test_key, key_list['test'])
 
-    #Bad key
+    # Bad key
     with nt.assert_raises(KeyError) as err:
         key_list['test_1']
     nt.assert_equal(err.exception.args[0], ' "test_1" is an invalid key')
 
-    #Repeated keys
+    # Repeated keys
     test_key_1 = TestKey(name='test')
     key_list.append(test_key_1)
     with nt.assert_raises(ValidationError) as err:
@@ -65,7 +65,7 @@ def test_keyed_list():
     nt.assert_equal(err.expected, ValidationError)
     nt.assert_equal(err.exception.args[0], 'duplicate keys found')
 
-    #Setting keys
+    # Setting keys
     key_list.pop(-1)
     test_key_2 = TestKey(name='test_2')
     key_list['test_2'] = test_key_2
@@ -78,7 +78,7 @@ def test_keyed_list():
     key_list[0] = mirror_key_2
     nt.assert_equal(key_list[0], mirror_key_2)
 
-    #Keysetting errors
+    # Keysetting errors
     test_key_3 = TestKey(name='test_3')
     with nt.assert_raises(ValidationError) as err:
         key_list['test_4'] = test_key_3
@@ -301,14 +301,14 @@ class TestVisualization(object):
     def test_axis_labeling(self):
         """Test convenience method for axis label setting"""
 
-        #With Axes already in place
+        # With Axes already in place
         test_obj = Visualization()
         test_obj.axes.extend([Axis(type='x'), Axis(type='y')])
         test_obj.axis_titles(x="test1", y="test2")
         nt.assert_equals(test_obj.axes['x'].title, 'test1')
         nt.assert_equals(test_obj.axes['y'].title, 'test2')
 
-        #With no Axes already defined
+        # With no Axes already defined
         del test_obj.axes[0]
         del test_obj.axes[0]
         test_obj.axis_titles(x="test1", y="test2")
@@ -415,45 +415,8 @@ class TestData(object):
         nt.assert_equal(data.name, 'table')
 
     def test_pandas_dataframe_loading(self):
-        """Pandas DataFrame objects are correctly loaded"""
-        # name = ['_x']
-        # length = [0, 1, 2]
-        # index_key = [None, 'ix', 1]
-        # index_types = ['int', 'char', 'datetime', 'Timestamp']
-        # column_types = ['int', 'char', 'datetime', 'Timestamp']
 
-        # # Leaving out some basic types here because we're not worried about
-        # # serialization.
-        # value_types = [
-        #     'char', 'datetime', 'Timestamp', 'numpy float', 'numpy int']
-
-        # dataframe_info = product(
-        #     name, length, length, index_key, index_types, column_types,
-        #     value_types)
-        # for n, rows, cols, ikey, itype, ctype, vtype in dataframe_info:
-        #     index = sequences[itype](rows)
-        #     columns = sequences[ctype](cols)
-        #     series = {
-        #         c: pd.Series(sequences[vtype](rows), index=index, name=n)
-        #         for c in columns}
-        #     dataframe = pd.DataFrame(series)
-
-        #     ikey = ikey or Data._default_index_key
-        #     if cols == 0:
-        #         expected = []
-        #     else:
-        #         expected = [
-        #             dict([(ikey, Data.serialize(index[i]))] +
-        #                  [(str(c), Data.serialize(series[c][i]))
-        #                   for c in columns])
-        #             for i in xrange(rows)]
-
-        #     data = Data.from_pandas(dataframe, name=n, index_key=ikey)
-        #     nt.assert_list_equal(expected, data.values)
-        #     nt.assert_equal(n, data.name)
-        #     data.to_json()
-
-        #Simple columns/key_on tests
+        # Simple columns/key_on tests
         df = pd.DataFrame({'one': [1, 2, 3], 'two': [6, 7, 8],
                            'three': [11, 12, 13], 'four': [17, 18, 19]})
         get_all = [{'col': 'four', 'idx': 0, 'val': 17},
@@ -503,7 +466,7 @@ class TestData(object):
         data = Data.from_pandas(dataframe)
         nt.assert_equal(data.name, 'table')
 
-        #Bad obj
+        # Bad obj
         nt.assert_raises(ValueError, Data.from_pandas, {})
 
     def test_numpy_loading(self):
@@ -536,7 +499,7 @@ class TestData(object):
             for i, row in zip(index, test_data.tolist())]
         nt.assert_list_equal(expected_values, data.values)
 
-        #Bad loads
+        # Bad loads
         with nt.assert_raises(LoadError) as err:
             Data.from_numpy(test_data, 'test', columns, index=range(4))
         nt.assert_equal(err.expected, LoadError)
@@ -565,7 +528,7 @@ class TestData(object):
         nt.assert_list_equal(test1.values, values1)
         nt.assert_list_equal(test2.values, values2)
 
-        #Iter errors
+        # Iter errors
         nt.assert_raises(ValueError, Data.from_mult_iters, x=[0], y=[1, 2])
 
     def test_from_iter(self):

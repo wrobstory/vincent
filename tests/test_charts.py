@@ -44,7 +44,7 @@ def test_data_type():
         test = data_type(ins)
         nt.assert_list_equal(test.values, outs)
 
-    #From Iters
+    # From Iters
     puts = {'x': [1, 2, 3], 'y': [10, 20, 30], 'z': [40, 50, 60]}
     gets = [{'col': 'y', 'idx': 1, 'val': 10},
             {'col': 'y', 'idx': 2, 'val': 20},
@@ -56,7 +56,7 @@ def test_data_type():
     test = data_type(puts, iter_idx='x')
     nt.assert_list_equal(test.values, gets)
 
-    #Pandas
+    # Pandas
     df = pd.DataFrame({'one': [1, 2, 3], 'two': [4, 5, 6]})
     series = pd.Series([1, 2, 3], name='test')
     gets1 = [{'col': 'one', 'idx': 0, 'val': 1},
@@ -73,7 +73,7 @@ def test_data_type():
     nt.assert_list_equal(test_df.values, gets1)
     nt.assert_list_equal(test_series.values, gets2)
 
-    #Bad type
+    # Bad type
     class BadType(object):
         'Bad data type'
         pass
@@ -92,7 +92,7 @@ class TestChart(object):
         padding = "auto"
         nt.assert_equal(chart.padding, padding)
 
-        #Data loading errors
+        # Data loading errors
         nt.assert_raises(ValueError, Chart)
         nt.assert_raises(ValueError, Chart, [])
 
@@ -455,7 +455,7 @@ class TestMaps(object):
 
     def setup(self):
 
-        #Data
+        # Data
         self.df = pd.DataFrame({'one': [1, 2, 3], 'two': [4, 5, 6],
                                 'three': [7, 8, 9]})
         self.series = pd.Series([1, 2, 3], name='test')

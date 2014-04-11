@@ -1,4 +1,4 @@
-  # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from vincent.charts import Bar
@@ -12,4 +12,4 @@ def test_unicode_axes():
        """
     bar = Bar([1, 2, 3])
     bar.axis_titles(x="老特洛伊呗", y="ZAŻÓŁĆ GĘŚLĄ JAŹŃ")
-    ### XXX: if this proves to be correct fix, we should test more methods here
+    # XXX: if this proves to be correct fix, we should test more methods here
