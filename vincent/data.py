@@ -201,7 +201,7 @@ class Data(GrammarClass):
         if key_on != 'idx':
             pd_obj.index = data[key_on]
         if records:
-            #The worst
+            # The worst
             vega_data.values = json.loads(pd_obj.to_json(orient='records'))
             return vega_data
 
@@ -393,20 +393,20 @@ class Data(GrammarClass):
             name = 'table'
         cls.raw_data = data
 
-        #Tuples
+        # Tuples
         if isinstance(data, tuple):
             values = [{"x": x[0], "y": x[1]} for x in data]
 
-        #Lists
+        # Lists
         elif isinstance(data, list):
             values = [{"x": x, "y": y}
                       for x, y in zip(range(len(data) + 1), data)]
 
-        #Dicts
+        # Dicts
         elif isinstance(data, dict) or isinstance(data, pd.Series):
             values = [{"x": x, "y": y} for x, y in sorted(data.items())]
 
-        #Dataframes
+        # Dataframes
         elif isinstance(data, pd.DataFrame):
             if len(columns) > 1 and use_index:
                 raise ValueError('If using index as x-axis, len(columns)'
@@ -421,7 +421,7 @@ class Data(GrammarClass):
                            "y": cls.serialize(x[1][columns[1]])}
                           for x in data.iterrows()]
 
-        #NumPy arrays
+        # NumPy arrays
         elif isinstance(data, np.ndarray):
             values = cls._numpy_to_values(data)
         else:
@@ -474,6 +474,6 @@ class Data(GrammarClass):
         string
             Valid Vega JSON.
         """
-        #TODO: support writing to separate file
+        # TODO: support writing to separate file
         return super(self.__class__, self).to_json(validate=validate,
                                                    pretty_print=pretty_print)

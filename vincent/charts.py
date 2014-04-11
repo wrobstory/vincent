@@ -88,7 +88,7 @@ class Chart(Visualization):
         self.columns = columns
         self._is_datetime = False
 
-        #Data
+        # Data
         if data is None and not no_data:
             raise ValueError('Please initialize the chart with data.')
 
@@ -100,7 +100,7 @@ class Chart(Visualization):
                 if isinstance(data.index, pd.DatetimeIndex):
                     self._is_datetime = True
 
-            #Using a vincent KeyedList here
+            # Using a vincent KeyedList here
             self.data['table'] = (
                 data_type(data, grouped=grouped, columns=columns,
                           key_on=key_on, iter_idx=iter_idx)
@@ -396,7 +396,7 @@ class Map(Chart):
 
         super(Map, self).__init__(no_data=True, *args, **kwargs)
 
-        #Don't want to pass None to property setters
+        # Don't want to pass None to property setters
         geo_kwargs = {}
         for param in [('projection', projection), ('center', center),
                       ('translate', translate), ('scale', scale),
@@ -407,9 +407,9 @@ class Map(Chart):
         if not translate:
             geo_kwargs['translate'] = [self.width/2, self.height/2]
 
-        #Add Data
+        # Add Data
         for dat in geo_data:
-            #Data
+            # Data
             transforms = []
             if data is not None and list(map_key.keys())[0] == dat['name']:
                 get_brewer = True
@@ -445,7 +445,7 @@ class Map(Chart):
                     'feature': dat['feature']
                     }
 
-            #Marks
+            # Marks
 
             geo_from = MarkRef(data=dat['name'])
 
