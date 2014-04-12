@@ -323,11 +323,34 @@ class TestVisualization(object):
         nt.assert_equals(err.exception.args[0],
                          'This Visualization has no axes!')
         test_vis.axes = [Axis(scale='x'), Axis(scale='y')]
-        test_vis.x_axis_properties(title_size=20, label_angle=30)
-        test_vis.y_axis_properties(title_size=20, label_angle=30)
+        test_vis.x_axis_properties(title_size=20, title_offset=10,
+                                   label_angle=30, color='#000')
+        test_vis.y_axis_properties(title_size=20, title_offset=10,
+                                   label_angle=30, color='#000')
+
+        def check_axis_colors():
+            for axis in test_vis.axes:
+                props = axis.properties
+                for prop in [props.title.fill, props.labels.fill]:
+                    nt.assert_equals(getattr(prop, 'value'), '#000')
+                for prop in [props.axis.stroke, props.major_ticks.stroke,
+                             props.minor_ticks.stroke, props.ticks.stroke]:
+                    nt.assert_equals(getattr(prop, 'value'), '#000')
+
         for axis in test_vis.axes:
-            nt.assert_equals(axis.properties.labels.angle.value, 30)
-            nt.assert_equals(axis.properties.title.font_size.value, 20)
+            props = axis.properties
+            nt.assert_equals(props.labels.angle.value, 30)
+            nt.assert_equals(props.title.font_size.value, 20)
+            if axis.scale == 'x':
+                nt.assert_equals(props.title.dy.value, 10)
+            elif axis.scale == 'y':
+                nt.assert_equals(props.title.dx.value, 10)
+        check_axis_colors()
+
+        test_vis.axes = [Axis(scale='x'), Axis(scale='y')]
+        test_vis.common_axis_properties(color='#000')
+        for axis in test_vis.axes:
+            check_axis_colors()
 
     def test_to_json(self):
         """Test JSON to string"""

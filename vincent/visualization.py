@@ -199,44 +199,101 @@ class Visualization(GrammarClass):
             self.axes.extend([Axis(type='x', title=x),
                               Axis(type='y', title=y)])
 
-    def _axis_properties(self, axis, title_size, label_angle):
-        """Assign axis properties"""
-        get_axis = lambda x, y: x.scale == y
-        if self.axes:
-            axis = [a for a in self.axes if get_axis(a, axis)][0]
+    def _set_axis_properties(self, axis):
+        """Set AxisProperties and PropertySets"""
+        if not getattr(axis, 'properties'):
             axis.properties = AxisProperties()
+            for prop in ['ticks', 'axis', 'major_ticks', 'minor_ticks',
+                         'title', 'labels']:
+                setattr(axis.properties, prop, PropertySet())
+
+
+    def _set_all_axis_color(self, axis, color):
+        """Set axis ticks, title, labels to given color"""
+        for prop in ['ticks', 'axis', 'major_ticks', 'minor_ticks', 'title',
+                     'labels']:
+            prop_set = getattr(axis.properties, prop)
+            if color and prop in ['title', 'labels']:
+                prop_set.fill = ValueRef(value=color)
+            elif color and prop in ['axis', 'major_ticks', 'minor_ticks',
+                                    'ticks']:
+                prop_set.stroke = ValueRef(value=color)
+
+    def _axis_properties(self, axis, title_size, title_offset, label_angle,
+                         label_align, color):
+        """Assign axis properties"""
+        if self.axes:
+            axis = [a for a in self.axes if a.scale == axis][0]
+            self._set_axis_properties(axis)
+            self._set_all_axis_color(axis, color)
+
             if title_size:
-                axis.properties.title = PropertySet(font_size=ValueRef(
-                                                    value=title_size))
+                axis.properties.title.font_size = ValueRef(value=title_size)
             if label_angle:
-                axis.properties.labels = PropertySet(angle=ValueRef(
-                                                     value=label_angle))
+                axis.properties.labels.angle = ValueRef(value=label_angle)
+            if label_align:
+                axis.properties.labels.align = ValueRef(value=label_align)
+            if title_offset:
+                axis.properties.title.dy = ValueRef(value=title_offset)
         else:
             raise ValueError('This Visualization has no axes!')
 
-    def x_axis_properties(self, title_size=None, label_angle=None):
+    def common_axis_properties(self, color=None, title_size=None):
+        """Set common axis properties such as color
+
+        Parameters
+        ----------
+        color: str, default None
+            Hex color str, etc
+        """
+        if self.axes:
+            for axis in self.axes:
+                self._set_axis_properties(axis)
+                self._set_all_axis_color(axis, color)
+                if title_size:
+                    axis.properties.title.font_size = ValueRef(value=title_size)
+        else:
+            raise ValueError('This Visualization has no axes!')
+
+    def x_axis_properties(self, title_size=None, title_offset=None,
+                          label_angle=None, label_align=None, color=None):
         """Change x-axis title font size and label angle
 
         Parameters
         ----------
         title_size: int, default None
             Title size, in px
+        title_offset: int, default None
+            Pixel offset from given axis
         label_angle: int, default None
             label angle in degrees
+        label_align: str, default None
+            Label alignment
+        color: str, default None
+            Hex color
         """
-        self._axis_properties('x', title_size, label_angle)
+        self._axis_properties('x', title_size, title_offset, label_angle,
+                              label_align, color)
 
-    def y_axis_properties(self, title_size=None, label_angle=None):
+    def y_axis_properties(self, title_size=None, title_offset=None,
+                          label_angle=None, label_align=None, color=None):
         """Change y-axis title font size and label angle
 
         Parameters
         ----------
         title_size: int, default None
             Title size, in px
+        title_offset: int, default None
+            Pixel offset from given axis
         label_angle: int, default None
             label angle in degrees
+        label_align: str, default None
+            Label alignment
+        color: str, default None
+            Hex color
         """
-        self._axis_properties('y', title_size, label_angle)
+        self._axis_properties('y', title_size, title_offset, label_angle,
+                              label_align, color)
 
     def legend(self, title=None, scale='color'):
         """Convience method for adding a legend to the figure.
