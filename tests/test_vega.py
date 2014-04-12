@@ -315,6 +315,20 @@ class TestVisualization(object):
         nt.assert_equals(test_obj.axes['x'].title, 'test1')
         nt.assert_equals(test_obj.axes['y'].title, 'test2')
 
+    def test_axis_properties(self):
+
+        test_vis = Visualization()
+        with nt.assert_raises(ValueError) as err:
+            test_vis.x_axis_properties(title_size=20, label_angle=30)
+        nt.assert_equals(err.exception.args[0],
+                         'This Visualization has no axes!')
+        test_vis.axes = [Axis(scale='x'), Axis(scale='y')]
+        test_vis.x_axis_properties(title_size=20, label_angle=30)
+        test_vis.y_axis_properties(title_size=20, label_angle=30)
+        for axis in test_vis.axes:
+            nt.assert_equals(axis.properties.labels.angle.value, 30)
+            nt.assert_equals(axis.properties.title.font_size.value, 20)
+
     def test_to_json(self):
         """Test JSON to string"""
 

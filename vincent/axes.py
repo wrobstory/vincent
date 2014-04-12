@@ -29,6 +29,10 @@ class AxisProperties(GrammarClass):
         """PropertySet : Definition of marks for axis labels"""
 
     @grammar(PropertySet)
+    def title(value):
+        """PropertySet : Definition of marks for axis labels"""
+
+    @grammar(PropertySet)
     def axis(value):
         """PropertySet : Definition of axis line style"""
 

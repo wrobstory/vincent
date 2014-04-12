@@ -11,8 +11,10 @@ from .core import (_assert_is_type, ValidationError,
 from .data import Data
 from .scales import Scale
 from .marks import Mark
-from .axes import Axis
+from .axes import Axis, AxisProperties
 from .legends import Legend
+from .properties import PropertySet
+from .values import ValueRef
 from .colors import brews
 from ._compat import str_types
 
@@ -196,6 +198,45 @@ class Visualization(GrammarClass):
         else:
             self.axes.extend([Axis(type='x', title=x),
                               Axis(type='y', title=y)])
+
+    def _axis_properties(self, axis, title_size, label_angle):
+        """Assign axis properties"""
+        get_axis = lambda x, y: x.scale == y
+        if self.axes:
+            axis = [a for a in self.axes if get_axis(a, axis)][0]
+            axis.properties = AxisProperties()
+            if title_size:
+                axis.properties.title = PropertySet(font_size=ValueRef(
+                                                    value=title_size))
+            if label_angle:
+                axis.properties.labels = PropertySet(angle=ValueRef(
+                                                     value=label_angle))
+        else:
+            raise ValueError('This Visualization has no axes!')
+
+    def x_axis_properties(self, title_size=None, label_angle=None):
+        """Change x-axis title font size and label angle
+
+        Parameters
+        ----------
+        title_size: int, default None
+            Title size, in px
+        label_angle: int, default None
+            label angle in degrees
+        """
+        self._axis_properties('x', title_size, label_angle)
+
+    def y_axis_properties(self, title_size=None, label_angle=None):
+        """Change y-axis title font size and label angle
+
+        Parameters
+        ----------
+        title_size: int, default None
+            Title size, in px
+        label_angle: int, default None
+            label angle in degrees
+        """
+        self._axis_properties('y', title_size, label_angle)
 
     def legend(self, title=None, scale='color'):
         """Convience method for adding a legend to the figure.
