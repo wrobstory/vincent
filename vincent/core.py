@@ -28,32 +28,75 @@ def initialize_notebook():
         from IPython.core.display import display, HTML
     except ImportError:
         print("IPython Notebook could not be loaded.")
-    require_js = """
-    if (window['{0}'] === undefined) {{
-        require.config({{ paths: {{{0}: "{1}"}} }});
-        require(["{0}"], function({0}) {{
-            window.{0} = {0};
-            {2}
-        }});
-    }};
-    """
+
+    # Thanks to @jakevdp:
+    # https://github.com/jakevdp/mpld3/blob/master/mpld3/_display.py#L85
+    load_lib = """
+                function vct_load_lib(url, callback){
+                      if(typeof d3 !== 'undefined' &&
+                         url === 'http://d3js.org/d3.v3.min.js'){
+                        callback()
+                      }
+                      var s = document.createElement('script');
+                      s.src = url;
+                      s.async = true;
+                      s.onreadystatechange = s.onload = callback;
+                      s.onerror = function(){
+                        console.warn("failed to load library " + url);
+                        };
+                      document.getElementsByTagName("head")[0].appendChild(s);
+                };
+                var vincent_event = new CustomEvent(
+                  "vincent_libs_loaded",
+                  {bubbles: true, cancelable: true}
+                );
+                """
     lib_urls = [
-        "http://d3js.org/d3.geo.projection.v0.min.js",
-        "http://wrobstory.github.io/d3-cloud/d3.layout.cloud.js",
-        "http://d3js.org/topojson.v1.min.js",
-        "http://trifacta.github.com/vega/vega.js"
+        "'http://d3js.org/d3.v3.min.js'",
+        "'http://d3js.org/d3.geo.projection.v0.min.js'",
+        "'http://wrobstory.github.io/d3-cloud/d3.layout.cloud.js'",
+        "'http://trifacta.github.com/vega/vega.js'"
     ]
-    get_script = "$.getScript(\"%s\", function() {%s})"
-    load_js = get_script
-    ipy_trigger = "$([IPython.events]).trigger(\"vega_loaded.vincent\");"
+    get_lib = """vct_load_lib(%s, function(){
+                  %s
+                  });"""
+    load_js = get_lib
+    ipy_trigger = "window.dispatchEvent(vincent_event);"
     for elem in lib_urls[:-1]:
-        load_js = load_js % (elem, get_script)
+        load_js = load_js % (elem, get_lib)
     load_js = load_js % (lib_urls[-1], ipy_trigger)
-    load_js += ";"
-    require = require_js.format("d3", "http://d3js.org/d3.v3.min", load_js)
-    require += require_js.format("topojson", "http://d3js.org/topojson.v1.min",
-                                 "")
-    html = "<script>%s</script>" % (require,)
+    html = """
+           <script>
+               %s
+               function load_all_libs(){
+                  console.log('loading all libs')
+                  %s
+               };
+               if(typeof define === "function" && define.amd){
+                    if (window['d3'] === undefined ||
+                        window['topojson'] === undefined){
+                        require.config(
+                            {paths: {
+                              d3: 'http://d3js.org/d3.v3.min',
+                              topojson: 'http://d3js.org/topojson.v1.min'
+                              }
+                            }
+                          );
+                        require(["d3"], function(d3){
+                            console.log('Loading from require.js...')
+                            window.d3 = d3;
+                            require(["topojson"], function(topojson){
+                                window.topojson = topojson;
+                                load_all_libs();
+                            });
+                        });
+                    };
+               }else{
+                    console.log('Require.js not found, loading manually...')
+                    load_all_libs();
+               };
+
+           </script>""" % (load_lib, load_js,)
     return display(HTML(html))
 
 
