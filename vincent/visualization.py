@@ -372,8 +372,8 @@ class Visualization(GrammarClass):
 <script>
    ( function() {
      var _do_plot = function() {
-       if ( (typeof vg == 'undefined') && (typeof IPython != 'undefined')) {
-         $([IPython.events]).on("vega_loaded.vincent", _do_plot);
+       if (typeof vg === 'undefined') {
+         window.addEventListener('vincent_libs_loaded', _do_plot)
          return;
        }
        vg.parse.spec(%s, function(chart) {
