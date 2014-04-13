@@ -341,16 +341,22 @@ class TestVisualization(object):
             props = axis.properties
             nt.assert_equals(props.labels.angle.value, 30)
             nt.assert_equals(props.title.font_size.value, 20)
-            if axis.scale == 'x':
-                nt.assert_equals(props.title.dy.value, 10)
-            elif axis.scale == 'y':
-                nt.assert_equals(props.title.dx.value, 10)
+            nt.assert_equals(props.title.dy.value, 10)
         check_axis_colors()
 
         test_vis.axes = [Axis(scale='x'), Axis(scale='y')]
         test_vis.common_axis_properties(color='#000')
         for axis in test_vis.axes:
             check_axis_colors()
+
+    def test_legends(self):
+        test_vis = Visualization()
+        test_vis.legend(title='Test', text_color='#000')
+        nt.assert_equals(test_vis.legends[0].title, 'Test')
+        nt.assert_equals(test_vis.legends[0].properties.labels.fill.value,
+                         '#000')
+        nt.assert_equals(test_vis.legends[0].properties.title.fill.value,
+                         '#000')
 
     def test_to_json(self):
         """Test JSON to string"""
@@ -834,11 +840,11 @@ class TestLegendProperties(object):
     def test_grammar_typechecking(self):
         """Test grammar of LegendProperties"""
 
-        grammar_types = [('title', [ValueRef]),
-                         ('labels', [ValueRef]),
-                         ('symbols', [ValueRef]),
-                         ('gradient', [ValueRef]),
-                         ('legend', [ValueRef])]
+        grammar_types = [('title', [PropertySet]),
+                         ('labels', [PropertySet]),
+                         ('symbols', [PropertySet]),
+                         ('gradient', [PropertySet]),
+                         ('legend', [PropertySet])]
 
         assert_grammar_typechecking(grammar_types, LegendProperties())
 

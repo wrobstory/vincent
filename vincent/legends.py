@@ -6,7 +6,7 @@ Legend: Classes to define Vega Legends
 """
 from __future__ import (print_function, division)
 from .core import grammar, GrammarClass
-from .values import ValueRef
+from .properties import PropertySet
 from ._compat import str_types
 
 
@@ -18,23 +18,23 @@ class LegendProperties(GrammarClass):
 
     """
 
-    @grammar(ValueRef)
+    @grammar(PropertySet)
     def title(value):
         """Legend title properties """
 
-    @grammar(ValueRef)
+    @grammar(PropertySet)
     def labels(value):
         """Legend label properties"""
 
-    @grammar(ValueRef)
+    @grammar(PropertySet)
     def symbols(value):
         """Legend symbol properties"""
 
-    @grammar(ValueRef)
+    @grammar(PropertySet)
     def gradient(value):
         """Continuous color gradient for legend"""
 
-    @grammar(ValueRef)
+    @grammar(PropertySet)
     def legend(value):
         """Legend styling properties"""
 

@@ -12,7 +12,7 @@ from .data import Data
 from .scales import Scale
 from .marks import Mark
 from .axes import Axis, AxisProperties
-from .legends import Legend
+from .legends import Legend, LegendProperties
 from .properties import PropertySet
 from .values import ValueRef
 from .colors import brews
@@ -207,7 +207,6 @@ class Visualization(GrammarClass):
                          'title', 'labels']:
                 setattr(axis.properties, prop, PropertySet())
 
-
     def _set_all_axis_color(self, axis, color):
         """Set axis ticks, title, labels to given color"""
         for prop in ['ticks', 'axis', 'major_ticks', 'minor_ticks', 'title',
@@ -251,7 +250,8 @@ class Visualization(GrammarClass):
                 self._set_axis_properties(axis)
                 self._set_all_axis_color(axis, color)
                 if title_size:
-                    axis.properties.title.font_size = ValueRef(value=title_size)
+                    ref = ValueRef(value=title_size)
+                    axis.properties.title.font_size = ref
         else:
             raise ValueError('This Visualization has no axes!')
 
@@ -295,7 +295,7 @@ class Visualization(GrammarClass):
         self._axis_properties('y', title_size, title_offset, label_angle,
                               label_align, color)
 
-    def legend(self, title=None, scale='color'):
+    def legend(self, title=None, scale='color', text_color=None):
         """Convience method for adding a legend to the figure.
 
         Important: This defaults to the color scale that is generated with
@@ -308,10 +308,16 @@ class Visualization(GrammarClass):
             Legend Title
         scale: string, default 'color'
             Scale reference for legend
-
+        text_color: str, default None
+            Title and label color
         """
 
-        self.legends.append(Legend(title=title, fill=scale, offset=0))
+        self.legends.append(Legend(title=title, fill=scale, offset=0,
+                                   properties=LegendProperties()))
+        if text_color:
+            color_props = PropertySet(fill=ValueRef(value=text_color))
+            self.legends[0].properties.labels = color_props
+            self.legends[0].properties.title = color_props
 
     def colors(self, brew=None):
         """Convenience method for adding color brewer scales to charts with a
