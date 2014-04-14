@@ -5,7 +5,11 @@ Visualization: Top level class for Vega Grammar
 
 """
 from __future__ import (print_function, division)
+
+from string import Template
+from pkg_resources import resource_string
 from uuid import uuid4
+
 from .core import (_assert_is_type, ValidationError,
                    KeyedList, grammar, GrammarClass)
 from .data import Data
@@ -29,7 +33,8 @@ class Visualization(GrammarClass):
     ``axes``, ``marks``, and ``scales`` attributes. See the docs for each
     attribute for details.
     """
-    def __init__(self, *args, **kwargs):
+
+    def __init__(self, renderer="svg", tooltips=True, *args, **kwargs):
         """Initialize a Visualization
 
         In addition to setting any attributes, this sets the data, marks,
@@ -49,6 +54,9 @@ class Visualization(GrammarClass):
         # Legends don't get keyed.
         if not self.legends:
             self.legends = []
+
+        self.renderer = renderer
+        self.tooltips = tooltips
 
     @grammar(str_types)
     def name(value):
@@ -368,23 +376,37 @@ class Visualization(GrammarClass):
     def _repr_html_(self):
         """Build the HTML representation for IPython."""
         vis_id = str(uuid4()).replace("-", "")
+        if self.tooltips:
+            ttips = str(resource_string('vincent', 'tooltips.js'))
+        else:
+            ttips = 'null'
         html = """<div id="vis%s"></div>
-<script>
-   ( function() {
-     var _do_plot = function() {
-       if (typeof vg === 'undefined') {
-         window.addEventListener('vincent_libs_loaded', _do_plot)
-         return;
-       }
-       vg.parse.spec(%s, function(chart) {
-         chart({el: "#vis%s"}).update();
-       });
-     };
-     _do_plot();
-   })();
-</script>
-<style>.vega canvas {width: 100%%;}</style>
-        """ % (vis_id, self.to_json(pretty_print=False), vis_id)
+            <script>
+               %s
+               ( function() {
+                 var _do_plot = function() {
+                   if (typeof vg === 'undefined') {
+                     window.addEventListener('vincent_libs_loaded', _do_plot)
+                     return;
+                   }
+                   vg.parse.spec(%s, function(chart){
+                     view = chart({el: "#vis%s", renderer: "%s"});
+                     view.update();
+                     var tooltipDiv;
+                     view.on('mouseover', function(event, item){
+                            vg_mouseover(item.x, item.y, event.x, event.y)
+                          });
+                     view.on('mousemove', vg_mousemove(0, 0,
+                                                       event.x, event.y));
+                     view.on('mouseout', vg_mouseout())
+                      });
+                 };
+                 _do_plot();
+               })();
+            </script>
+            <style>.vega canvas {width: 100%%;}</style>
+        """ % (vis_id, ttips, self.to_json(pretty_print=False), vis_id,
+               self.renderer)
         return html
 
     def display(self):
