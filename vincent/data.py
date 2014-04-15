@@ -209,7 +209,7 @@ class Data(GrammarClass):
 
         if isinstance(pd_obj, pd.Series):
             data_key = data.name or series_key
-            for i, v in pd_obj.iterkv():
+            for i, v in pd_obj.iteritems():
                 value = {}
                 value['idx'] = cls.serialize(i)
                 value['col'] = data_key
@@ -220,7 +220,7 @@ class Data(GrammarClass):
             # We have to explicitly convert the column names to strings
             # because the json serializer doesn't allow for integer keys.
             for i, row in pd_obj.iterrows():
-                for num, (k, v) in enumerate(row.iterkv()):
+                for num, (k, v) in enumerate(row.iteritems()):
                     value = {}
                     value['idx'] = cls.serialize(i)
                     value['col'] = cls.serialize(k)
