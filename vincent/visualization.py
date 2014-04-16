@@ -319,7 +319,7 @@ class Visualization(GrammarClass):
             self.legends[0].properties.labels = color_props
             self.legends[0].properties.title = color_props
 
-    def colors(self, brew=None):
+    def colors(self, brew=None, range_=None):
         """Convenience method for adding color brewer scales to charts with a
         color scale, such as stacked or grouped bars.
 
@@ -333,8 +333,13 @@ class Visualization(GrammarClass):
         ----------
         brew: string, default None
             Color brewer scheme (BuGn, YlOrRd, etc)
+        range: list, default None
+            List of colors. Ex: ['#ac4142', '#d28445', '#f4bf75']
         """
-        self.scales['color'].range = brews[brew]
+        if brew:
+            self.scales['color'].range = brews[brew]
+        elif range_:
+            self.scales['color'].range = range_
 
     def validate(self, require_all=True, scale='colors'):
         """Validate the visualization contents.

@@ -9,6 +9,7 @@ from itertools import product
 import time
 import json
 
+from vincent.charts import Line
 from vincent.core import (grammar, GrammarClass, GrammarDict, KeyedList,
                           LoadError, ValidationError)
 from vincent.visualization import Visualization
@@ -357,6 +358,12 @@ class TestVisualization(object):
                          '#000')
         nt.assert_equals(test_vis.legends[0].properties.title.fill.value,
                          '#000')
+
+    def test_colors(self):
+        test_vis = Line([1, 2, 3])
+        rng = ['foo', 'bar']
+        test_vis.colors(range_=rng)
+        nt.assert_equals(test_vis.scales['color'].range, rng)
 
     def test_to_json(self):
         """Test JSON to string"""
