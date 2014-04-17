@@ -198,6 +198,7 @@ class Visualization(GrammarClass):
         else:
             self.axes.extend([Axis(type='x', title=x),
                               Axis(type='y', title=y)])
+        return self
 
     def _set_axis_properties(self, axis):
         """Set AxisProperties and PropertySets"""
@@ -254,6 +255,7 @@ class Visualization(GrammarClass):
                     axis.properties.title.font_size = ref
         else:
             raise ValueError('This Visualization has no axes!')
+        return self
 
     def x_axis_properties(self, title_size=None, title_offset=None,
                           label_angle=None, label_align=None, color=None):
@@ -274,6 +276,7 @@ class Visualization(GrammarClass):
         """
         self._axis_properties('x', title_size, title_offset, label_angle,
                               label_align, color)
+        return self
 
     def y_axis_properties(self, title_size=None, title_offset=None,
                           label_angle=None, label_align=None, color=None):
@@ -294,6 +297,7 @@ class Visualization(GrammarClass):
         """
         self._axis_properties('y', title_size, title_offset, label_angle,
                               label_align, color)
+        return self
 
     def legend(self, title=None, scale='color', text_color=None):
         """Convience method for adding a legend to the figure.
@@ -318,6 +322,7 @@ class Visualization(GrammarClass):
             color_props = PropertySet(fill=ValueRef(value=text_color))
             self.legends[0].properties.labels = color_props
             self.legends[0].properties.title = color_props
+        return self
 
     def colors(self, brew=None, range_=None):
         """Convenience method for adding color brewer scales to charts with a
@@ -340,6 +345,7 @@ class Visualization(GrammarClass):
             self.scales['color'].range = brews[brew]
         elif range_:
             self.scales['color'].range = range_
+        return self
 
     def validate(self, require_all=True, scale='colors'):
         """Validate the visualization contents.
