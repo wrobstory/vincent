@@ -8,10 +8,14 @@ Vincent Line Examples
 #Build a Line Chart from scratch
 
 from vincent import *
+import pandas as pd
 import pandas.io.data as web
+import datetime
 all_data = {}
-for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:
-    all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2010', '1/1/2013')
+date_start = datetime.datetime(2010, 1, 1)
+date_end = datetime.datetime(2014, 1, 1)
+for ticker in ['AAPL', 'IBM', 'YHOO', 'MSFT']:
+    all_data[ticker] = web.DataReader(ticker, 'yahoo', date_start, date_end)
 price = pd.DataFrame({tic: data['Adj Close']
                       for tic, data in all_data.items()})
 
@@ -55,4 +59,4 @@ vis = Line(price)
 vis.axis_titles(x='Date', y='Price')
 vis.legend(title='Tech Stocks')
 vis.colors(brew='Set1')
-vis.to_json('vega.json')
+vis.to_json('vega.json', html_out=True)
