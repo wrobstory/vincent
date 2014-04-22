@@ -148,7 +148,7 @@ Pie charts:
 vis = vincent.Pie(farm_1)
 vis.legend('Farm 1 Fruit')
 ```
-![pie](http://farm4.staticflickr.com/3684/11391908745_2837f1bb9a.jpg)
+![pie](https://farm4.staticflickr.com/3684/11391908745_227ffba829.jpg)
 
 Donut charts:
 
