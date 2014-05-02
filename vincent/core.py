@@ -55,7 +55,7 @@ def initialize_notebook():
         "'http://d3js.org/d3.v3.min.js'",
         "'http://d3js.org/d3.geo.projection.v0.min.js'",
         "'http://wrobstory.github.io/d3-cloud/d3.layout.cloud.js'",
-        "'http://trifacta.github.com/vega/vega.js'"
+        "'http://wrobstory.github.io/vega/vega.v1.3.3.js'"
     ]
     get_lib = """vct_load_lib(%s, function(){
                   %s
@@ -69,7 +69,7 @@ def initialize_notebook():
            <script>
                %s
                function load_all_libs(){
-                  console.log('loading all libs')
+                  console.log('Loading Vincent libs...')
                   %s
                };
                if(typeof define === "function" && define.amd){
@@ -83,13 +83,15 @@ def initialize_notebook():
                             }
                           );
                         require(["d3"], function(d3){
-                            console.log('Loading from require.js...')
+                            console.log('Loading Vincent from require.js...')
                             window.d3 = d3;
                             require(["topojson"], function(topojson){
                                 window.topojson = topojson;
                                 load_all_libs();
                             });
                         });
+                    } else {
+                        load_all_libs();
                     };
                }else{
                     console.log('Require.js not found, loading manually...')
