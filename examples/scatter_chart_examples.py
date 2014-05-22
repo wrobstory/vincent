@@ -8,10 +8,14 @@ Vincent Scatter Examples
 #Build a Line Chart from scratch
 
 from vincent import *
+import pandas as pd
 import pandas.io.data as web
+import datetime
 all_data = {}
-for ticker in ['AAPL', 'GOOG', 'IBM', 'YHOO', 'MSFT']:
-    all_data[ticker] = web.get_data_yahoo(ticker, '1/1/2010', '1/1/2013')
+date_start = datetime.datetime(2010, 1, 1)
+date_end = datetime.datetime(2014, 1, 1)
+for ticker in ['AAPL', 'IBM', 'YHOO', 'MSFT']:
+    all_data[ticker] = web.DataReader(ticker, 'yahoo', date_start, date_end)
 price = pd.DataFrame({tic: data['Adj Close']
                       for tic, data in all_data.items()})
 
@@ -40,18 +44,18 @@ mark = Mark(type='group', from_=transform,
             properties=MarkProperties(enter=enter_props))])
 vis.marks.append(mark)
 
-data = Data.from_pandas(price[['GOOG', 'AAPL']])
+data = Data.from_pandas(price[['MSFT', 'AAPL']])
 
 #Using a Vincent Keyed List here
 vis.data['table'] = data
 vis.axis_titles(x='Date', y='Price')
-vis.legend(title='GOOG vs AAPL')
+vis.legend(title='MSFT vs AAPL')
 vis.to_json('vega.json')
 
 #Convenience method
 
-vis = Scatter(price[['GOOG', 'AAPL']])
+vis = Scatter(price[['MSFT', 'AAPL']])
 vis.axis_titles(x='Date', y='Price')
-vis.legend(title='GOOG vs AAPL')
+vis.legend(title='MSFT vs AAPL')
 vis.colors(brew='RdBu')
 vis.to_json('vega.json')
