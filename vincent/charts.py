@@ -43,7 +43,7 @@ class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
-                 width=960, height=500, grouped=False, no_data=False,
+                 width=960, height=500, grouped=False, no_data=False, label_color = None,
                  *args, **kwargs):
         """Create a Vega Chart
 
@@ -87,6 +87,7 @@ class Chart(Visualization):
         self.padding = "auto"
         self.columns = columns
         self._is_datetime = False
+        self.label_color = label_color
 
         # Data
         if data is None and not no_data:
@@ -319,7 +320,21 @@ class GroupedBar(Chart):
                 width=ValueRef(scale='pos', band=True, offset=-1),
                 fill=ValueRef(scale='color', field='data.col')))
 
-        mark_group_marks = [Mark(type='rect', properties=mark_props)]
+        if self.label_color:
+            mark_props_text = MarkProperties(
+                enter=PropertySet(
+                    x=ValueRef(scale='pos', field='data.col'),
+                    dy=ValueRef(scale='pos', band=True, mult=0.5),
+                    y=ValueRef(scale='y', field='data.val'),
+                    align=ValueRef(value='left'),
+                    text=ValueRef(field='data.val'),
+                    baseline=ValueRef(value='middle'),
+                    fill=ValueRef(value=self.label_color)))
+
+            mark_group_marks = [Mark(type='rect', properties=mark_props), Mark(type='text', properties=mark_props_text)]
+        else:
+            mark_group_marks = [Mark(type='rect', properties=mark_props)]
+
         mark_group_from = MarkRef(
             data='table',
             transform=[Transform(type='facet', keys=['data.idx'])])
