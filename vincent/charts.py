@@ -43,8 +43,8 @@ class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
-                 width=960, height=500, grouped=False, no_data=False, label_color = None,
-                 fontsize = 12, offset=0,
+                 width=960, height=500, grouped=False, no_data=False, label_color = '#000000',
+                 fontsize = 12, baseline='top', data_labels=False,
                  *args, **kwargs):
         """Create a Vega Chart
 
@@ -90,7 +90,8 @@ class Chart(Visualization):
         self._is_datetime = False
         self.label_color = label_color
         self.fontsize = fontsize
-        self.offset = offset 
+        self.baseline = baseline
+        self.data_labels = data_labels
 
         # Data
         if data is None and not no_data:
@@ -324,15 +325,15 @@ class GroupedBar(Chart):
                 fill=ValueRef(scale='color', field='data.col')))
         mark_group_marks = [Mark(type='rect', properties=mark_props)]
 
-        if self.label_color:
+        if self.data_labels:
             mark_props_text = MarkProperties(
                 enter=PropertySet(
-                    x=ValueRef(scale='pos', field='data.col', offset=self.offset),
-                    dy=ValueRef(scale='pos', band=True, mult=0.5),
+                    x=ValueRef(scale='pos', field='data.col', offset=0),
+                    dx=ValueRef(scale='pos', band=True, mult=0.5),
                     y=ValueRef(scale='y', field='data.val'),
-                    align=ValueRef(value='left'),
+                    align=ValueRef(value='center'),
                     text=ValueRef(field='data.val'),
-                    baseline=ValueRef(value='middle'),
+                    baseline=ValueRef(value=self.baseline),
                     fill=ValueRef(value=self.label_color),
                     font_size= ValueRef(value=self.fontsize)))
 
