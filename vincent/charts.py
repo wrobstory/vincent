@@ -79,7 +79,7 @@ class Chart(Visualization):
         fontsize: int, default 12
             Set data label font size
         baseline: string, default top
-            Set to change vertical placement of data labels. 
+            Set to change vertical placement of data labels.
             Values :('top','bottom','middle')
 
         Returns
