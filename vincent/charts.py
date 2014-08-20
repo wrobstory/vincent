@@ -43,8 +43,9 @@ class Chart(Visualization):
     """Abstract Base Class for all Chart types"""
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
-                 width=960, height=500, grouped=False, no_data=False, data_labels=False,
-                 label_color = '#000000', fontsize = 12, baseline='top', 
+                 width=960, height=500, grouped=False, no_data=False, 
+                 data_labels=False,
+                 label_color='#000000', fontsize=12, baseline='top', 
                  *args, **kwargs):
         """Create a Vega Chart
 
@@ -345,8 +346,8 @@ class GroupedBar(Chart):
                     fill=ValueRef(value=self.label_color),
                     font_size= ValueRef(value=self.fontsize)))
 
-            mark_group_marks.append(Mark(type='text', properties=mark_props_text))
-            
+            mark_group_marks.append(Mark(type='text', 
+                                         properties=mark_props_text))
 
         mark_group_from = MarkRef(
             data='table',
