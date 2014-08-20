@@ -44,6 +44,7 @@ class Chart(Visualization):
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
                  width=960, height=500, grouped=False, no_data=False, label_color = None,
+                 fontsize = 12, offset=0,
                  *args, **kwargs):
         """Create a Vega Chart
 
@@ -88,6 +89,8 @@ class Chart(Visualization):
         self.columns = columns
         self._is_datetime = False
         self.label_color = label_color
+        self.fontsize = fontsize
+        self.offset = offset 
 
         # Data
         if data is None and not no_data:
@@ -319,21 +322,22 @@ class GroupedBar(Chart):
                 y2=ValueRef(scale='y', value=0),
                 width=ValueRef(scale='pos', band=True, offset=-1),
                 fill=ValueRef(scale='color', field='data.col')))
+        mark_group_marks = [Mark(type='rect', properties=mark_props)]
 
         if self.label_color:
             mark_props_text = MarkProperties(
                 enter=PropertySet(
-                    x=ValueRef(scale='pos', field='data.col'),
+                    x=ValueRef(scale='pos', field='data.col', offset=self.offset),
                     dy=ValueRef(scale='pos', band=True, mult=0.5),
                     y=ValueRef(scale='y', field='data.val'),
                     align=ValueRef(value='left'),
                     text=ValueRef(field='data.val'),
                     baseline=ValueRef(value='middle'),
-                    fill=ValueRef(value=self.label_color)))
+                    fill=ValueRef(value=self.label_color),
+                    font_size= ValueRef(value=self.fontsize)))
 
-            mark_group_marks = [Mark(type='rect', properties=mark_props), Mark(type='text', properties=mark_props_text)]
-        else:
-            mark_group_marks = [Mark(type='rect', properties=mark_props)]
+            mark_group_marks.append(Mark(type='text', properties=mark_props_text))
+            
 
         mark_group_from = MarkRef(
             data='table',
