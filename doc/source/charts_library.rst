@@ -88,6 +88,12 @@ Multiple lines can also be plotted easily::
 
 .. image:: /images/line2.png
 
+You can also specify the x-coordinates explicitly::
+
+    vincent.Line({i: math.sin(i/15.0) for i in range(10, 100, 2)})
+
+.. image:: /images/line3.png
+
 .. _chart_lib_scatter:
 
 Scatter
