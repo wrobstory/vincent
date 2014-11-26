@@ -8,6 +8,10 @@
 
 The folks at Trifacta are making it easy to build visualizations on top of D3 with Vega. Vincent makes it easy to build Vega with Python.
 
+Do you want to own this project?
+--------------------------------
+Vincent is looking for a new owner/maintainer. Interested? You can find my email on my Github profile.
+
 Concept
 -------
 The data capabilities of Python. The visualization capabilities of JavaScript.
