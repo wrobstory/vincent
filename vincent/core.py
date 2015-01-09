@@ -57,7 +57,6 @@ def initialize_notebook():
         "'//wrobstory.github.io/d3-cloud/d3.layout.cloud.js'",
         "'//wrobstory.github.io/vega/vega.v1.3.3.js'"
     ]
-    print(lib_urls)
     get_lib = """vct_load_lib(%s, function(){
                   %s
                   });"""
