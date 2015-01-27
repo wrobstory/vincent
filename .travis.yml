@@ -1,10 +1,7 @@
 language: python
 python:
   - "2.7"
-  - "3.2"
-  - "3.3"
-virtualenv:
-  system_site_packages: true
+  - "3.4"
 before_install:
   - sudo apt-get install -qq gfortran libatlas-base-dev python-numpy
 install:

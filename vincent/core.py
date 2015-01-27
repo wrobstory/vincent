@@ -33,8 +33,9 @@ def initialize_notebook():
     # https://github.com/jakevdp/mpld3/blob/master/mpld3/_display.py#L85
     load_lib = """
                 function vct_load_lib(url, callback){
-                      if(typeof d3 !== 'undefined' &&
-                         url === '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js'){
+                      if(
+                typeof d3 !== 'undefined' &&
+                url === '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js'){
                         callback()
                       }
                       var s = document.createElement('script');
@@ -53,7 +54,8 @@ def initialize_notebook():
                 """
     lib_urls = [
         "'//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js'",
-        "'//cdnjs.cloudflare.com/ajax/libs/d3-geo-projection/0.2.9/d3.geo.projection.min.js'",
+        ("'//cdnjs.cloudflare.com/ajax/libs/d3-geo-projection/0.2.9/"
+         "d3.geo.projection.min.js'"),
         "'//wrobstory.github.io/d3-cloud/d3.layout.cloud.js'",
         "'//wrobstory.github.io/vega/vega.v1.3.3.js'"
     ]
@@ -77,8 +79,8 @@ def initialize_notebook():
                         window['topojson'] === undefined){
                         require.config(
                             {paths: {
-                              d3: '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min',
-                              topojson: '//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min'
+    d3: '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min',
+    topojson: '//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min'
                               }
                             }
                           );
