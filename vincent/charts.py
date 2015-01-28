@@ -70,15 +70,6 @@ class Chart(Visualization):
             Pass true to indicate that data is not being passed. For example,
             this is used for the Map class, where geodata is passed as a
             separate attibute
-        data_labels: boolean, default False
-            Pass true to enable data labels in GroupedBar chart
-        label_color: string, default #000000
-            Set data label text color
-        fontsize: int, default 12
-            Set data label font size
-        baseline: string, default top
-            Set to change vertical placement of data labels.
-            Values :('top','bottom','middle')
 
         Returns
         -------
@@ -303,8 +294,21 @@ class GroupedBar(Chart):
     def __init__(self, data_labels=False, label_color='#000000', 
                  fontsize=12, baseline='top',
                  *args, **kwargs):
-        """Create a Vega Grouped Bar Chart"""
-        
+        """Create a Vega Grouped Bar Chart
+
+        Parameters
+        -----------
+        data_labels: boolean, default False
+            Pass true to enable data labels in GroupedBar chart
+        label_color: string, default #000000
+            Set data label text color
+        fontsize: int, default 12
+            Set data label font size
+        baseline: string, default top
+            Set to change vertical placement of data labels.
+            Values :('top','bottom','middle')
+        """
+
         self.label_color = label_color
         self.fontsize = fontsize
         self.baseline = baseline
