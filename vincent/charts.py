@@ -314,7 +314,7 @@ class GroupedBar(Chart):
         self.baseline = baseline
         self.data_labels = data_labels
 
-        super(GroupedBar, self).__init__(*args, **kwargs)
+        super(GroupedBar, self).__init__(data=data, *args, **kwargs)
 
         # Scales
         self.scales += [
