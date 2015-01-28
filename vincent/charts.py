@@ -291,8 +291,8 @@ StackedArea = Area
 class GroupedBar(Chart):
     """Vega Grouped Bar Chart"""
 
-    def __init__(self, data_labels=False, label_color='#000000', 
-                 fontsize=12, baseline='top',
+    def __init__(self, data=None, data_labels=False, 
+                 label_color='#000000', fontsize=12, baseline='top',
                  *args, **kwargs):
         """Create a Vega Grouped Bar Chart
 
