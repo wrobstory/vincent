@@ -44,8 +44,6 @@ class Chart(Visualization):
 
     def __init__(self, data=None, columns=None, key_on='idx', iter_idx=None,
                  width=960, height=500, grouped=False, no_data=False,
-                 data_labels=False,
-                 label_color='#000000', fontsize=12, baseline='top',
                  *args, **kwargs):
         """Create a Vega Chart
 
@@ -306,7 +304,9 @@ StackedArea = Area
 class GroupedBar(Chart):
     """Vega Grouped Bar Chart"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, data_labels=False, label_color='#000000', 
+                 fontsize=12, baseline='top',
+                 *args, **kwargs):
         """Create a Vega Grouped Bar Chart"""
 
         super(GroupedBar, self).__init__(*args, **kwargs)
