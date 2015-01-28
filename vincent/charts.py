@@ -291,10 +291,30 @@ StackedArea = Area
 class GroupedBar(Chart):
     """Vega Grouped Bar Chart"""
 
-    def __init__(self, *args, **kwargs):
-        """Create a Vega Grouped Bar Chart"""
+    def __init__(self, data=None, data_labels=False, 
+                 label_color='#000000', fontsize=12, baseline='top',
+                 *args, **kwargs):
+        """Create a Vega Grouped Bar Chart
 
-        super(GroupedBar, self).__init__(*args, **kwargs)
+        Parameters
+        -----------
+        data_labels: boolean, default False
+            Pass true to enable data labels in GroupedBar chart
+        label_color: string, default #000000
+            Set data label text color
+        fontsize: int, default 12
+            Set data label font size
+        baseline: string, default top
+            Set to change vertical placement of data labels.
+            Values :('top','bottom','middle')
+        """
+
+        self.label_color = label_color
+        self.fontsize = fontsize
+        self.baseline = baseline
+        self.data_labels = data_labels
+
+        super(GroupedBar, self).__init__(data=data, *args, **kwargs)
 
         # Scales
         self.scales += [
@@ -318,8 +338,23 @@ class GroupedBar(Chart):
                 y2=ValueRef(scale='y', value=0),
                 width=ValueRef(scale='pos', band=True, offset=-1),
                 fill=ValueRef(scale='color', field='data.col')))
-
         mark_group_marks = [Mark(type='rect', properties=mark_props)]
+
+        if self.data_labels:
+            mark_props_text = MarkProperties(
+                enter=PropertySet(
+                    x=ValueRef(scale='pos', field='data.col', offset=0),
+                    dx=ValueRef(scale='pos', band=True, mult=0.5),
+                    y=ValueRef(scale='y', field='data.val'),
+                    align=ValueRef(value='center'),
+                    text=ValueRef(field='data.val'),
+                    baseline=ValueRef(value=self.baseline),
+                    fill=ValueRef(value=self.label_color),
+                    font_size=ValueRef(value=self.fontsize)))
+
+            mark_group_marks.append(Mark(type='text',
+                                         properties=mark_props_text))
+
         mark_group_from = MarkRef(
             data='table',
             transform=[Transform(type='facet', keys=['data.idx'])])
