@@ -96,10 +96,6 @@ class Chart(Visualization):
         self.padding = "auto"
         self.columns = columns
         self._is_datetime = False
-        self.label_color = label_color
-        self.fontsize = fontsize
-        self.baseline = baseline
-        self.data_labels = data_labels
 
         # Data
         if data is None and not no_data:
@@ -308,6 +304,11 @@ class GroupedBar(Chart):
                  fontsize=12, baseline='top',
                  *args, **kwargs):
         """Create a Vega Grouped Bar Chart"""
+        
+        self.label_color = label_color
+        self.fontsize = fontsize
+        self.baseline = baseline
+        self.data_labels = data_labels
 
         super(GroupedBar, self).__init__(*args, **kwargs)
 
