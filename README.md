@@ -19,6 +19,10 @@ Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intui
 Status
 ------
 
+#### 2015-08-12 Update
+
+Vincent is essetially frozen for development right now, and has been for quite a while. The features for the currently targeted version of Vega (1.4) work fine, but it will *not* work with Vega 2.x releases. Regarding a rewrite, I'm honestly not sure if it's worth the time and effort at this point.
+
 Version 0.2 is a major release for Vincent, with major syntax changes. All of the Vincent 0.1 features have been ported.
 
 Vincent works with IPython 1.0, including the IPython notebook. Please see [Vincent_Examples.ipynb](https://github.com/wrobstory/vincent/blob/master/examples/Vincent_Examples.ipynb) for a demo of all chart types, as well as the new IPython integration API in Vincent 0.2, using the ```.initialize_notebook()``` and ```.display()``` methods.
