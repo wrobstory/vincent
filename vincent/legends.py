@@ -5,9 +5,10 @@ Legend: Classes to define Vega Legends
 
 """
 from __future__ import (print_function, division)
-from .core import grammar, GrammarClass
-from .properties import PropertySet
-from ._compat import str_types
+
+from vincent.core import grammar, GrammarClass
+from vincent.properties import PropertySet
+from vincent._compat import str_types
 
 
 class LegendProperties(GrammarClass):
@@ -72,10 +73,6 @@ class Legend(GrammarClass):
 
         if value not in ('left', 'right'):
             raise ValueError('Value must be one of "left" or "right".')
-
-    @grammar(int)
-    def offset(value):
-        """Pixel offset from figure"""
 
     @grammar(str_types)
     def title(value):

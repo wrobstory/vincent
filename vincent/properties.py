@@ -12,83 +12,55 @@ from vincent._compat import str_types
 
 
 class PropertySet(GrammarClass):
-    """Definition of properties for ``Mark`` objects and labels of ``Axis``
-    objects
-
-    These define the appearance details for marks and axes.
-
-    All properties are defined by ``ValueRef`` classes. As a warning,
-    validation of the values is only performed on the ``value`` field of the
-    class, which is ignored by Vega if the ``field`` property is set.
     """
+    Shared Visual Properties
+
+    https://github.com/vega/vega/wiki/Marks#shared-visual-properties
+    """
+
     @grammar(ValueRef)
     def x(value):
-        """ValueRef : number, left-most x-coordinate
-
-        For most marks, this will be equal to the field of the independent
-        variable. For example,
-        ``{"scale": "x", "field": "data.x"}``
-        will place a mark with its left-most coordinate at the x-values of
-        the data. Something like
-        ``{"scale": "x", "value": 10}``
-        will place a single mark at given x-coordinate.
-        """
+        pass
 
     @grammar(ValueRef)
     def x2(value):
-        """ValueRef : number, right-most x-coordinate
+        pass
 
-        Generally, for marks where the width is significant, it's better to
-        use the ``width`` property.
-        """
+    @grammar(ValueRef)
+    def xc(value):
+        pass
 
     @grammar(ValueRef)
     def width(value):
-        """ValueRef : number, width of the mark
-
-        Set the ``band`` property of the ``ValueRef`` to True to use the
-        full width.
-        """
+        pass
 
     @grammar(ValueRef)
     def y(value):
-        """ValueRef : number, top-most y-coordinate
-
-        The same remarks for the ``x`` property apply here.
-        """
+       pass
 
     @grammar(ValueRef)
     def y2(value):
-        """ValueRef : number, bottom-most y-coordinate
+        pass
 
-        The same remarks for the ``x2`` property apply here.
-        """
+    @grammar(ValueRef)
+    def yc(value):
+        pass
 
     @grammar(ValueRef)
     def height(value):
-        """ValueRef : number, height of the mark
-        """
+        pass
 
     @grammar(ValueRef)
     def opacity(value):
-        """ValueRef : number, overall opacity (0 to 1)
-        """
+        pass
 
     @grammar(ValueRef)
     def fill(value):
-        """ValueRef : string, fill color for the mark
-
-        Colors can be specified in standard HTML hex notation or as CSS3
-        compatible strings. The color string is not validated due to its
-        large number of valid values.
-        """
         if value.value:
             _assert_is_type('fill.value', value.value, str_types)
 
     @grammar(grammar_type=ValueRef, grammar_name='fillOpacity')
     def fill_opacity(value):
-        """ValueRef : int or float, opacity of the fill (0 to 1)
-        """
         if value.value:
             _assert_is_type('fill_opacity.value', value.value,
                             (float, int))
@@ -98,19 +70,11 @@ class PropertySet(GrammarClass):
 
     @grammar(ValueRef)
     def stroke(value):
-        """ValueRef : color, stroke color for the mark
-
-        Colors can be specified in standard HTML hex notation or as CSS3
-        compatible strings. The color string is not validated due to its
-        large number of valid values.
-        """
         if value.value:
             _assert_is_type('stroke.value', value.value, str)
 
     @grammar(grammar_type=ValueRef, grammar_name='strokeWidth')
     def stroke_width(value):
-        """ValueRef : int, width of the stroke in pixels
-        """
         if value.value:
             _assert_is_type('stroke_width.value', value.value, int)
             if value.value < 0:
@@ -118,14 +82,20 @@ class PropertySet(GrammarClass):
 
     @grammar(grammar_type=ValueRef, grammar_name='strokeOpacity')
     def stroke_opacity(value):
-        """ValueRef : number, opacity of the stroke (0 to 1)
-        """
         if value.value:
             _assert_is_type('stroke_opacity.value', value.value,
                             (float, int))
             if value.value < 0 or value.value > 1:
                 raise ValueError(
                     'stroke_opacity must be between 0 and 1')
+
+    @grammar(ValueRef, grammar_name="strokeDash")
+    def stroke_dash(value):
+        pass
+
+    @grammar(ValueRef, grammar_name="strokeDashOffset")
+    def stroke_dash_offset(value):
+        pass
 
     @grammar(ValueRef)
     def size(value):

@@ -10,7 +10,8 @@ from vincent._compat import str_types
 
 
 class Transform(GrammarClass):
-    """Container to Transforma metrics
+    """
+    Container to Transforma metrics
 
     As detailed in the Vega wiki:
 
@@ -82,23 +83,23 @@ class Transform(GrammarClass):
     https://github.com/vega/vega/wiki/Data-Transforms#-bin
     """
 
-    @grammar(int)
+    @grammar((int, float))
     def min(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def max(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def base(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def maxbins(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def step(value):
         pass
 
@@ -106,7 +107,7 @@ class Transform(GrammarClass):
     def steps(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def minstep(value):
         pass
 
@@ -239,7 +240,7 @@ class Transform(GrammarClass):
     def interactive(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def iterations(value):
         pass
 
@@ -255,19 +256,19 @@ class Transform(GrammarClass):
     def link_strength(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def friction(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def theta(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def gravity(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def alpha(value):
         pass
 
@@ -304,7 +305,7 @@ class Transform(GrammarClass):
     def translate(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def scale(value):
         pass
 
@@ -312,7 +313,7 @@ class Transform(GrammarClass):
     def rotate(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def precision(value):
         pass
 
@@ -345,7 +346,7 @@ class Transform(GrammarClass):
     def shape(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def tension(value):
         pass
 
@@ -388,7 +389,7 @@ class Transform(GrammarClass):
     def padding(value):
         pass
 
-    @grammar(int)
+    @grammar((int, float))
     def ratio(value):
         pass
 
