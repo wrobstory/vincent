@@ -5,18 +5,25 @@ Visualization: Top level class for Vega Grammar
 
 """
 from __future__ import (print_function, division)
+
 from uuid import uuid4
-from .core import (_assert_is_type, ValidationError,
-                   KeyedList, grammar, GrammarClass)
-from .data import Data
-from .scales import Scale
-from .marks import Mark
-from .axes import Axis, AxisProperties
-from .legends import Legend, LegendProperties
-from .properties import PropertySet
-from .values import ValueRef
-from .colors import brews
-from ._compat import str_types
+
+from jinja2 import Template, Environment, PackageLoader, escape
+
+from vincent.core import (_assert_is_type, ValidationError,
+                          KeyedList, grammar, GrammarClass)
+from vincent.data import Data
+from vincent.scales import Scale
+from vincent.marks import Mark
+from vincent.axes import Axis, AxisProperties
+from vincent.legends import Legend, LegendProperties
+from vincent.properties import PropertySet
+from vincent.values import ValueRef
+from vincent.colors import brews
+from vincent._compat import str_types
+
+
+TMPL_ENV = Environment(loader=PackageLoader('vincent', 'templates'))
 
 
 class Visualization(GrammarClass):
@@ -377,26 +384,13 @@ class Visualization(GrammarClass):
                     elem + ' must be defined for valid visualization')
 
     def _repr_html_(self):
-        """Build the HTML representation for IPython."""
-        vis_id = str(uuid4()).replace("-", "")
-        html = """<div id="vis%s"></div>
-<script>
-   ( function() {
-     var _do_plot = function() {
-       if (typeof vg === 'undefined') {
-         window.addEventListener('vincent_libs_loaded', _do_plot)
-         return;
-       }
-       vg.parse.spec(%s, function(chart) {
-         chart({el: "#vis%s"}).update();
-       });
-     };
-     _do_plot();
-   })();
-</script>
-<style>.vega canvas {width: 100%%;}</style>
-        """ % (vis_id, self.to_json(pretty_print=False), vis_id)
-        return html
+        """Build the HTML representation for Jupyter."""
+        template = TMPL_ENV.get_template("vega_jupyter.html")
+
+        vals = {"width": self.width,
+                "height": self.height,
+                "spec": self.to_json(pretty_print=False)}
+        return template.render(**vals)
 
     def display(self):
         """Display the visualization inline in the IPython notebook.

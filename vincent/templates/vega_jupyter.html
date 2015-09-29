@@ -1,0 +1,23 @@
+<iframe width='{{ width }}' height='{{ height }}' frameBorder='0' srcdoc='
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+    <script src="https://cdn.rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-geo-projection/0.2.15/d3.geo.projection.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.2.6/vega.min.js"></script>
+  </head>
+  <body>
+    <div id="vis"></div>
+  </body>
+    <script type="text/javascript">
+      function parse(spec) {
+        vg.parse.spec(spec, function(chart) {
+          chart({el:"#vis"}).update();
+        });
+      }
+      var data = {{ spec }}
+      render(data);
+    </script>
+</html>'
+</iframe>

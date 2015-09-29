@@ -27,9 +27,7 @@ kw = {
     'keywords': 'data visualization',
     'classifiers': classifiers,
     'packages': ['vincent'],
-    'package_data': {'vincent': ['*.html']},
     'install_requires': required,
-    'zip_safe': True,
 }
 
 setup(**kw)

@@ -4,15 +4,15 @@
 Charts: Constructors for different chart types in Vega grammar.
 
 """
-from .visualization import Visualization
-from .data import Data
-from .transforms import Transform
-from .values import ValueRef
-from .properties import PropertySet
-from .scales import DataRef, Scale
-from .marks import MarkProperties, MarkRef, Mark
-from .axes import Axis
-from .colors import brews
+from vincent.visualization import Visualization
+from vincent.data import Data
+from vincent.transforms import Transform
+from vincent.values import ValueRef
+from vincent.properties import PropertySet
+from vincent.scales import DataRef, Scale
+from vincent.marks import MarkProperties, MarkRef, Mark
+from vincent.axes import Axis
+from vincent.colors import brews
 
 try:
     import pandas as pd
@@ -122,11 +122,11 @@ class Line(Chart):
         x_type = 'time' if self._is_datetime else 'linear'
         self.scales += [
             Scale(name='x', type=x_type, range='width',
-                  domain=DataRef(data='table', field="data.idx")),
+                  domain=DataRef(data='table', field="idx")),
             Scale(name='y', range='height', nice=True,
-                  domain=DataRef(data='table', field="data.val")),
+                  domain=DataRef(data='table', field="val")),
             Scale(name='color', type='ordinal',
-                  domain=DataRef(data='table', field='data.col'),
+                  domain=DataRef(data='table', field='col'),
                   range='category20')
         ]
 
@@ -137,11 +137,11 @@ class Line(Chart):
         # Marks
         from_ = MarkRef(
             data='table',
-            transform=[Transform(type='facet', keys=['data.col'])])
+            transform=[Transform(type='facet', keys=['col'])])
         enter_props = PropertySet(
-            x=ValueRef(scale='x', field="data.idx"),
-            y=ValueRef(scale='y', field="data.val"),
-            stroke=ValueRef(scale="color", field='data.col'),
+            x=ValueRef(scale='x', field="idx"),
+            y=ValueRef(scale='y', field="val"),
+            stroke=ValueRef(scale="color", field='col'),
             stroke_width=ValueRef(value=2))
         marks = [Mark(type='line',
                       properties=MarkProperties(enter=enter_props))]
@@ -161,11 +161,11 @@ class Scatter(Chart):
         x_type = 'time' if self._is_datetime else 'linear'
         self.scales += [
             Scale(name='x', type=x_type, range='width',
-                  domain=DataRef(data='table', field="data.idx")),
+                  domain=DataRef(data='table', field="idx")),
             Scale(name='y', range='height', nice=True,
-                  domain=DataRef(data='table', field="data.val")),
+                  domain=DataRef(data='table', field="val")),
             Scale(name='color', type='ordinal',
-                  domain=DataRef(data='table', field='data.col'),
+                  domain=DataRef(data='table', field='col'),
                   range='category20')
         ]
 
@@ -176,12 +176,12 @@ class Scatter(Chart):
         # Marks
         from_ = MarkRef(
             data='table',
-            transform=[Transform(type='facet', keys=['data.col'])])
+            transform=[Transform(type='facet', keys=['col'])])
         enter_props = PropertySet(
-            x=ValueRef(scale='x', field="data.idx"),
-            y=ValueRef(scale='y', field="data.val"),
+            x=ValueRef(scale='x', field="idx"),
+            y=ValueRef(scale='y', field="val"),
             size=ValueRef(value=100),
-            fill=ValueRef(scale="color", field='data.col'))
+            fill=ValueRef(scale="color", field='col'))
         marks = [Mark(type='symbol',
                       properties=MarkProperties(enter=enter_props))]
         mark_group = Mark(type='group', from_=from_, marks=marks)
@@ -202,11 +202,11 @@ class Bar(Chart):
         # Scales
         self.scales += [
             Scale(name='x', type='ordinal', range='width', zero=False,
-                  domain=DataRef(data='table', field='data.idx')),
+                  domain=DataRef(data='table', field='idx')),
             Scale(name='y', range='height', nice=True,
                   domain=DataRef(data='stats', field='sum')),
             Scale(name='color', type='ordinal', range='category20',
-                  domain=DataRef(data='table', field='data.col'))
+                  domain=DataRef(data='table', field='col'))
         ]
 
         # Axes
@@ -214,24 +214,24 @@ class Bar(Chart):
                       Axis(type='y', scale='y')]
 
         # Stats Data
-        stats_transform = [Transform(type='facet', keys=['data.idx']),
-                           Transform(type='stats', value='data.val')]
+        stats_transform = [Transform(type='facet', keys=['idx']),
+                           Transform(type='stats', value='val')]
         stats_data = Data(name='stats', source='table',
                           transform=stats_transform)
         self.data.append(stats_data)
 
         # Marks
         from_transform = [
-            Transform(type='facet', keys=['data.col']),
-            Transform(type='stack', point='data.idx', height='data.val')
+            Transform(type='facet', keys=['col']),
+            Transform(type='stack', point='idx', height='val')
         ]
         from_ = MarkRef(data='table', transform=from_transform)
         enter_props = PropertySet(
-            x=ValueRef(scale='x', field='data.idx'),
+            x=ValueRef(scale='x', field='idx'),
             y=ValueRef(scale='y', field='y'),
             y2=ValueRef(scale='y', field='y2'),
             width=ValueRef(scale='x', band=True, offset=-1),
-            fill=ValueRef(scale='color', field='data.col'))
+            fill=ValueRef(scale='color', field='col'))
         marks = [Mark(type='rect',
                       properties=MarkProperties(enter=enter_props))]
         mark_group = Mark(type='group', from_=from_, marks=marks)
@@ -251,11 +251,11 @@ class Area(Chart):
         x_type = 'time' if self._is_datetime else 'linear'
         self.scales += [
             Scale(name='x', type=x_type, range='width', zero=False,
-                  domain=DataRef(data='table', field="data.idx")),
+                  domain=DataRef(data='table', field="idx")),
             Scale(name='y', range='height', nice=True,
                   domain=DataRef(data='stats', field='sum')),
             Scale(name='color', type='ordinal', range='category20',
-                  domain=DataRef(data='table', field='data.col'))
+                  domain=DataRef(data='table', field='col'))
         ]
 
         # Axes
@@ -263,24 +263,24 @@ class Area(Chart):
                       Axis(type='y', scale='y')]
 
         # Stats Data
-        stats_transform = [Transform(type='facet', keys=['data.idx']),
-                           Transform(type='stats', value='data.val')]
+        stats_transform = [Transform(type='facet', keys=['idx']),
+                           Transform(type='stats', value='val')]
         stats_data = Data(name='stats', source='table',
                           transform=stats_transform)
         self.data.append(stats_data)
 
         # Marks
         from_transform = [
-            Transform(type='facet', keys=['data.col']),
-            Transform(type='stack', point='data.idx', height='data.val')
+            Transform(type='facet', keys=['col']),
+            Transform(type='stack', point='idx', height='val')
         ]
         from_ = MarkRef(data='table', transform=from_transform)
         enter_props = PropertySet(
-            x=ValueRef(scale='x', field='data.idx'),
+            x=ValueRef(scale='x', field='idx'),
             y=ValueRef(scale='y', field='y'),
             y2=ValueRef(scale='y', field='y2'),
             interpolate=ValueRef(value='monotone'),
-            fill=ValueRef(scale='color', field='data.col'))
+            fill=ValueRef(scale='color', field='col'))
         marks = [Mark(type='area',
                       properties=MarkProperties(enter=enter_props))]
         mark_group = Mark(type='group', from_=from_, marks=marks)
@@ -319,11 +319,11 @@ class GroupedBar(Chart):
         # Scales
         self.scales += [
             Scale(name='x', type='ordinal', range='width', padding=0.2,
-                  domain=DataRef(data='table', field='data.idx')),
+                  domain=DataRef(data='table', field='idx')),
             Scale(name='y', range='height', nice=True,
-                  domain=DataRef(data='table', field="data.val")),
+                  domain=DataRef(data='table', field="val")),
             Scale(name='color', type='ordinal', range='category20',
-                  domain=DataRef(data='table', field='data.col'))
+                  domain=DataRef(data='table', field='col'))
         ]
 
         # Axes
@@ -333,21 +333,21 @@ class GroupedBar(Chart):
         # Marks
         mark_props = MarkProperties(
             enter=PropertySet(
-                x=ValueRef(scale='pos', field='data.col'),
-                y=ValueRef(scale='y', field='data.val'),
+                x=ValueRef(scale='pos', field='col'),
+                y=ValueRef(scale='y', field='val'),
                 y2=ValueRef(scale='y', value=0),
                 width=ValueRef(scale='pos', band=True, offset=-1),
-                fill=ValueRef(scale='color', field='data.col')))
+                fill=ValueRef(scale='color', field='col')))
         mark_group_marks = [Mark(type='rect', properties=mark_props)]
 
         if self.data_labels:
             mark_props_text = MarkProperties(
                 enter=PropertySet(
-                    x=ValueRef(scale='pos', field='data.col', offset=0),
+                    x=ValueRef(scale='pos', field='col', offset=0),
                     dx=ValueRef(scale='pos', band=True, mult=0.5),
-                    y=ValueRef(scale='y', field='data.val'),
+                    y=ValueRef(scale='y', field='val'),
                     align=ValueRef(value='center'),
-                    text=ValueRef(field='data.val'),
+                    text=ValueRef(field='val'),
                     baseline=ValueRef(value=self.baseline),
                     fill=ValueRef(value=self.label_color),
                     font_size=ValueRef(value=self.fontsize)))
@@ -357,12 +357,12 @@ class GroupedBar(Chart):
 
         mark_group_from = MarkRef(
             data='table',
-            transform=[Transform(type='facet', keys=['data.idx'])])
+            transform=[Transform(type='facet', keys=['idx'])])
         mark_group_props = MarkProperties(
             enter=PropertySet(x=ValueRef(scale='x', field='key'),
                               width=ValueRef(scale='x', band=True)))
         mark_group_scales = [Scale(name="pos", range="width", type="ordinal",
-                             domain=DataRef(field="data.col"))]
+                             domain=DataRef(field="col"))]
         mark_group = Mark(
             type='group', from_=mark_group_from,
             properties=mark_group_props, scales=mark_group_scales,
@@ -457,7 +457,7 @@ class Map(Chart):
                 key_join = '.'.join(['data', map_key[dat['name']]])
                 data_transform = Transform(
                     type='zip', key=key_join, with_='table',
-                    with_key='data.x', as_='value', default='noval'
+                    with_key='x', as_='value', default='noval'
                     )
                 transforms.append(data_transform)
                 null_trans = Transform(
@@ -540,10 +540,10 @@ class Pie(Chart):
 
         self.scales["color"] = Scale(
             name="color", type="ordinal", range="category10",
-            domain=DataRef(data="table", field="data.idx"))
+            domain=DataRef(data="table", field="idx"))
 
         transform = MarkRef(
-            data="table", transform=[Transform(type="pie", value="data.val")])
+            data="table", transform=[Transform(type="pie", value="val")])
 
         enter_props = PropertySet(
             x=ValueRef(group="width", mult=0.5),
@@ -553,7 +553,7 @@ class Pie(Chart):
             inner_radius=ValueRef(value=inner_radius),
             outer_radius=ValueRef(value=outer_radius),
             stroke=ValueRef(value="white"),
-            fill=ValueRef(scale="color", field="data.idx"))
+            fill=ValueRef(scale="color", field="idx"))
 
         mark = Mark(type="arc", from_=transform,
                     properties=MarkProperties(enter=enter_props))
@@ -572,12 +572,12 @@ class Word(Chart):
         # Scales
         self.scales["color"] = Scale(
             name="color", type="ordinal", range="category10",
-            domain=DataRef(data="table", field="data.idx"))
+            domain=DataRef(data="table", field="idx"))
 
         # Data transform
         wordcloud_transform = [
-            Transform(type="wordcloud", text="data.idx",
-                      font="Helvetica Neue", font_size="data.val",
+            Transform(type="wordcloud", text="idx",
+                      font="Helvetica Neue", font_size="val",
                       rotate={"random": list(range(-90, 90, 30))})]
         self.data[0].transform = wordcloud_transform
 
@@ -590,8 +590,8 @@ class Word(Chart):
             baseline=ValueRef(value="middle"),
             font=ValueRef(field="font"),
             font_size=ValueRef(field="fontSize"),
-            text=ValueRef(field="data.idx"),
-            fill=ValueRef(scale="color", field="data.idx"))
+            text=ValueRef(field="idx"),
+            fill=ValueRef(scale="color", field="idx"))
 
         mark = Mark(type="text", from_=MarkRef(data="table"),
                     properties=MarkProperties(enter=enter_props))

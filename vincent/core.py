@@ -5,8 +5,10 @@ Core: The core functionality for Vincent to map to Vega grammar
 
 """
 from __future__ import (print_function, division)
+
 import json
-from string import Template
+
+from jinja2 import Template, Environment, PackageLoader, escape
 from pkg_resources import resource_string
 
 try:
@@ -19,90 +21,9 @@ try:
 except ImportError:
     np = None
 
-from ._compat import str_types
+from vincent._compat import str_types
 
-
-def initialize_notebook():
-    """Initialize the IPython notebook display elements"""
-    try:
-        from IPython.core.display import display, HTML
-    except ImportError:
-        print("IPython Notebook could not be loaded.")
-
-    # Thanks to @jakevdp:
-    # https://github.com/jakevdp/mpld3/blob/master/mpld3/_display.py#L85
-    load_lib = """
-                function vct_load_lib(url, callback){
-                      if(
-                typeof d3 !== 'undefined' &&
-                url === '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js'){
-                        callback()
-                      }
-                      var s = document.createElement('script');
-                      s.src = url;
-                      s.async = true;
-                      s.onreadystatechange = s.onload = callback;
-                      s.onerror = function(){
-                        console.warn("failed to load library " + url);
-                        };
-                      document.getElementsByTagName("head")[0].appendChild(s);
-                };
-                var vincent_event = new CustomEvent(
-                  "vincent_libs_loaded",
-                  {bubbles: true, cancelable: true}
-                );
-                """
-    lib_urls = [
-        "'//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js'",
-        ("'//cdnjs.cloudflare.com/ajax/libs/d3-geo-projection/0.2.9/"
-         "d3.geo.projection.min.js'"),
-        "'//wrobstory.github.io/d3-cloud/d3.layout.cloud.js'",
-        "'//wrobstory.github.io/vega/vega.v1.3.3.js'"
-    ]
-    get_lib = """vct_load_lib(%s, function(){
-                  %s
-                  });"""
-    load_js = get_lib
-    ipy_trigger = "window.dispatchEvent(vincent_event);"
-    for elem in lib_urls[:-1]:
-        load_js = load_js % (elem, get_lib)
-    load_js = load_js % (lib_urls[-1], ipy_trigger)
-    html = """
-           <script>
-               %s
-               function load_all_libs(){
-                  console.log('Loading Vincent libs...')
-                  %s
-               };
-               if(typeof define === "function" && define.amd){
-                    if (window['d3'] === undefined ||
-                        window['topojson'] === undefined){
-                        require.config(
-                            {paths: {
-    d3: '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min',
-    topojson: '//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min'
-                              }
-                            }
-                          );
-                        require(["d3"], function(d3){
-                            console.log('Loading Vincent from require.js...')
-                            window.d3 = d3;
-                            require(["topojson"], function(topojson){
-                                window.topojson = topojson;
-                                load_all_libs();
-                            });
-                        });
-                    } else {
-                        load_all_libs();
-                    };
-               }else{
-                    console.log('Require.js not found, loading manually...')
-                    load_all_libs();
-               };
-
-           </script>""" % (load_lib, load_js,)
-    return display(HTML(html))
-
+TMPL_ENV = Environment(loader=PackageLoader('vincent', 'templates'))
 
 def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
@@ -177,7 +98,8 @@ class KeyedList(list):
 
 
 def grammar(grammar_type=None, grammar_name=None):
-    """Decorator to define properties that map to the ``grammar``
+    """
+    Decorator to define properties that map to the ``grammar``
     dict. This dict is the canonical representation of the Vega grammar
     within Vincent.
 
@@ -352,10 +274,9 @@ class GrammarClass(object):
                 return obj.grammar
 
         if html_out:
-            template = Template(
-                str(resource_string('vincent', 'vega_template.html')))
+            template = TMPL_ENV.get_template("vega.html")
             with open(html_path, 'w') as f:
-                f.write(template.substitute(path=path))
+                f.write(template.render(path=path))
 
         if path:
             with open(path, 'w') as f:

@@ -4,7 +4,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
     <script src="//cdn.rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-geo-projection/0.2.15/d3.geo.projection.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/vega/2.2.6/vega.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vega/2.2.6/vega.js"></script>
   </head>
   <body>
     <div id="vis"></div>
@@ -15,6 +15,6 @@
           chart({el:"#vis"}).update();
         });
       }
-      render(None);
+      parse("{{path}}");
     </script>
 </html>

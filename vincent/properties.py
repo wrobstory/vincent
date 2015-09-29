@@ -6,9 +6,9 @@ PropertySet: Definition of properties for ``Mark`` objects and labels of
 
 """
 
-from .core import _assert_is_type, grammar, GrammarClass
-from .values import ValueRef
-from ._compat import str_types
+from vincent.core import _assert_is_type, grammar, GrammarClass
+from vincent.values import ValueRef
+from vincent._compat import str_types
 
 
 class PropertySet(GrammarClass):
