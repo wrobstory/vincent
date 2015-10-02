@@ -356,7 +356,7 @@ class GroupedBar(Chart):
                 x=ValueRef(scale='pos', field='col'),
                 y=ValueRef(scale='y', field='val'),
                 y2=ValueRef(scale='y', value=0),
-                width=ValueRef(scale='pos', band=True, offset=-1),
+                width=ValueRef(scale='pos', band=True),
                 fill=ValueRef(scale='color', field='col')))
         mark_group_marks = [Mark(type='rect', properties=mark_props)]
 
@@ -375,12 +375,13 @@ class GroupedBar(Chart):
             mark_group_marks.append(Mark(type='text',
                                          properties=mark_props_text))
 
-        mark_group_from = MarkRef(
-            data='table',
-            transform=[Transform(type='facet', keys=['idx'])])
+        mark_group_from = MarkRef(data='table',
+            transform=[Transform(type='facet', groupby=['idx'])])
+
         mark_group_props = MarkProperties(
             enter=PropertySet(x=ValueRef(scale='x', field='key'),
                               width=ValueRef(scale='x', band=True)))
+
         mark_group_scales = [Scale(name="pos", range="width", type="ordinal",
                              domain=DataRef(field="col"))]
         mark_group = Mark(
