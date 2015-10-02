@@ -16,6 +16,11 @@ class AxisProperties(GrammarClass):
     but instead of events, the axes are divided into major ticks, minor
     ticks, labels, and the axis itself.
     """
+
+    @grammar(grammar_type=PropertySet)
+    def ticks(value):
+        pass
+
     @grammar(grammar_type=PropertySet, grammar_name='majorTicks')
     def major_ticks(value):
         """PropertySet : Definition of major tick marks"""
@@ -133,6 +138,14 @@ class Axis(GrammarClass):
         """int : Offset in pixels to displace the edge of the axis from the
         referenced area
         """
+
+    @grammar(str_types)
+    def layer(value):
+        pass
+
+    @grammar(bool)
+    def grid(value):
+        pass
 
     @grammar(AxisProperties)
     def properties(value):

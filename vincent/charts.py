@@ -6,7 +6,7 @@ Charts: Constructors for different chart types in Vega grammar.
 """
 from vincent.visualization import Visualization
 from vincent.data import Data
-from vincent.transforms import Transform
+from vincent.transforms import AggregateSpec, Transform
 from vincent.values import ValueRef
 from vincent.properties import PropertySet
 from vincent.scales import DataRef, Scale
@@ -201,10 +201,11 @@ class Bar(Chart):
 
         # Scales
         self.scales += [
-            Scale(name='x', type='ordinal', range='width', zero=False,
+            Scale(name='x', type='ordinal', range='width',
                   domain=DataRef(data='table', field='idx')),
             Scale(name='y', range='height', nice=True,
-                  domain=DataRef(data='stats', field='sum')),
+                  domain=DataRef(data='stats', field='sum_val'),
+                  type='linear'),
             Scale(name='color', type='ordinal', range='category20',
                   domain=DataRef(data='table', field='col'))
         ]
@@ -214,28 +215,30 @@ class Bar(Chart):
                       Axis(type='y', scale='y')]
 
         # Stats Data
-        stats_transform = [Transform(type='facet', keys=['idx']),
-                           Transform(type='stats', value='val')]
+        summarize_stat = AggregateSpec(field="val", ops=["sum"])
+        stats_transform = Transform(type='aggregate', groupby=['idx'],
+                                    summarize=[summarize_stat])
         stats_data = Data(name='stats', source='table',
-                          transform=stats_transform)
+                          transform=[stats_transform])
         self.data.append(stats_data)
 
         # Marks
-        from_transform = [
-            Transform(type='facet', keys=['col']),
-            Transform(type='stack', point='idx', height='val')
-        ]
-        from_ = MarkRef(data='table', transform=from_transform)
+        from_transform = Transform(type='stack', groupby=['idx'],
+                                   sortby=["col"], field="val")
+
+        from_ = MarkRef(data='table', transform=[from_transform])
+
         enter_props = PropertySet(
             x=ValueRef(scale='x', field='idx'),
-            y=ValueRef(scale='y', field='y'),
-            y2=ValueRef(scale='y', field='y2'),
+            y=ValueRef(scale='y', field='layout_start'),
+            y2=ValueRef(scale='y', field='layout_end'),
             width=ValueRef(scale='x', band=True, offset=-1),
             fill=ValueRef(scale='color', field='col'))
-        marks = [Mark(type='rect',
-                      properties=MarkProperties(enter=enter_props))]
-        mark_group = Mark(type='group', from_=from_, marks=marks)
-        self.marks.append(mark_group)
+
+        mark = Mark(from_=from_,
+                    type='rect',
+                    properties=MarkProperties(enter=enter_props))
+        self.marks.append(mark)
 StackedBar = Bar
 
 

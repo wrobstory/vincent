@@ -9,6 +9,51 @@ from vincent.core import grammar, GrammarClass
 from vincent._compat import str_types
 
 
+class AggregateSpec(GrammarClass):
+    """
+    Aggregate Specifications:
+    https://github.com/vega/vega/wiki/Data-Transforms#-aggregate
+    """
+
+    @grammar(str_types)
+    def field(value):
+        pass
+
+    @grammar(list)
+    def ops(value):
+
+        valid_aggregate_ops  = frozenset([
+            "values",
+            "count",
+            "valid",
+            "missing",
+            "distinct",
+            "sum",
+            "mean",
+            "average",
+            "variance",
+            "variancep",
+            "stdev",
+            "stdevp",
+            "median",
+            "q1",
+            "q3",
+            "modeskew",
+            "min",
+            "max",
+            "argmin",
+            "argmax"])
+
+        set_diff = set(value).difference(valid_aggregate_ops)
+        if len(set_diff) != 0:
+            raise ValueError('Ops must be'
+                             ' one of {0}'.format(str(valid_aggregate_ops)))
+
+    @grammar(list, grammar_name="as")
+    def as_(value):
+        pass
+
+
 class Transform(GrammarClass):
     """
     Container to Transforma metrics
@@ -46,7 +91,16 @@ class Transform(GrammarClass):
             'formula',
             'lookup',
             'sort',
-            'zip'
+            'zip',
+            'force',
+            'geo',
+            'geopath',
+            'linkpath',
+            'pie',
+            'stack',
+            'treemap',
+            'voronoi',
+            'wordcloud'
         ])
 
         if value not in valid_transforms:
@@ -206,7 +260,7 @@ class Transform(GrammarClass):
     def as_(value):
         pass
 
-    @grammar(str_types):
+    @grammar(str_types)
     def default(value):
         pass
 
