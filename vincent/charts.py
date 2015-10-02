@@ -181,15 +181,19 @@ class Scatter(Chart):
         # Marks
         from_ = MarkRef(
             data='table',
-            transform=[Transform(type='facet', keys=['col'])])
+            transform=[Transform(type='facet', groupby=['col'])])
+
         enter_props = PropertySet(
             x=ValueRef(scale='x', field="idx"),
             y=ValueRef(scale='y', field="val"),
             size=ValueRef(value=100),
             fill=ValueRef(scale="color", field='col'))
+
         marks = [Mark(type='symbol',
                       properties=MarkProperties(enter=enter_props))]
+
         mark_group = Mark(type='group', from_=from_, marks=marks)
+
         self.marks.append(mark_group)
 
 
@@ -257,11 +261,12 @@ class Area(Chart):
 
         # Scales
         x_type = 'time' if self._is_datetime else 'linear'
+
         self.scales += [
             Scale(name='x', type=x_type, range='width', zero=False,
                   domain=DataRef(data='table', field="idx")),
-            Scale(name='y', range='height', nice=True,
-                  domain=DataRef(data='stats', field='sum')),
+            Scale(name='y', range='height', nice=True, type='linear',
+                  domain=DataRef(data='stats', field='sum_val')),
             Scale(name='color', type='ordinal', range='category20',
                   domain=DataRef(data='table', field='col'))
         ]
@@ -271,27 +276,34 @@ class Area(Chart):
                       Axis(type='y', scale='y')]
 
         # Stats Data
-        stats_transform = [Transform(type='facet', keys=['idx']),
-                           Transform(type='stats', value='val')]
+        summarize_stat = AggregateSpec(field="val", ops=["sum"])
+        stats_transform = Transform(type='aggregate', groupby=['idx'],
+                                    summarize=[summarize_stat])
         stats_data = Data(name='stats', source='table',
-                          transform=stats_transform)
+                          transform=[stats_transform])
         self.data.append(stats_data)
 
         # Marks
         from_transform = [
-            Transform(type='facet', keys=['col']),
-            Transform(type='stack', point='idx', height='val')
+            Transform(type='stack', groupby=['idx'], sortby=["col"],
+                      field='val'),
+            Transform(type='facet', groupby=['col'])
         ]
+
         from_ = MarkRef(data='table', transform=from_transform)
+
         enter_props = PropertySet(
             x=ValueRef(scale='x', field='idx'),
-            y=ValueRef(scale='y', field='y'),
-            y2=ValueRef(scale='y', field='y2'),
+            y=ValueRef(scale='y', field='layout_start'),
+            y2=ValueRef(scale='y', field='layout_end'),
             interpolate=ValueRef(value='monotone'),
             fill=ValueRef(scale='color', field='col'))
+
         marks = [Mark(type='area',
                       properties=MarkProperties(enter=enter_props))]
+
         mark_group = Mark(type='group', from_=from_, marks=marks)
+
         self.marks.append(mark_group)
 StackedArea = Area
 
