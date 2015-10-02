@@ -120,6 +120,7 @@ class Line(Chart):
 
         # Scales
         x_type = 'time' if self._is_datetime else 'linear'
+
         self.scales += [
             Scale(name='x', type=x_type, range='width',
                   domain=DataRef(data='table', field="idx")),
@@ -137,15 +138,19 @@ class Line(Chart):
         # Marks
         from_ = MarkRef(
             data='table',
-            transform=[Transform(type='facet', keys=['col'])])
+            transform=[Transform(type='facet', groupby=['col'])])
+
         enter_props = PropertySet(
             x=ValueRef(scale='x', field="idx"),
             y=ValueRef(scale='y', field="val"),
             stroke=ValueRef(scale="color", field='col'),
             stroke_width=ValueRef(value=2))
+
         marks = [Mark(type='line',
                       properties=MarkProperties(enter=enter_props))]
+
         mark_group = Mark(type='group', from_=from_, marks=marks)
+
         self.marks.append(mark_group)
 
 

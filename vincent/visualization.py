@@ -323,7 +323,7 @@ class Visualization(GrammarClass):
             Title and label color
         """
 
-        self.legends.append(Legend(title=title, fill=scale, offset=0,
+        self.legends.append(Legend(title=title, fill=scale,
                                    properties=LegendProperties()))
         if text_color:
             color_props = PropertySet(fill=ValueRef(value=text_color))
