@@ -3,9 +3,10 @@ python:
   - "2.7"
   - "3.4"
 before_install:
+  - sudo apt-get update
   - sudo apt-get install -qq gfortran libatlas-base-dev python-numpy
 install:
-  - pip install ipython mock pandas flake8 --use-mirrors
+  - pip install ipython mock pandas flake8 jinja2 --use-mirrors
 script:
   - flake8 --exclude=colors.py,_compat.py vincent tests
   - nosetests

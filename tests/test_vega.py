@@ -190,14 +190,17 @@ def assert_grammar_typechecking(grammar_types, test_obj):
         pass
 
     for name, objects in grammar_types:
+        bad_obj = BadType()
         for obj in objects:
             tmp_obj = obj()
             setattr(test_obj, name, tmp_obj)
             nt.assert_equal(getattr(test_obj, name), tmp_obj)
-            bad_obj = BadType()
-            nt.assert_raises_regexp(ValueError, name + '.*' + obj.__name__,
-                                    setattr, test_obj, name, bad_obj)
-            nt.assert_equal(getattr(test_obj, name), tmp_obj)
+
+            # any object can have 'str' and 'bool' representations
+            if obj.__name__ != 'str' and obj.__name__ != 'bool':
+                nt.assert_raises_regexp(ValueError, name + '.*' + obj.__name__,
+                                        setattr, test_obj, name, bad_obj)
+                nt.assert_equal(getattr(test_obj, name), tmp_obj)
 
 
 def assert_manual_typechecking(bad_grammar, test_obj):
@@ -618,7 +621,7 @@ class TestTransform(object):
         """Transform field typechecking"""
         grammar_types = [
             ('fields', [list]), ('from_', [str]),
-            ('as_', [list]), ('keys', [list]), ('sort', [str]),
+            ('as_', [list]), ('groupby', [list]), ('sort', [bool, list]),
             ('test', [str]), ('field', [str]), ('expr', [str]),
             ('by', [str, list]), ('value', [str]), ('median', [bool]),
             ('with_', [str]), ('key', [str]), ('with_key', [str]),

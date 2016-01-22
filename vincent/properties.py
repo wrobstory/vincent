@@ -36,7 +36,7 @@ class PropertySet(GrammarClass):
 
     @grammar(ValueRef)
     def y(value):
-       pass
+        pass
 
     @grammar(ValueRef)
     def y2(value):

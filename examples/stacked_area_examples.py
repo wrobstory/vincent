@@ -22,31 +22,31 @@ vis.padding = {'top': 10, 'left': 50, 'bottom': 50, 'right': 100}
 
 data = Data.from_pandas(price)
 vis.data['table'] = data
-facets = Transform(type='facet', keys=['data.idx'])
-stats = Transform(type='stats', value='data.val')
+facets = Transform(type='facet', groupby=['idx'])
+stats = Transform(type='aggregate', value='val')
 stat_dat = Data(name='stats', source='table', transform=[facets, stats])
 vis.data['stats'] = stat_dat
 
 
 vis.scales['x'] = Scale(name='x', type='time', range='width',
-                        domain=DataRef(data='table', field="data.idx"))
+                        domain=DataRef(data='table', field="idx"))
 vis.scales['y'] = Scale(name='y', range='height', type='linear', nice=True,
                         domain=DataRef(data='stats', field="sum"))
 vis.scales['color'] = Scale(name='color', type='ordinal',
-                            domain=DataRef(data='table', field='data.col'),
+                            domain=DataRef(data='table', field='col'),
                             range='category20')
 vis.axes.extend([Axis(type='x', scale='x'),
                  Axis(type='y', scale='y')])
 
 
-facet = Transform(type='facet', keys=['data.col'])
-stack = Transform(type='stack', point='data.idx', height='data.val')
+facet = Transform(type='facet', groupby=['col'])
+stack = Transform(type='stack', point='idx', height='val')
 transform = MarkRef(data='table',transform=[facet, stack])
-enter_props = PropertySet(x=ValueRef(scale='x', field="data.idx"),
+enter_props = PropertySet(x=ValueRef(scale='x', field="idx"),
                           y=ValueRef(scale='y', field="y"),
                           interpolate=ValueRef(value='monotone'),
                           y2=ValueRef(field='y2', scale='y'),
-                          fill=ValueRef(scale='color', field='data.col'))
+                          fill=ValueRef(scale='color', field='col'))
 mark = Mark(type='group', from_=transform,
             marks=[Mark(type='area',
             properties=MarkProperties(enter=enter_props))])

@@ -8,8 +8,7 @@ from __future__ import (print_function, division)
 
 import json
 
-from jinja2 import Template, Environment, PackageLoader, escape
-from pkg_resources import resource_string
+from jinja2 import Environment, PackageLoader
 
 try:
     import pandas as pd
@@ -25,15 +24,25 @@ from vincent._compat import str_types
 
 TMPL_ENV = Environment(loader=PackageLoader('vincent', 'templates'))
 
+
+def _get_tuple_type_names(tuple_type):
+    if type(tuple_type) is tuple:
+        # tuple may contain other tuples
+        type_names = ', '.join(_get_tuple_type_names(t) for t in tuple_type)
+        return '({0})'.format(type_names)
+    else:
+        return tuple_type.__name__
+
+
 def _assert_is_type(name, value, value_type):
     """Assert that a value must be a given type."""
     if not isinstance(value, value_type):
         if type(value_type) is tuple:
-            types = ', '.join(t.__name__ for t in value_type)
-            raise ValueError('{0} must be one of ({1})'.format(name, types))
+            types = _get_tuple_type_names(value_type)
+            raise ValueError('{0} must be one of {1}'.format(name, types))
         else:
-            raise ValueError('{0} must be {1}'
-                             .format(name, value_type.__name__))
+            raise ValueError('{0} must be {1}'.format(name,
+                                                      value_type.__name__))
 
 
 class ValidationError(Exception):

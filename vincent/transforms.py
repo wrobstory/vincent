@@ -22,7 +22,7 @@ class AggregateSpec(GrammarClass):
     @grammar(list)
     def ops(value):
 
-        valid_aggregate_ops  = frozenset([
+        valid_aggregate_ops = frozenset([
             "values",
             "count",
             "valid",
@@ -256,10 +256,6 @@ class Transform(GrammarClass):
     def keys(value):
         pass
 
-    @grammar(list, grammar_name="as")
-    def as_(value):
-        pass
-
     @grammar(str_types)
     def default(value):
         pass
@@ -363,7 +359,7 @@ class Transform(GrammarClass):
     def scale(value):
         pass
 
-    @grammar((int, str_types))
+    @grammar((int, dict))
     def rotate(value):
         pass
 
@@ -417,7 +413,7 @@ class Transform(GrammarClass):
     def end_angle(value):
         pass
 
-    @grammar(bool)
+    @grammar((bool, list))
     def sort(value):
         pass
 

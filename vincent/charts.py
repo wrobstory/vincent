@@ -97,8 +97,10 @@ class Chart(Visualization):
                 if not data:
                     raise ValueError('The data structure is empty.')
             if isinstance(data, (pd.Series, pd.DataFrame)):
-                if isinstance(data.index, pd.DatetimeIndex):
-                    self._is_datetime = True
+                self._is_datetime = isinstance(data.index,
+                                               pd.DatetimeIndex) or\
+                    data.index.is_type_compatible('date') or\
+                    data.index.is_type_compatible('datetime')
 
             # Using a vincent KeyedList here
             self.data['table'] = (
@@ -376,7 +378,8 @@ class GroupedBar(Chart):
                                          properties=mark_props_text))
 
         mark_group_from = MarkRef(data='table',
-            transform=[Transform(type='facet', groupby=['idx'])])
+                                  transform=[Transform(type='facet',
+                                                       groupby=['idx'])])
 
         mark_group_props = MarkProperties(
             enter=PropertySet(x=ValueRef(scale='x', field='key'),
@@ -477,8 +480,10 @@ class Map(Chart):
                     )
                 key_join = '.'.join(['data', map_key[dat['name']]])
                 data_transform = Transform(
-                    type='zip', key=key_join, with_='table',
-                    with_key='x', as_='value', default='noval'
+                    type='zip', field=key_join,
+                    # with_='table',
+                    # with_key='x',
+                    as_=['value'], default='noval'
                     )
                 transforms.append(data_transform)
                 null_trans = Transform(
@@ -489,7 +494,7 @@ class Map(Chart):
                 get_brewer = False
 
             geo_transform = Transform(
-                type='geopath', value="data", **geo_kwargs
+                type='geopath', field="data", **geo_kwargs
                 )
             transforms.append(geo_transform)
             self.data[dat['name']] = Data(
@@ -564,7 +569,7 @@ class Pie(Chart):
             domain=DataRef(data="table", field="idx"))
 
         transform = MarkRef(
-            data="table", transform=[Transform(type="pie", value="val")])
+            data="table", transform=[Transform(type="pie", field="val")])
 
         enter_props = PropertySet(
             x=ValueRef(group="width", mult=0.5),

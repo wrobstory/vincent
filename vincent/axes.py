@@ -139,14 +139,6 @@ class Axis(GrammarClass):
         referenced area
         """
 
-    @grammar(str_types)
-    def layer(value):
-        pass
-
-    @grammar(bool)
-    def grid(value):
-        pass
-
     @grammar(AxisProperties)
     def properties(value):
         """AxisProperties : Custom styling for ticks and tick labels

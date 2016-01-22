@@ -147,8 +147,8 @@ class Data(GrammarClass):
         elif hasattr(obj, '__int__'):
             return int(obj)
         else:
-            raise LoadError('cannot serialize index of type '
-                            + type(obj).__name__)
+            raise LoadError('cannot serialize index of type ' +
+                            type(obj).__name__)
 
     @classmethod
     def from_pandas(cls, data, columns=None, key_on='idx', name=None,
@@ -229,8 +229,8 @@ class Data(GrammarClass):
                         value['group'] = num
                     vega_data.values.append(value)
         else:
-            raise ValueError('cannot load from data type '
-                             + type(pd_obj).__name__)
+            raise ValueError('cannot load from data type ' +
+                             type(pd_obj).__name__)
         return vega_data
 
     @classmethod

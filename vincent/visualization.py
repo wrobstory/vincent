@@ -6,9 +6,7 @@ Visualization: Top level class for Vega Grammar
 """
 from __future__ import (print_function, division)
 
-from uuid import uuid4
-
-from jinja2 import Template, Environment, PackageLoader, escape
+from jinja2 import Environment, PackageLoader
 
 from vincent.core import (_assert_is_type, ValidationError,
                           KeyedList, grammar, GrammarClass)
