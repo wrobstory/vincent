@@ -1,3 +1,12 @@
+# Status
+------
+
+#### 2016-06-18 Update
+
+If you are interested in this library, I would direct you to the Altair project: https://github.com/ellisonbg/altair It supports the latest version of vega, is fully-featured, has a great development team, and has been developed with the support of the Vega team at UW. 
+
+There will be no more updates, closed issues, or PR merges for the Vincent project. Thanks so much to everyone who tried it or used it along the way. 
+
 #Vincent
 
 [![Travs-CI status](https://travis-ci.org/wrobstory/vincent.png)](https://travis-ci.org/wrobstory/vincent)
@@ -15,17 +24,6 @@ The data capabilities of Python. The visualization capabilities of JavaScript.
 Vincent takes Python data structures and translates them into [Vega](https://github.com/trifacta/vega) visualization grammar. It allows for quick iteration of visualization designs via getters and setters on grammar elements, and outputs the final visualization to JSON.
 
 Perhaps most importantly, Vincent groks Pandas DataFrames and Series in an intuitive way.
-
-Status
-------
-
-#### 2015-08-12 Update
-
-Vincent is essetially frozen for development right now, and has been for quite a while. The features for the currently targeted version of Vega (1.4) work fine, but it will *not* work with Vega 2.x releases. Regarding a rewrite, I'm honestly not sure if it's worth the time and effort at this point.
-
-There is a new project seeking to integrate Vega-related tools with the IPython Notebook: https://github.com/uwdata/ipython-vega-lite 
-
-Work is ongoing, and will probably supersede the need for a new version of Vincent.
 
 Installation
 ------------
