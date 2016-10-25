@@ -2,7 +2,7 @@
 
 #### 2016-06-18 Update
 
-If you are interested in this library, I would direct you to the Altair project: https://github.com/ellisonbg/altair It supports the latest version of vega, is fully-featured, has a great development team, and has been developed with the support of the Vega team at UW. 
+If you are interested in this library, I would direct you to the Altair project: https://github.com/altair-viz/altair It supports the latest version of vega, is fully-featured, has a great development team, and has been developed with the support of the Vega team at UW. 
 
 There will be no more updates, closed issues, or PR merges for the Vincent project. Thanks so much to everyone who tried it or used it along the way. 
 
