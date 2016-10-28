@@ -18,7 +18,7 @@ JavaScript.
 
 Vincent takes Python data structures (tuples, lists, dicts, and Pandas
 DataFrames) and translates them into
-`Vega <https://github.com/trifacta/vega>`__ visualization grammar. It
+`Vega <https://github.com/vega/vega>`__ visualization grammar. It
 allows for quick iteration of visualization designs via simple addition
 and subtraction of grammar elements, and outputs the final visualization
 to JSON.
