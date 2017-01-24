@@ -448,7 +448,7 @@ class Map(Chart):
             transforms = []
             if data is not None and list(map_key.keys())[0] == dat['name']:
                 get_brewer = True
-                if not data_key or not data_bind:
+                if data_key is None or data_bind is None:
                     raise ValueError('If passing data, '
                                      'you must pass data cols to key/bind on')
                 self.data['table'] = Data.keypairs(
