@@ -200,8 +200,9 @@ class Bar(Chart):
         super(Bar, self).__init__(*args, **kwargs)
 
         # Scales
+        x_type = 'time' if self._is_datetime else 'linear'
         self.scales += [
-            Scale(name='x', type='ordinal', range='width', zero=False,
+            Scale(name='x', type=x_type, range='width', zero=False,
                   domain=DataRef(data='table', field='data.idx')),
             Scale(name='y', range='height', nice=True,
                   domain=DataRef(data='stats', field='sum')),
